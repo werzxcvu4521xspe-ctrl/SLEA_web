@@ -1,0 +1,103 @@
+/* 디자인 시스템 컬러 토큰 및 전역 테마 정의 */
+:root {
+  /* Color Palette */
+  --color-emerald-deep: #063c2e;
+  --color-emerald-medium: #0f5c47;
+  --color-emerald-light: #168366;
+  --color-emerald-pale: #e8f5f1;
+  
+  --color-sand-warm: #f4ece1;
+  --color-sand-medium: #ede4d3;
+  --color-sand-light: #faf7f2;
+  
+  --color-charcoal-deep: #121413;
+  --color-charcoal-medium: #1a1d1c;
+  --color-charcoal-light: #2b302e;
+  
+  --color-gray-dark: #666e6b;
+  --color-gray-medium: #9ca6a2;
+  --color-gray-light: #dbe2e0;
+  
+  --color-white: #ffffff;
+  --color-orange-accent: #ff5722;
+  --color-orange-light: #ffebe5;
+  
+  /* Fonts */
+  --font-family-base: 'Noto Sans KR', sans-serif;
+  --font-family-condensed: 'Roboto Condensed', sans-serif;
+
+  /* Layout and Spacing */
+  --max-width-content: 1180px;
+  --header-height: 80px;
+  --banner-height: 40px;
+
+  /* Shadows and Borders */
+  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.08);
+  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+  
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 16px;
+  --border-radius-full: 9999px;
+
+  /* Glassmorphism Styles */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-bg-dark: rgba(26, 29, 28, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.3);
+  --glass-border-dark: rgba(255, 255, 255, 0.05);
+  --glass-blur: blur(12px);
+}
+
+/* Dark Mode Overwrite (기본적으로 다크/라이트 하이브리드 지원) */
+[data-theme='dark'] {
+  --color-sand-light: #121413;
+  --color-sand-warm: #1a1d1c;
+  --color-sand-medium: #2b302e;
+  
+  --color-charcoal-deep: #faf7f2;
+  --color-charcoal-medium: #ede4d3;
+  --color-charcoal-light: #f4ece1;
+  
+  --glass-bg: rgba(26, 29, 28, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.05);
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Transition Utilities */
+.transition-base {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
