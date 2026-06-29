@@ -76,11 +76,22 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="auth-footer-links">
-          <span>아직 계정이 없으신가요?</span>
-          <Link href="/signup" className="auth-redirect-link">
-            회원가입 하기
-          </Link>
+        <div className="auth-footer-links" style={{ flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <Link href="/find-auth?tab=id" className="auth-redirect-link" style={{ fontSize: '12px', color: 'var(--color-gray-dark)', textDecoration: 'none' }}>
+              아이디 찾기
+            </Link>
+            <span style={{ color: '#ccc', fontSize: '12px' }}>|</span>
+            <Link href="/find-auth?tab=password" className="auth-redirect-link" style={{ fontSize: '12px', color: 'var(--color-gray-dark)', textDecoration: 'none' }}>
+              비밀번호 재설정
+            </Link>
+          </div>
+          <div style={{ marginTop: '4px' }}>
+            <span>아직 계정이 없으신가요? </span>
+            <Link href="/signup" className="auth-redirect-link">
+              회원가입 하기
+            </Link>
+          </div>
         </div>
       </div>
 
