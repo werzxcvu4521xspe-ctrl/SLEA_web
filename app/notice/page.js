@@ -367,38 +367,7 @@ export default function NoticePage() {
           line-height: 1.5;
         }
 
-        .newsletter-form {
-          display: flex;
-          flex-direction: column;
-          gap: 16px;
-        }
 
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .form-group label {
-          font-size: 11px;
-          font-weight: 700;
-          color: var(--color-gray-dark);
-        }
-
-        .form-group input {
-          border: 1px solid var(--color-gray-light);
-          border-radius: var(--border-radius-sm);
-          padding: 12px;
-          outline: none;
-          font-size: 14px;
-          font-weight: 600;
-          background-color: var(--color-sand-light);
-        }
-
-        .form-group input:focus {
-          border-color: var(--color-emerald-deep);
-          background-color: var(--color-white);
-        }
 
         .subscribe-btn {
           height: 48px;
