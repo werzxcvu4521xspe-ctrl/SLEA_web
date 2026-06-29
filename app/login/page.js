@@ -93,6 +93,81 @@ export default function LoginPage() {
             </Link>
           </div>
         </div>
+
+        {/* Demo Simulator Box */}
+        <div style={{ marginTop: '30px', padding: '16px', background: 'var(--color-sand-light)', borderRadius: '6px', border: '1px solid var(--color-gray-light)', width: '100%' }}>
+          <h4 style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-charcoal-deep)', marginBottom: '8px', textAlign: 'center' }}>
+            💡 테스트용 원클릭 권한 로그인
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <button
+              type="button"
+              className="sim-login-btn"
+              onClick={() => {
+                localStorage.setItem('sejong_role_override', 'super_admin');
+                window.dispatchEvent(new Event('sejong_role_update'));
+                router.push('/admin');
+              }}
+              style={{
+                width: '100%',
+                padding: '8px',
+                fontSize: '12px',
+                fontWeight: '700',
+                background: 'var(--color-orange-light)',
+                color: 'var(--color-orange-accent)',
+                border: '1px solid rgba(229,76,28,0.2)',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              최고 관리자 (Level 2) 로그인
+            </button>
+            <button
+              type="button"
+              className="sim-login-btn"
+              onClick={() => {
+                localStorage.setItem('sejong_role_override', 'staff_admin');
+                window.dispatchEvent(new Event('sejong_role_update'));
+                router.push('/admin');
+              }}
+              style={{
+                width: '100%',
+                padding: '8px',
+                fontSize: '12px',
+                fontWeight: '700',
+                background: 'var(--color-emerald-pale)',
+                color: 'var(--color-emerald-deep)',
+                border: '1px solid rgba(10,92,54,0.2)',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              일반 관리자 (Level 1) 로그인
+            </button>
+            <button
+              type="button"
+              className="sim-login-btn"
+              onClick={() => {
+                localStorage.setItem('sejong_role_override', 'user');
+                window.dispatchEvent(new Event('sejong_role_update'));
+                router.push('/mypage');
+              }}
+              style={{
+                width: '100%',
+                padding: '8px',
+                fontSize: '12px',
+                fontWeight: '700',
+                background: '#f1f1f1',
+                color: '#555',
+                border: '1px solid #ddd',
+                borderRadius: '4px',
+                cursor: 'pointer'
+              }}
+            >
+              일반 회원으로 로그인
+            </button>
+          </div>
+        </div>
       </div>
 
       <style jsx>{`

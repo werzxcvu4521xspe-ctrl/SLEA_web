@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 import MenuOverlay from './MenuOverlay';
 import SearchOverlay from './SearchOverlay';
 
@@ -11,6 +12,7 @@ export default function Navigation() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMegaOpen, setIsMegaOpen] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -25,6 +27,44 @@ export default function Navigation() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  useEffect(() => {
+    const checkRole = () => {
+      // Priority 1: Local override for demo/testing
+      const override = localStorage.getItem('sejong_role_override');
+      if (override) {
+        setUserRole(override === 'none' ? null : override);
+        return;
+      }
+      
+      // Priority 2: Supabase session
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          const role = session.user.user_metadata?.role || 'user';
+          setUserRole(role);
+        } else {
+          setUserRole(null);
+        }
+      });
+    };
+
+    checkRole();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
+      checkRole();
+    });
+
+    window.addEventListener('storage', checkRole);
+    window.addEventListener('sejong_role_update', checkRole);
+
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('storage', checkRole);
+      window.removeEventListener('sejong_role_update', checkRole);
+    };
+  }, []);
+
+  const showAdminMenu = userRole === 'super_admin' || userRole === 'staff_admin';
 
   return (
     <>
@@ -63,16 +103,25 @@ export default function Navigation() {
                   협회활동
                 </Link>
               </li>
-              <li>
-                <Link href="/members" className={pathname.startsWith('/members') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
-                  회원관리
-                </Link>
-              </li>
+              {showAdminMenu && (
+                <li>
+                  <Link href="/members" className={pathname.startsWith('/members') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
+                    회원관리
+                  </Link>
+                </li>
+              )}
               <li>
                 <Link href="/shop" className={pathname.startsWith('/shop') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
                   쇼핑몰
                 </Link>
               </li>
+              {showAdminMenu && (
+                <li>
+                  <Link href="/admin" className={pathname.startsWith('/admin') ? 'active' : ''} onClick={() => setIsMegaOpen(false)} style={{ color: 'var(--color-orange-accent)' }}>
+                    👑 관리자
+                  </Link>
+                </li>
+              )}
               <li>
                 <button
                   type="button"

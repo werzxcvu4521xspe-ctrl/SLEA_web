@@ -6,20 +6,39 @@ import { supabase } from '@/lib/supabaseClient';
 
 export default function MenuOverlay({ isOpen, onClose }) {
   const [user, setUser] = useState(null);
+  const [userRole, setUserRole] = useState(null);
 
   useEffect(() => {
+    const checkRole = (session) => {
+      const override = localStorage.getItem('sejong_role_override');
+      if (override) {
+        setUserRole(override === 'none' ? null : override);
+        return;
+      }
+      if (session?.user) {
+        const role = session.user.user_metadata?.role || 'user';
+        setUserRole(role);
+      } else {
+        setUserRole(null);
+      }
+    };
+
     // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
+      checkRole(session);
     });
 
     // Listen to auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
+      checkRole(session);
     });
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const showAdminMenu = userRole === 'super_admin' || userRole === 'staff_admin';
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -73,8 +92,8 @@ export default function MenuOverlay({ isOpen, onClose }) {
             <li className="menu-section">
               <span className="section-title">3. 회원 & 쇼핑몰</span>
               <div className="submenu-grid">
-                <Link href="/members?tab=register" onClick={onClose}>정회원 등록 신청</Link>
-                <Link href="/members?tab=directory" onClick={onClose}>회원 디렉토리</Link>
+                {showAdminMenu && <Link href="/members?tab=register" onClick={onClose}>정회원 등록 신청</Link>}
+                {showAdminMenu && <Link href="/members?tab=directory" onClick={onClose}>회원 디렉토리</Link>}
                 <Link href="/shop?tab=brand" onClick={onClose}>브랜드관 (쇼핑몰)</Link>
                 <Link href="/shop?tab=group" onClick={onClose}>공동구매 & 추천상품</Link>
               </div>
@@ -130,6 +149,11 @@ export default function MenuOverlay({ isOpen, onClose }) {
             </div>
 
             <div className="association-links">
+              {showAdminMenu && (
+                <Link href="/admin" className="menu-sub-item icon-link logout-btn" onClick={onClose}>
+                  👑 관리자 대시보드
+                </Link>
+              )}
               <Link href="/proposal" className="menu-sub-item icon-link" onClick={onClose}>
                 🤝 협업 및 광고 제휴
               </Link>

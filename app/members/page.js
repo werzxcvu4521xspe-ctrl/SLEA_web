@@ -2,6 +2,8 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
+import Link from 'next/link';
 
 const INITIAL_MEMBERS = [
   { id: 1, rep: '이민수', brand: '디저트 카페 도원', type: 'F&B', region: '조치원읍', collaboration: '로컬 농산물 수급 및 협동 메뉴 기획' },
@@ -19,6 +21,37 @@ function MembersContent() {
   const router = useRouter();
   const tabParam = searchParams.get('tab') || 'register';
   const [activeTab, setActiveTab] = useState(tabParam);
+  const [userRole, setUserRole] = useState(null);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  useEffect(() => {
+    const checkRole = () => {
+      const override = localStorage.getItem('sejong_role_override');
+      if (override) {
+        setUserRole(override === 'none' ? null : override);
+        setCheckingAuth(false);
+        return;
+      }
+
+      supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session?.user) {
+          const role = session.user.user_metadata?.role || 'user';
+          setUserRole(role);
+        } else {
+          setUserRole(null);
+        }
+        setCheckingAuth(false);
+      });
+    };
+
+    checkRole();
+    window.addEventListener('storage', checkRole);
+    window.addEventListener('sejong_role_update', checkRole);
+    return () => {
+      window.removeEventListener('storage', checkRole);
+      window.removeEventListener('sejong_role_update', checkRole);
+    };
+  }, []);
 
   // Directory Search/Filter State
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,6 +97,35 @@ function MembersContent() {
 
     setFilteredMembers(result);
   }, [searchQuery, selectedType, selectedRegion]);
+
+  if (checkingAuth) {
+    return (
+      <div className="container" style={{ padding: '150px 0', textAlign: 'center', minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ fontSize: '16px', fontWeight: '700', color: 'var(--color-emerald-deep)' }}>권한을 확인하고 있습니다...</div>
+      </div>
+    );
+  }
+
+  const isAdmin = userRole === 'super_admin' || userRole === 'staff_admin';
+  if (!isAdmin) {
+    return (
+      <div className="container" style={{ padding: '150px 20px', textAlign: 'center', minHeight: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '24px' }}>
+        <span style={{ fontSize: '64px' }}>🔒</span>
+        <h2 style={{ fontSize: '28px', fontWeight: '900', color: 'var(--color-charcoal-deep)', letterSpacing: '-0.5px' }}>접근 권한이 제한되었습니다</h2>
+        <p style={{ fontSize: '15.5px', color: 'var(--color-gray-dark)', maxWidth: '480px', lineHeight: '1.7', margin: '0' }}>
+          회원관리 등록 현황 및 디렉토리 열람 기능은 사단법인 세종로컬창업가협회의 **승인된 관리자(Level 1 / Level 2)** 권한이 있는 계정만 접근할 수 있습니다.
+        </p>
+        <div style={{ display: 'flex', gap: '12px', marginTop: '8px' }}>
+          <Link href="/login" className="subscribe-btn" style={{ padding: '12px 28px', height: 'auto', borderRadius: '4px', textDecoration: 'none', display: 'inline-block' }}>
+            관리자 계정으로 로그인 ➔
+          </Link>
+          <Link href="/" className="subscribe-btn" style={{ padding: '12px 28px', height: 'auto', borderRadius: '4px', textDecoration: 'none', background: '#aaa', display: 'inline-block' }}>
+            홈으로 돌아가기
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="members-page-wrapper">
