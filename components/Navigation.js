@@ -10,6 +10,7 @@ export default function Navigation() {
   const [isBannerVisible, setIsBannerVisible] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMegaOpen, setIsMegaOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -41,32 +42,55 @@ export default function Navigation() {
         {/* Main GNB */}
         <nav className="gnb-bar glass-panel">
           <div className="gnb-inner">
-            <Link href="/" className="logo-text">
+            <Link href="/" className="logo-text" onClick={() => setIsMegaOpen(false)}>
               SEJONG <span>LOCAL</span>
             </Link>
 
             {/* Desktop Navigation Links */}
             <ul className="nav-links pc-only">
               <li>
-                <Link href="/" className={pathname === '/' ? 'active' : ''}>
+                <Link href="/" className={pathname === '/' ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
                   홈
                 </Link>
               </li>
               <li>
-                <Link href="/archive" className={pathname.startsWith('/archive') ? 'active' : ''}>
-                  창업가 아카이브
-                  <span className="badge badge-apply">신청중</span>
+                <Link href="/about" className={pathname.startsWith('/about') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
+                  협회소개
                 </Link>
               </li>
               <li>
-                <Link href="/map" className={pathname === '/map' ? 'active' : ''}>
-                  로컬 맵
+                <Link href="/activities" className={pathname.startsWith('/activities') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
+                  협회활동
                 </Link>
               </li>
               <li>
-                <Link href="/notice" className={pathname.startsWith('/notice') ? 'active' : ''}>
-                  공지사항
+                <Link href="/members" className={pathname.startsWith('/members') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
+                  회원관리
                 </Link>
+              </li>
+              <li>
+                <Link href="/shop" className={pathname.startsWith('/shop') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
+                  쇼핑몰
+                </Link>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className={`mega-trigger-btn ${isMegaOpen ? 'active' : ''}`}
+                  onClick={() => setIsMegaOpen(!isMegaOpen)}
+                  style={{
+                    fontSize: '15px',
+                    fontWeight: '700',
+                    color: isMegaOpen ? 'var(--color-emerald-deep)' : 'var(--color-gray-dark)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                    padding: '8px 0',
+                    transition: 'color 0.2s ease'
+                  }}
+                >
+                  전체 서비스 {isMegaOpen ? '▲' : '▼'}
+                </button>
               </li>
             </ul>
 
@@ -75,7 +99,7 @@ export default function Navigation() {
               <button 
                 type="button" 
                 className="icon-btn search-btn" 
-                onClick={() => setIsSearchOpen(true)}
+                onClick={() => { setIsSearchOpen(true); setIsMegaOpen(false); }}
                 aria-label="검색 열기"
               >
                 🔍
@@ -83,7 +107,7 @@ export default function Navigation() {
               <button 
                 type="button" 
                 className={`icon-btn menu-btn ${isMenuOpen ? 'open' : ''}`}
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                onClick={() => { setIsMenuOpen(!isMenuOpen); setIsMegaOpen(false); }}
                 aria-label="메뉴 열기"
               >
                 <span className="bar"></span>
@@ -93,184 +117,55 @@ export default function Navigation() {
             </div>
           </div>
         </nav>
+
+        {/* Mega Menu Overlay */}
+        <div className={`mega-menu-overlay ${isMegaOpen ? 'active' : ''}`}>
+          <div className="mega-menu-grid">
+            <div className="mega-menu-col">
+              <div className="mega-menu-title">1. 협회소개</div>
+              <Link href="/about?tab=intro" onClick={() => setIsMegaOpen(false)}>협회소개 & 설립목적</Link>
+              <Link href="/about?tab=leaders" onClick={() => setIsMegaOpen(false)}>공동리더 & 임원진</Link>
+              <Link href="/about?tab=history" onClick={() => setIsMegaOpen(false)}>협회 연혁</Link>
+              <Link href="/about?tab=mou" onClick={() => setIsMegaOpen(false)}>MOU 기관 현황</Link>
+            </div>
+            
+            <div className="mega-menu-col">
+              <div className="mega-menu-title">2. 협회활동</div>
+              <Link href="/activities?tab=seroday" onClick={() => setIsMegaOpen(false)}>세로데이 (네트워킹)</Link>
+              <Link href="/activities?tab=mentoring" onClick={() => setIsMegaOpen(false)}>멘토링데이 (컨설팅)</Link>
+              <Link href="/activities?tab=education" onClick={() => setIsMegaOpen(false)}>교육 · 특강</Link>
+              <Link href="/activities?tab=popup" onClick={() => setIsMegaOpen(false)}>팝업마켓</Link>
+            </div>
+
+            <div className="mega-menu-col">
+              <div className="mega-menu-title">3. 회원 & 쇼핑몰</div>
+              <Link href="/members?tab=register" onClick={() => setIsMegaOpen(false)}>정회원 등록 신청</Link>
+              <Link href="/members?tab=directory" onClick={() => setIsMegaOpen(false)}>회원 디렉토리</Link>
+              <Link href="/shop?tab=brand" onClick={() => setIsMegaOpen(false)}>브랜드관 (쇼핑몰)</Link>
+              <Link href="/shop?tab=group" onClick={() => setIsMegaOpen(false)}>공동구매 & 추천상품</Link>
+            </div>
+
+            <div className="mega-menu-col">
+              <div className="mega-menu-title">4. 홍보 & 파트너</div>
+              <Link href="/pr?tab=intro" onClick={() => setIsMegaOpen(false)}>기업 소개 & 인터뷰</Link>
+              <Link href="/pr?tab=videos" onClick={() => setIsMegaOpen(false)}>홍보영상 & 쇼츠</Link>
+              <Link href="/partnership" onClick={() => setIsMegaOpen(false)}>MOU 및 파트너십</Link>
+              <Link href="/archive" onClick={() => setIsMegaOpen(false)}>창업가 아카이브</Link>
+            </div>
+
+            <div className="mega-menu-col">
+              <div className="mega-menu-title">5. 커뮤니티 & 지원</div>
+              <Link href="/community" onClick={() => setIsMegaOpen(false)}>자유게시판 (협업)</Link>
+              <Link href="/notice" onClick={() => setIsMegaOpen(false)}>협회 공지사항</Link>
+              <Link href="/support" onClick={() => setIsMegaOpen(false)}>창업지원센터 (자료실)</Link>
+            </div>
+          </div>
+        </div>
       </header>
 
       {/* Overlays */}
       <MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
-
-      <style jsx global>{`
-        .header-container {
-          position: fixed;
-          top: 0;
-          left: 0;
-          width: 100%;
-          z-index: 1000;
-          transition: transform 0.4s ease;
-        }
-
-        .top-banner {
-          height: var(--banner-height);
-          background-color: var(--color-emerald-deep);
-          color: var(--color-sand-warm);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 13px;
-          font-weight: 500;
-          transition: height 0.3s ease, opacity 0.3s ease;
-          overflow: hidden;
-        }
-
-        .top-banner.hidden {
-          height: 0;
-          opacity: 0;
-        }
-
-        .banner-content {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-        }
-
-        .banner-link {
-          color: var(--color-orange-accent);
-          font-weight: 600;
-          text-decoration: underline;
-        }
-
-        .gnb-bar {
-          height: var(--header-height);
-          border-radius: 0;
-          border-left: none;
-          border-right: none;
-          border-top: none;
-          background: rgba(255, 255, 255, 0.75);
-          backdrop-filter: var(--glass-blur);
-          transition: background 0.3s ease;
-        }
-
-        .header-container.scrolled .gnb-bar {
-          background: rgba(255, 255, 255, 0.9);
-          box-shadow: var(--shadow-subtle);
-        }
-
-        .gnb-inner {
-          max-width: var(--max-width-content);
-          height: 100%;
-          margin: 0 auto;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0 20px;
-        }
-
-        .logo-text {
-          font-size: 22px;
-          font-weight: 900;
-          letter-spacing: -0.5px;
-          color: var(--color-charcoal-deep);
-          font-family: var(--font-family-condensed);
-        }
-
-        .logo-text span {
-          color: var(--color-emerald-medium);
-        }
-
-        .nav-links {
-          display: flex;
-          gap: 32px;
-        }
-
-        .nav-links li {
-          position: relative;
-        }
-
-        .nav-links a {
-          font-size: 15px;
-          font-weight: 700;
-          color: var(--color-gray-dark);
-          padding: 8px 0;
-          display: flex;
-          align-items: center;
-          gap: 6px;
-          transition: color 0.2s ease;
-        }
-
-        .nav-links a:hover, .nav-links a.active {
-          color: var(--color-emerald-deep);
-        }
-
-        .nav-links a::after {
-          content: '';
-          position: absolute;
-          bottom: -4px;
-          left: 0;
-          width: 0;
-          height: 2px;
-          background-color: var(--color-emerald-deep);
-          transition: width 0.3s ease;
-        }
-
-        .nav-links a.active::after {
-          width: 100%;
-        }
-
-        .header-controls {
-          display: flex;
-          align-items: center;
-          gap: 16px;
-        }
-
-        .icon-btn {
-          font-size: 20px;
-          padding: 8px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          color: var(--color-charcoal-deep);
-          transition: opacity 0.2s ease;
-        }
-
-        .icon-btn:hover {
-          opacity: 0.7;
-        }
-
-        /* Hamburger Menu Icon */
-        .menu-btn {
-          display: flex;
-          flex-direction: column;
-          gap: 5px;
-          width: 24px;
-        }
-
-        .menu-btn .bar {
-          display: block;
-          width: 100%;
-          height: 2px;
-          background-color: var(--color-charcoal-deep);
-          transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        .menu-btn.open .bar:nth-child(1) {
-          transform: translateY(7px) rotate(45deg);
-        }
-
-        .menu-btn.open .bar:nth-child(2) {
-          opacity: 0;
-        }
-
-        .menu-btn.open .bar:nth-child(3) {
-          transform: translateY(-7px) rotate(-45deg);
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-          .pc-only {
-            display: none !important;
-          }
-        }
-      `}</style>
     </>
   );
 }

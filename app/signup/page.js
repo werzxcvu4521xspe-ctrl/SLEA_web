@@ -24,10 +24,12 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
+      const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '';
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password: password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
             name: name.trim(),
             role: role
@@ -38,10 +40,15 @@ export default function SignupPage() {
       if (error) {
         setErrorMsg(error.message || '회원가입 중 오류가 발생했습니다.');
       } else if (data) {
-        setSuccessMsg('회원가입 신청이 정상 접수되었습니다! 로그인 창으로 이동합니다.');
-        setTimeout(() => {
-          router.push('/login');
-        }, 2000);
+        // If email confirmation is enabled, session will be null
+        if (data.user && !data.session) {
+          setSuccessMsg('입력하신 이메일로 인증 링크가 발송되었습니다! 메일함(또는 스팸함)을 확인하셔서 인증을 완료해 주세요. 완료 후 로그인이 가능합니다.');
+        } else {
+          setSuccessMsg('회원가입이 정상 완료되었습니다! 로그인 창으로 이동합니다.');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        }
       }
     } catch (e) {
       setErrorMsg('서버와 통신하는 도중 오류가 발생했습니다.');
