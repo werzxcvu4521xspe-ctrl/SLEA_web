@@ -178,6 +178,7 @@ export default function LoginPage() {
           justify-content: center;
           padding: 80px 20px;
           background-color: var(--color-sand-light);
+          margin-top: 100px;
         }
 
         .auth-card {
