@@ -12,6 +12,12 @@ const notoSansKr = Noto_Sans_KR({
 export const metadata = {
   title: "세종로컬창업가협회 l SEJONG LOCAL",
   description: "세종시 로컬 크리에이터와 브랜드의 성장 가치와 공간을 기록하는 아카이빙 플랫폼",
+  verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",
+    other: {
+      "naver-site-verification": process.env.NEXT_PUBLIC_NAVER_SITE_VERIFICATION || "",
+    }
+  }
 };
 
 export default function RootLayout({ children }) {
