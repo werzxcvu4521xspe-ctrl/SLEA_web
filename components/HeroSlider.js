@@ -214,7 +214,16 @@ export default function HeroSlider() {
 
         @media (max-width: 767px) {
           .hero-slider-wrapper {
-            height: clamp(400px, 58svh, 460px);
+            height: auto !important;
+            min-height: 0;
+            background-color: transparent;
+          }
+
+          :global(.hero-swiper),
+          :global(.hero-swiper .swiper-wrapper),
+          :global(.hero-swiper .swiper-slide) {
+            height: auto !important;
+            min-height: 0 !important;
           }
 
           .slide-counter-badge {
@@ -222,38 +231,40 @@ export default function HeroSlider() {
           }
 
           .slide-bg {
+            height: auto !important;
+            min-height: 360px;
             align-items: flex-end;
-            padding: 34px 0 38px;
+            padding: 70px 0 34px;
             background-position: center;
           }
 
           .slide-content {
-            gap: 12px;
+            gap: 10px;
             max-width: 100%;
           }
 
           .slide-title {
             max-width: 94%;
-            font-size: 28px;
-            line-height: 1.26;
+            font-size: 23px;
+            line-height: 1.22;
           }
 
           .slide-desc {
             max-width: 94%;
-            font-size: 15px;
-            line-height: 1.58;
+            font-size: 14.5px;
+            line-height: 1.55;
           }
 
           .slide-category {
-            font-size: 12px;
-            letter-spacing: 1px;
+            display: none;
           }
 
           .slide-btn {
-            min-height: 52px;
-            width: min(100%, 330px);
-            padding: 0 22px;
-            font-size: 15px;
+            min-height: 48px;
+            width: min(100%, 300px);
+            padding: 0 18px;
+            font-size: 14px;
+            margin-top: 4px;
           }
         }
       `}</style>
