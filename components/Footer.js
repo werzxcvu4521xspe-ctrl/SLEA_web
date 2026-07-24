@@ -36,7 +36,7 @@ export default function Footer() {
               <span className="bold-label">창업 정보 등록 신청</span>
               세종로컬창업가협회의 일원이 되어 브랜드 가치를 널리 알리고 협회 네트워킹에 참여하세요.
             </div>
-            <Link href="/mypage" className="card-action-btn">
+            <Link href="/signup" className="card-action-btn">
               신청하기 →
             </Link>
           </div>
@@ -60,8 +60,8 @@ export default function Footer() {
             </ul>
             <div className="details-text">
               <p>세종로컬창업가협회 (Sejong Local Entrepreneur Association)</p>
-              <p>대표자: 홍길동 | 소재지: 세종특별자치시 나성로 123 세종로컬허브 3층</p>
-              <p>이메일: contact@sejonglocal.org | 문의전화: 044-123-4567</p>
+              <p>사무국: 세종 로컬 창업가 네트워크 운영팀 | 소재지: 세종특별자치시 일대</p>
+              <p>이메일: contact@sejonglocal.org | 제휴·회원 문의는 문의하기 페이지를 이용해 주세요.</p>
             </div>
             <p className="copyright">
               © {new Date().getFullYear()} SEJONG LOCAL. All rights reserved. 본 사이트의 무단 전재 및 배포를 금합니다.

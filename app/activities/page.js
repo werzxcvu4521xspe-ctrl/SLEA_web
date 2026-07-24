@@ -3,6 +3,8 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
+const MENTORING_STORAGE_KEY = 'sejong_mentoring_requests';
+
 function ActivitiesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -27,6 +29,24 @@ function ActivitiesContent() {
   const handleMentoringSubmit = (e) => {
     e.preventDefault();
     if (!mentorName || !mentorDesc) return;
+
+    const request = {
+      id: `mentor-${Date.now()}`,
+      type: mentorType,
+      typeLabel: {
+        professor: '대학교 전문 교수 멘토링',
+        business: '실무 전문가 멘토링',
+        consulting: '창업 및 비즈니스 모델 컨설팅'
+      }[mentorType],
+      name: mentorName.trim(),
+      desc: mentorDesc.trim(),
+      status: 'new',
+      createdAt: new Date().toISOString()
+    };
+
+    const savedRequests = JSON.parse(localStorage.getItem(MENTORING_STORAGE_KEY) || '[]');
+    localStorage.setItem(MENTORING_STORAGE_KEY, JSON.stringify([request, ...savedRequests]));
+
     setMentorSubmitted(true);
     setTimeout(() => {
       setMentorSubmitted(false);

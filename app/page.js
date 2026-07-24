@@ -2,7 +2,7 @@ import HeroSlider from '@/components/HeroSlider';
 import CabinetSection from '@/components/CabinetSection';
 import MapRankingSection from '@/components/MapRankingSection';
 import ArchiveCard from '@/components/ArchiveCard';
-import { supabase } from '@/lib/supabaseClient';
+import { isSupabaseConfigured, supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 
 // Fallback Mock Data if Supabase fetch is empty/unconfigured
@@ -59,9 +59,64 @@ const FALLBACK_ARCHIVES = [
     category: 'F&B',
     image_url: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=600&auto=format&fit=crop',
     address: '세종특별자치시 아름동 보듬3로 8',
-    short_desc: '세종 쌀로 만든 쌀식빵 and 친환경 효모종을 구워내는 건강한 베이커리 연구소'
+    short_desc: '세종 쌀로 만든 쌀식빵과 친환경 효모종을 구워내는 건강한 베이커리 연구소'
   }
 ];
+
+const QUICK_LINKS = [
+  {
+    title: '창업가 아카이브',
+    desc: '세종 로컬 브랜드와 대표자, 업종, 지역 정보를 탐색합니다.',
+    href: '/archive',
+    tag: 'Brand DB'
+  },
+  {
+    title: '정회원 가입',
+    desc: '협회 커뮤니티 계정을 만들고 브랜드 등록 절차를 시작합니다.',
+    href: '/signup',
+    tag: 'Member'
+  },
+  {
+    title: '협회활동',
+    desc: '세로데이, 멘토링데이, 교육, 팝업마켓 일정을 확인합니다.',
+    href: '/activities',
+    tag: 'Program'
+  },
+  {
+    title: '창업지원센터',
+    desc: '사업계획서, 피칭덱, 정부지원사업, AI 활용 자료를 모았습니다.',
+    href: '/support',
+    tag: 'Resource'
+  }
+];
+
+const IMPACT_STATS = [
+  { value: '150+', label: '회원·파트너 브랜드' },
+  { value: '24회', label: '정기 네트워킹 운영' },
+  { value: '6개', label: '세종 권역 아카이브' },
+  { value: '12곳', label: '공공·대학 협력 채널' }
+];
+
+const HOME_ARCHIVE_SELECT_COLUMNS = [
+  'id',
+  'company_name',
+  'representative',
+  'category',
+  'image_url',
+  'address',
+  'short_desc'
+].join(',');
+
+const SUPABASE_TIMEOUT_MS = 900;
+
+function withTimeout(promise, timeoutMs) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Home archive query timed out')), timeoutMs);
+    })
+  ]);
+}
 
 export const revalidate = 60; // Revalidate every minute
 
@@ -69,12 +124,16 @@ export default async function HomePage() {
   let displayArchives = [];
 
   try {
-    const { data, error } = await supabase
+    if (!isSupabaseConfigured) {
+      throw new Error('Supabase is not configured');
+    }
+
+    const { data, error } = await withTimeout(supabase
       .from('archives')
-      .select('*')
+      .select(HOME_ARCHIVE_SELECT_COLUMNS)
       .eq('status', 'approved')
       .order('created_at', { ascending: false })
-      .limit(6);
+      .limit(6), SUPABASE_TIMEOUT_MS);
 
     if (error || !data || data.length === 0) {
       displayArchives = FALLBACK_ARCHIVES;
@@ -90,13 +149,56 @@ export default async function HomePage() {
       {/* 1. Hero Swiper Slider */}
       <HeroSlider />
 
+      <section className="home-intro-section">
+        <div className="container">
+          <div className="home-intro-grid">
+            <div className="home-intro-copy">
+              <span className="section-label en-title">What We Connect</span>
+              <h1>세종의 로컬 창업가가 서로를 찾고, 협업하고, 더 멀리 알려지는 곳</h1>
+              <p>
+                세종로컬창업가협회는 지역 브랜드의 정보를 기록하는 아카이브이자,
+                창업가·공공기관·대학·지역 소비자를 연결하는 실행형 네트워크입니다.
+              </p>
+              <div className="home-intro-actions">
+                <Link href="/signup" className="primary-cta-link">
+                  회원가입 시작하기
+                </Link>
+                <Link href="/about" className="secondary-cta-link">
+                  협회 소개 보기
+                </Link>
+              </div>
+            </div>
+
+            <div className="home-stats-panel" aria-label="협회 주요 지표">
+              {IMPACT_STATS.map((stat) => (
+                <div key={stat.label} className="home-stat-item">
+                  <strong>{stat.value}</strong>
+                  <span>{stat.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="quick-link-grid">
+            {QUICK_LINKS.map((item) => (
+              <Link href={item.href} className="quick-link-card" key={item.title}>
+                <span className="quick-link-tag en-title">{item.tag}</span>
+                <h2>{item.title}</h2>
+                <p>{item.desc}</p>
+                <span className="quick-link-arrow" aria-hidden="true">→</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 2. Hot Archives Showcase Grid */}
       <section className="showcase-section">
         <div className="container">
           <div className="showcase-header">
             <div>
               <span className="section-label en-title">New Archives</span>
-              <h2 className="showcase-title">새로 등록된 세종 창업가</h2>
+              <h2 className="showcase-title">새로 등록된 세종 창업가 브랜드</h2>
             </div>
             <Link href="/archive" className="view-all-link">
               전체 보기 <span>→</span>
@@ -129,7 +231,7 @@ export default async function HomePage() {
             </p>
           </div>
           <div className="promo-action">
-            <Link href="/notice" className="subscribe-btn transition-base">
+            <Link href="/signup" className="subscribe-btn transition-base">
               뉴스레터 무료 구독 신청하기
             </Link>
           </div>

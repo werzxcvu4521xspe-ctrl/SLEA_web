@@ -1,7 +1,41 @@
-import { supabase } from '@/lib/supabaseClient';
+import { isSupabaseConfigured, supabase } from '@/lib/supabaseClient';
 import MapWidget from '@/components/MapWidget';
 import ArchiveCard from '@/components/ArchiveCard';
 import Link from 'next/link';
+
+const DETAIL_SELECT_COLUMNS = [
+  'id',
+  'company_name',
+  'representative',
+  'category',
+  'image_url',
+  'address',
+  'short_desc',
+  'story',
+  'website_url',
+  'sns_url'
+].join(',');
+
+const RELATED_SELECT_COLUMNS = [
+  'id',
+  'company_name',
+  'representative',
+  'category',
+  'image_url',
+  'address',
+  'short_desc'
+].join(',');
+
+const SUPABASE_TIMEOUT_MS = 900;
+
+function withTimeout(promise, timeoutMs) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Archive detail query timed out')), timeoutMs);
+    })
+  ]);
+}
 
 const FALLBACK_ARCHIVES = [
   {
@@ -134,11 +168,15 @@ export default async function ArchiveDetailPage({ params }) {
   let isFallback = false;
 
   try {
-    const { data, error } = await supabase
+    if (!isSupabaseConfigured) {
+      throw new Error('Supabase is not configured');
+    }
+
+    const { data, error } = await withTimeout(supabase
       .from('archives')
-      .select('*')
+      .select(DETAIL_SELECT_COLUMNS)
       .eq('id', id)
-      .single();
+      .single(), SUPABASE_TIMEOUT_MS);
 
     if (error || !data) {
       isFallback = true;
@@ -146,12 +184,12 @@ export default async function ArchiveDetailPage({ params }) {
       archive = data;
     }
 
-    const { data: related } = await supabase
+    const { data: related } = await withTimeout(supabase
       .from('archives')
-      .select('*')
+      .select(RELATED_SELECT_COLUMNS)
       .eq('status', 'approved')
       .neq('id', id)
-      .limit(3);
+      .limit(3), SUPABASE_TIMEOUT_MS);
     
     otherArchives = related || [];
   } catch (e) {

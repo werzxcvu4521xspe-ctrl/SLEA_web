@@ -2,7 +2,29 @@ import ArchiveCategoryTabs from '@/components/ArchiveCategoryTabs';
 import ArchiveCard from '@/components/ArchiveCard';
 import ArchiveListRow from '@/components/ArchiveListRow';
 import ArchiveFilterBar from '@/components/ArchiveFilterBar';
-import { supabase } from '@/lib/supabaseClient';
+import { isSupabaseConfigured, supabase } from '@/lib/supabaseClient';
+
+const ARCHIVE_SELECT_COLUMNS = [
+  'id',
+  'company_name',
+  'representative',
+  'category',
+  'image_url',
+  'address',
+  'short_desc',
+  'created_at'
+].join(',');
+
+const SUPABASE_TIMEOUT_MS = 900;
+
+function withTimeout(promise, timeoutMs) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      setTimeout(() => reject(new Error('Supabase archive query timed out')), timeoutMs);
+    })
+  ]);
+}
 
 const FALLBACK_ARCHIVES = [
   {
@@ -87,10 +109,16 @@ export default async function ArchivePage({ searchParams }) {
   let isFallback = false;
 
   try {
+    if (!isSupabaseConfigured) {
+      throw new Error('Supabase is not configured');
+    }
+
     let query = supabase
       .from('archives')
-      .select('*')
-      .eq('status', 'approved');
+      .select(ARCHIVE_SELECT_COLUMNS)
+      .eq('status', 'approved')
+      .order('created_at', { ascending: false })
+      .limit(60);
 
     if (category) {
       query = query.eq('category', category);
@@ -99,7 +127,7 @@ export default async function ArchivePage({ searchParams }) {
       query = query.or(`company_name.ilike.%${search}%,representative.ilike.%${search}%,short_desc.ilike.%${search}%`);
     }
 
-    const { data, error } = await query;
+    const { data, error } = await withTimeout(query, SUPABASE_TIMEOUT_MS);
 
     if (error || !data || data.length === 0) {
       isFallback = true;
@@ -163,8 +191,8 @@ export default async function ArchivePage({ searchParams }) {
             </div>
           ) : (
             <div className="grid-3">
-              {archives.map((item) => (
-                <ArchiveCard key={item.id} archive={item} />
+              {archives.map((item, index) => (
+                <ArchiveCard key={item.id} archive={item} preload={index === 0} />
               ))}
             </div>
           )

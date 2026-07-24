@@ -1,26 +1,34 @@
 /* 디자인 시스템 컬러 토큰 및 전역 테마 정의 */
 :root {
-  /* Color Palette */
-  --color-emerald-deep: #063c2e;
-  --color-emerald-medium: #0f5c47;
-  --color-emerald-light: #168366;
-  --color-emerald-pale: #e8f5f1;
+  /* Color Palette: Sejong gradient city tone */
+  --color-emerald-deep: #1456c8;
+  --color-emerald-medium: #0a9ee8;
+  --color-emerald-light: #11c7c7;
+  --color-emerald-pale: #eef9ff;
+  --color-brand-navy: #113274;
+  --color-brand-cyan: #08a7d8;
+  --color-brand-green: #00bf63;
+  --color-button-solid: #1456c8;
+  --color-button-solid-hover: #0f48ad;
+  --brand-gradient: linear-gradient(105deg, #113274 0%, #1456c8 42%, #08a7d8 68%, #00bf63 100%);
+  --brand-gradient-soft: linear-gradient(135deg, rgba(20, 86, 200, 0.12) 0%, rgba(8, 167, 216, 0.12) 50%, rgba(0, 191, 99, 0.10) 100%);
+  --brand-gradient-hover: linear-gradient(105deg, #0f2b65 0%, #0f68d8 44%, #06b6d4 72%, #00c967 100%);
   
-  --color-sand-warm: #f4ece1;
-  --color-sand-medium: #ede4d3;
-  --color-sand-light: #faf7f2;
+  --color-sand-warm: #f2efe8;
+  --color-sand-medium: #f6f6f6;
+  --color-sand-light: #ffffff;
   
   --color-charcoal-deep: #121413;
   --color-charcoal-medium: #1a1d1c;
   --color-charcoal-light: #2b302e;
   
-  --color-gray-dark: #666e6b;
-  --color-gray-medium: #9ca6a2;
-  --color-gray-light: #dbe2e0;
+  --color-gray-dark: #525252;
+  --color-gray-medium: #8d8d8d;
+  --color-gray-light: #e0e0e0;
   
   --color-white: #ffffff;
-  --color-orange-accent: #ff5722;
-  --color-orange-light: #ffebe5;
+  --color-orange-accent: #ff4e00;
+  --color-orange-light: #fff0e8;
   
   /* Fonts */
   --font-family-base: 'Noto Sans KR', sans-serif;
@@ -32,9 +40,9 @@
   --banner-height: 40px;
 
   /* Shadows and Borders */
-  --shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.05);
-  --shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.08);
-  --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.06);
+  --shadow-subtle: 0 8px 24px rgba(22, 22, 22, 0.05);
+  --shadow-medium: 0 16px 40px rgba(22, 22, 22, 0.1);
+  --shadow-glass: 0 16px 44px rgba(22, 22, 22, 0.08);
   
   --border-radius-sm: 4px;
   --border-radius-md: 8px;

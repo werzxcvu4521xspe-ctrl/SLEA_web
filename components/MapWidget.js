@@ -60,7 +60,7 @@ export default function MapWidget({ address, companyName }) {
           position: relative;
           width: 100%;
           height: 180px;
-          background-color: #d8e5e0;
+          background: var(--brand-gradient-soft);
           overflow: hidden;
         }
 
@@ -89,7 +89,7 @@ export default function MapWidget({ address, companyName }) {
           position: absolute;
           width: 50px;
           height: 50px;
-          background-color: rgba(22, 131, 102, 0.2);
+          background-color: rgba(17, 199, 199, 0.28);
           border-radius: 50%;
           z-index: 1;
           animation: pulse 2s infinite;
@@ -192,11 +192,11 @@ export default function MapWidget({ address, companyName }) {
         }
 
         .map-link.naver {
-          background-color: #03cf5d;
+          background: var(--color-button-solid);
         }
 
         .map-link.naver:hover {
-          background-color: #02b350;
+          background: var(--color-button-solid-hover);
         }
       `}</style>
     </div>

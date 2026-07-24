@@ -72,9 +72,9 @@ export default function Navigation() {
         {/* Top Announcement Banner */}
         <div className={`top-banner ${!isBannerVisible ? 'hidden' : ''}`}>
           <div className="banner-content">
-            <span>세종시 로컬 창업가의 생생한 성장 기록, 아카이빙 신청 접수 중!</span>
-            <Link href="/archive" className="banner-link">
-              신청하기 <span className="arrow">→</span>
+            <span>세종시 로컬 창업가 정회원 가입 및 브랜드 아카이빙 신청 접수 중</span>
+            <Link href="/signup" className="banner-link">
+              가입하기 <span className="arrow">→</span>
             </Link>
           </div>
         </div>
@@ -113,6 +113,11 @@ export default function Navigation() {
               <li>
                 <Link href="/shop" className={pathname.startsWith('/shop') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
                   쇼핑몰
+                </Link>
+              </li>
+              <li>
+                <Link href="/archive" className={pathname.startsWith('/archive') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
+                  아카이브
                 </Link>
               </li>
               {showAdminMenu && (
@@ -172,10 +177,10 @@ export default function Navigation() {
           <div className="mega-menu-grid">
             <div className="mega-menu-col">
               <div className="mega-menu-title">1. 협회소개</div>
-              <Link href="/about?tab=intro" onClick={() => setIsMegaOpen(false)}>협회소개 & 설립목적</Link>
-              <Link href="/about?tab=leaders" onClick={() => setIsMegaOpen(false)}>공동리더 & 임원진</Link>
-              <Link href="/about?tab=history" onClick={() => setIsMegaOpen(false)}>협회 연혁</Link>
-              <Link href="/about?tab=mou" onClick={() => setIsMegaOpen(false)}>MOU 기관 현황</Link>
+              <Link href="/about#intro" onClick={() => setIsMegaOpen(false)}>소개&설립 목적</Link>
+              <Link href="/about#leaders" onClick={() => setIsMegaOpen(false)}>임원 및 자문 위원</Link>
+              <Link href="/about#mou" onClick={() => setIsMegaOpen(false)}>MOU기관 현황</Link>
+              <Link href="/about#history" onClick={() => setIsMegaOpen(false)}>협회 연혁</Link>
             </div>
             
             <div className="mega-menu-col">

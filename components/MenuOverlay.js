@@ -72,10 +72,10 @@ export default function MenuOverlay({ isOpen, onClose }) {
             <li className="menu-section">
               <span className="section-title">1. 협회소개</span>
               <div className="submenu-grid">
-                <Link href="/about?tab=intro" onClick={onClose}>협회소개 & 설립목적</Link>
-                <Link href="/about?tab=leaders" onClick={onClose}>공동리더 & 임원진</Link>
-                <Link href="/about?tab=history" onClick={onClose}>협회 연혁</Link>
-                <Link href="/about?tab=mou" onClick={onClose}>MOU 기관 현황</Link>
+                <Link href="/about#intro" onClick={onClose}>소개&설립 목적</Link>
+                <Link href="/about#leaders" onClick={onClose}>임원 및 자문 위원</Link>
+                <Link href="/about#mou" onClick={onClose}>MOU기관 현황</Link>
+                <Link href="/about#history" onClick={onClose}>협회 연혁</Link>
               </div>
             </li>
 

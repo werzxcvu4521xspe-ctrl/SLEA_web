@@ -11,35 +11,39 @@ import 'swiper/css';
 const MOCK_SLIDES = [
   {
     id: 1,
-    title: '조치원 복숭아의 맛있는 변신, 로컬 디저트 카페 "도원"',
-    category: 'F&B / 로컬브랜드',
-    desc: '3대째 이어져 온 복숭아 과수원의 청년들이 만든 세종의 대표 로컬 스위츠',
-    image: 'https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?q=80&w=1200&auto=format&fit=crop',
-    link: '/archive'
+    title: '세종 로컬 창업가를 연결하는 공식 협회 플랫폼',
+    category: 'Association / Sejong Local',
+    desc: '회원 브랜드 아카이브, 정기 네트워킹, 창업 지원 자료, 파트너십을 한곳에서 연결합니다.',
+    image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1400&auto=format&fit=crop',
+    link: '/signup',
+    cta: '협회 회원으로 시작하기'
   },
   {
     id: 2,
-    title: '세종 조치원 유휴 양조장, 복합문화공간 "조치원 브루어리"로 태어나다',
-    category: 'CULTURE / 재생공간',
-    desc: '버려진 공간에 음악과 수제 맥주의 활기를 불어넣은 세종의 젊은 로컬 크리에이터들',
-    image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=1200&auto=format&fit=crop',
-    link: '/archive'
+    title: '창업가의 브랜드 이야기를 아카이브하고 알립니다',
+    category: 'Archive / Brand Story',
+    desc: '세종의 F&B, 문화공간, 공예, 교육, 로컬 제조 브랜드를 검색 가능한 이야기로 정리합니다.',
+    image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1400&auto=format&fit=crop',
+    link: '/archive',
+    cta: '창업가 아카이브 보기'
   },
   {
     id: 3,
-    title: '전통 백자의 미학을 재해석하는 라이프스타일 브랜드 "공방 세종"',
-    category: 'CRAFT / 로컬제조',
-    desc: '현대 생활양식에 자연스럽게 스며드는 모던 세종 도자기 라인업',
-    image: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?q=80&w=1200&auto=format&fit=crop',
-    link: '/archive'
+    title: '매월 열리는 세로데이에서 협업의 다음 기회를 만듭니다',
+    category: 'Network / Sero Day',
+    desc: '정기 네트워킹, 1:1 멘토링, 실무 교육, 팝업마켓으로 창업가의 성장을 실제 기회로 바꿉니다.',
+    image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1400&auto=format&fit=crop',
+    link: '/activities',
+    cta: '협회활동 살펴보기'
   },
   {
     id: 4,
-    title: '스마트 물류 테크로 세종의 신선함을 배달하는 스타트업 "로컬 고"',
-    category: 'TECH / 신선물류',
-    desc: '세종시 농가와 소상공인을 직접 연결하는 친환경 직배송 플랫폼 서비스',
-    image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1200&auto=format&fit=crop',
-    link: '/archive'
+    title: '공공기관과 지역 파트너가 함께 키우는 로컬 생태계',
+    category: 'Partnership / Support',
+    desc: '세종시 지원사업, 대학·기관 협력, 자료실과 제휴 제안을 통해 지속 가능한 판로를 넓힙니다.',
+    image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1400&auto=format&fit=crop',
+    link: '/support',
+    cta: '지원 자료 확인하기'
   }
 ];
 
@@ -69,14 +73,14 @@ export default function HeroSlider() {
           <SwiperSlide key={slide.id}>
             <div 
               className="slide-bg"
-              style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.65)), url(${slide.image})` }}
+              style={{ backgroundImage: `linear-gradient(105deg, rgba(17,50,116,0.94) 0%, rgba(20,86,200,0.8) 42%, rgba(8,167,216,0.56) 68%, rgba(0,191,99,0.42) 100%), url(${slide.image})` }}
             >
               <div className="slide-content container">
                 <span className="slide-category en-title">{slide.category}</span>
                 <h2 className="slide-title">{slide.title}</h2>
                 <p className="slide-desc">{slide.desc}</p>
                 <Link href={slide.link} className="slide-btn">
-                  기획 스토리 읽기 <span>→</span>
+                  {slide.cta} <span>→</span>
                 </Link>
               </div>
             </div>
@@ -88,7 +92,7 @@ export default function HeroSlider() {
         .hero-slider-wrapper {
           position: relative;
           width: 100%;
-          height: 600px;
+          height: 640px;
           overflow: hidden;
           background-color: var(--color-charcoal-medium);
         }
@@ -136,7 +140,8 @@ export default function HeroSlider() {
         .slide-content {
           color: var(--color-white);
           max-width: 800px;
-          margin-left: 0;
+          margin-left: auto;
+          margin-right: auto;
           text-align: left;
           display: flex;
           flex-direction: column;
@@ -158,13 +163,14 @@ export default function HeroSlider() {
           font-size: 32px;
           line-height: 1.4;
           font-weight: 800;
-          letter-spacing: -1px;
+          letter-spacing: 0;
           text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+          max-width: 760px;
         }
 
         @media (min-width: 768px) {
           .slide-title {
-            font-size: 46px;
+            font-size: 50px;
           }
         }
 
@@ -198,6 +204,30 @@ export default function HeroSlider() {
           background-color: var(--color-white);
           color: var(--color-charcoal-medium);
           transform: translateY(-2px);
+        }
+
+        @media (max-width: 767px) {
+          .hero-slider-wrapper {
+            height: 600px;
+          }
+
+          .slide-counter-badge {
+            top: 24px;
+            right: 20px;
+          }
+
+          .slide-bg {
+            padding-bottom: 56px;
+          }
+
+          .slide-category {
+            font-size: 12px;
+            letter-spacing: 1px;
+          }
+
+          .slide-desc {
+            max-width: 92%;
+          }
         }
       `}</style>
     </div>

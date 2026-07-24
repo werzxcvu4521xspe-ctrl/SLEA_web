@@ -189,7 +189,7 @@ function MembersContent() {
                   </div>
                 </div>
 
-                <div style={{ marginTop: '24px', padding: '16px', background: 'var(--color-emerald-pale)', borderRadius: '8px', border: '1px solid rgba(10, 92, 54, 0.2)' }}>
+                <div style={{ marginTop: '24px', padding: '16px', background: 'var(--color-emerald-pale)', borderRadius: '8px', border: '1px solid rgba(0, 102, 179, 0.2)' }}>
                   <h4 style={{ color: 'var(--color-emerald-deep)', marginBottom: '6px', fontSize: '14px' }}>📋 구글폼 간편 등록 신청</h4>
                   <p style={{ fontSize: '13px', color: 'var(--color-gray-dark)', marginBottom: '12px' }}>
                     웹 신청이 어렵거나 모바일에서 구글 계정으로 빠르게 신청하고 싶으신가요?
