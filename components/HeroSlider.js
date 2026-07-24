@@ -127,6 +127,11 @@ export default function HeroSlider() {
           height: 100%;
         }
 
+        :global(.hero-swiper .swiper-wrapper),
+        :global(.hero-swiper .swiper-slide) {
+          height: 100%;
+        }
+
         .slide-bg {
           width: 100%;
           height: 100%;
@@ -164,6 +169,7 @@ export default function HeroSlider() {
           line-height: 1.4;
           font-weight: 800;
           letter-spacing: 0;
+          word-break: keep-all;
           text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
           max-width: 760px;
         }
@@ -208,16 +214,34 @@ export default function HeroSlider() {
 
         @media (max-width: 767px) {
           .hero-slider-wrapper {
-            height: 600px;
+            height: clamp(400px, 58svh, 460px);
           }
 
           .slide-counter-badge {
-            top: 24px;
-            right: 20px;
+            display: none;
           }
 
           .slide-bg {
-            padding-bottom: 56px;
+            align-items: flex-end;
+            padding: 34px 0 38px;
+            background-position: center;
+          }
+
+          .slide-content {
+            gap: 12px;
+            max-width: 100%;
+          }
+
+          .slide-title {
+            max-width: 94%;
+            font-size: 28px;
+            line-height: 1.26;
+          }
+
+          .slide-desc {
+            max-width: 94%;
+            font-size: 15px;
+            line-height: 1.58;
           }
 
           .slide-category {
@@ -225,8 +249,11 @@ export default function HeroSlider() {
             letter-spacing: 1px;
           }
 
-          .slide-desc {
-            max-width: 92%;
+          .slide-btn {
+            min-height: 52px;
+            width: min(100%, 330px);
+            padding: 0 22px;
+            font-size: 15px;
           }
         }
       `}</style>
