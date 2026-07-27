@@ -2,6 +2,7 @@ import { Noto_Sans_KR } from "next/font/google";
 import "@/styles/globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import SideScrollNavigator from "@/components/SideScrollNavigator";
 
 const notoSansKr = Noto_Sans_KR({
   subsets: ["latin"],
@@ -166,6 +167,7 @@ export default function RootLayout({ children }) {
         <main style={{ flex: 1, display: "flex", flexDirection: "column" }}>
           {children}
         </main>
+        <SideScrollNavigator />
         <Footer />
       </body>
     </html>
