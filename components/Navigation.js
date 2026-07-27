@@ -90,11 +90,6 @@ export default function Navigation() {
 
             {/* Desktop Navigation Links */}
             <ul className="nav-links pc-only">
-              <li>
-                <Link href="/" className={pathname === '/' ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
-                  홈
-                </Link>
-              </li>
               {SERVICE_CATEGORIES.map((category) => (
                 <li key={category.slug}>
                   <Link href={category.href} className={isCategoryActive(category.href) ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
