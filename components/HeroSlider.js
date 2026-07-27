@@ -202,6 +202,10 @@ export default function HeroSlider() {
           padding: 12px 28px;
           border-radius: var(--border-radius-full);
           margin-top: 10px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
           transition: all 0.2s ease;
           background-color: rgba(255, 255, 255, 0.05);
         }
@@ -261,10 +265,12 @@ export default function HeroSlider() {
 
           .slide-btn {
             min-height: 48px;
-            width: min(100%, 300px);
-            padding: 0 18px;
+            width: fit-content;
+            max-width: 100%;
+            padding: 0 24px;
             font-size: 14px;
             margin-top: 4px;
+            white-space: nowrap;
           }
         }
       `}</style>
