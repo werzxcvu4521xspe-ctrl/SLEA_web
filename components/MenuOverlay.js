@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 
 export default function MenuOverlay({ isOpen, onClose }) {
   const [user, setUser] = useState(null);
@@ -63,27 +62,6 @@ export default function MenuOverlay({ isOpen, onClose }) {
     <div className="menu-overlay">
       <div className="menu-inner container animate-fade-in">
         <div className="scroll-wrapper">
-          <ul className="main-menu">
-            <li>
-              <Link href="/" onClick={onClose} className="menu-header-link">
-                홈 (Home)
-              </Link>
-            </li>
-            
-            {SERVICE_CATEGORIES.map((category) => (
-              <li className="menu-section" key={category.slug}>
-                <span className="section-title">{category.number}. {category.title}</span>
-                <div className="submenu-grid">
-                  {category.topics.map((topic) => (
-                    <Link href={category.href} onClick={onClose} key={topic}>{topic}</Link>
-                  ))}
-                </div>
-              </li>
-            ))}
-          </ul>
-
-          <hr className="divider" />
-
           <div className="sub-menu-links">
             <div className="auth-links">
               {user ? (

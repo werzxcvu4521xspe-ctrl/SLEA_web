@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
-import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 import MenuOverlay from './MenuOverlay';
 import SearchOverlay from './SearchOverlay';
 
@@ -12,7 +11,6 @@ export default function Navigation() {
   const [isBannerVisible, setIsBannerVisible] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [isMegaOpen, setIsMegaOpen] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const pathname = usePathname();
 
@@ -66,7 +64,6 @@ export default function Navigation() {
   }, []);
 
   const showAdminMenu = userRole === 'super_admin' || userRole === 'staff_admin';
-  const isCategoryActive = (href) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <>
@@ -84,45 +81,19 @@ export default function Navigation() {
         {/* Main GNB */}
         <nav className="gnb-bar glass-panel">
           <div className="gnb-inner">
-            <Link href="/" className="logo-text" onClick={() => setIsMegaOpen(false)}>
+            <Link href="/" className="logo-text">
               SEJONG <span>LOCAL</span>
             </Link>
 
             {/* Desktop Navigation Links */}
             <ul className="nav-links pc-only">
-              {SERVICE_CATEGORIES.map((category) => (
-                <li key={category.slug}>
-                  <Link href={category.href} className={isCategoryActive(category.href) ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
-                    {category.shortTitle}
-                  </Link>
-                </li>
-              ))}
               {showAdminMenu && (
                 <li>
-                  <Link href="/admin" className={pathname.startsWith('/admin') ? 'active' : ''} onClick={() => setIsMegaOpen(false)} style={{ color: 'var(--color-orange-accent)' }}>
+                  <Link href="/admin" className={pathname.startsWith('/admin') ? 'active' : ''} style={{ color: 'var(--color-orange-accent)' }}>
                     👑 관리자
                   </Link>
                 </li>
               )}
-              <li>
-                <button
-                  type="button"
-                  className={`mega-trigger-btn ${isMegaOpen ? 'active' : ''}`}
-                  onClick={() => setIsMegaOpen(!isMegaOpen)}
-                  style={{
-                    fontSize: '15px',
-                    fontWeight: '700',
-                    color: isMegaOpen ? 'var(--color-emerald-deep)' : 'var(--color-gray-dark)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    padding: '8px 0',
-                    transition: 'color 0.2s ease'
-                  }}
-                >
-                  전체 서비스 {isMegaOpen ? '▲' : '▼'}
-                </button>
-              </li>
             </ul>
 
             {/* Icons / Controls */}
@@ -130,7 +101,7 @@ export default function Navigation() {
               <button 
                 type="button" 
                 className="icon-btn search-btn" 
-                onClick={() => { setIsSearchOpen(true); setIsMegaOpen(false); }}
+                onClick={() => setIsSearchOpen(true)}
                 aria-label="검색 열기"
               >
                 🔍
@@ -138,7 +109,7 @@ export default function Navigation() {
               <button 
                 type="button" 
                 className={`icon-btn menu-btn ${isMenuOpen ? 'open' : ''}`}
-                onClick={() => { setIsMenuOpen(!isMenuOpen); setIsMegaOpen(false); }}
+                onClick={() => setIsMenuOpen(!isMenuOpen)}
                 aria-label="메뉴 열기"
               >
                 <span className="bar"></span>
@@ -148,22 +119,6 @@ export default function Navigation() {
             </div>
           </div>
         </nav>
-
-        {/* Mega Menu Overlay */}
-        <div className={`mega-menu-overlay ${isMegaOpen ? 'active' : ''}`}>
-          <div className="mega-menu-grid">
-            {SERVICE_CATEGORIES.map((category) => (
-              <div className="mega-menu-col" key={category.slug}>
-                <div className="mega-menu-title">{category.number}. {category.title}</div>
-                {category.topics.slice(0, 4).map((topic) => (
-                  <Link href={category.href} onClick={() => setIsMegaOpen(false)} key={topic}>
-                    {topic}
-                  </Link>
-                ))}
-              </div>
-            ))}
-          </div>
-        </div>
       </header>
 
       {/* Overlays */}
