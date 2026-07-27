@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 
-export default function MenuOverlay({ isOpen, onClose }) {
+export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose }) {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
 
@@ -59,9 +60,22 @@ export default function MenuOverlay({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="menu-overlay">
+    <div className={`menu-overlay ${isBannerVisible ? '' : 'banner-hidden'}`}>
       <div className="menu-inner container animate-fade-in">
         <div className="scroll-wrapper">
+          <nav className="mobile-category-menu" aria-label="전체 서비스 카테고리">
+            {SERVICE_CATEGORIES.map((category) => (
+              <Link
+                key={category.slug}
+                href={category.href}
+                className="mobile-category-link"
+                onClick={onClose}
+              >
+                {category.title}
+              </Link>
+            ))}
+          </nav>
+
           <div className="sub-menu-links">
             <div className="auth-links">
               {user ? (
@@ -85,21 +99,21 @@ export default function MenuOverlay({ isOpen, onClose }) {
                 </>
               )}
               <Link href="/mypage" className="menu-sub-item bookmark-link" onClick={onClose}>
-                🔖 북마크
+                북마크
               </Link>
             </div>
 
             <div className="association-links">
               {showAdminMenu && (
                 <Link href="/admin" className="menu-sub-item icon-link logout-btn" onClick={onClose}>
-                  👑 관리자 대시보드
+                  관리자 대시보드
                 </Link>
               )}
               <Link href="/proposal" className="menu-sub-item icon-link" onClick={onClose}>
-                🤝 협업 및 광고 제휴
+                협업 및 광고 제휴
               </Link>
               <Link href="/mypage" className="menu-sub-item icon-link" onClick={onClose}>
-                🏪 로컬 창업 정보 등록 신청
+                로컬 창업 정보 등록 신청
               </Link>
             </div>
           </div>
@@ -109,11 +123,11 @@ export default function MenuOverlay({ isOpen, onClose }) {
       <style jsx>{`
         .menu-overlay {
           position: fixed;
-          top: var(--header-height);
+          top: calc(var(--banner-height) + var(--header-height));
           left: 0;
           width: 100vw;
-          height: calc(100vh - var(--header-height));
-          background: rgba(26, 26, 26, 0.98);
+          height: calc(100vh - var(--banner-height) - var(--header-height));
+          background: #141414;
           backdrop-filter: var(--glass-blur);
           z-index: 999;
           display: flex;
@@ -123,81 +137,61 @@ export default function MenuOverlay({ isOpen, onClose }) {
           overflow-y: auto;
         }
 
+        .menu-overlay.banner-hidden {
+          top: var(--header-height);
+          height: calc(100vh - var(--header-height));
+        }
+
         .menu-inner {
           display: flex;
           flex-direction: column;
-          max-width: 600px;
+          max-width: 720px;
           width: 100%;
-          padding: 20px;
+          padding: 28px 20px 44px;
         }
 
         .scroll-wrapper {
           width: 100%;
-          max-height: 80vh;
+          max-height: calc(100vh - var(--banner-height) - var(--header-height) - 56px);
           overflow-y: auto;
           padding-right: 8px;
         }
 
-        .main-menu {
+        .menu-overlay.banner-hidden .scroll-wrapper {
+          max-height: calc(100vh - var(--header-height) - 56px);
+        }
+
+        .mobile-category-menu {
           display: flex;
           flex-direction: column;
-          gap: 24px;
+          align-items: flex-start;
+          gap: clamp(12px, 3vh, 22px);
+          padding-bottom: 36px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.16);
         }
 
-        .menu-header-link {
-          font-size: 20px;
-          font-weight: 800;
+        .mobile-category-link {
+          display: block;
           color: var(--color-white);
-          transition: color 0.2s ease;
+          font-size: clamp(34px, 12vw, 58px);
+          font-weight: 900;
+          line-height: 0.96;
+          letter-spacing: 0;
+          transition: color 0.2s ease, transform 0.2s ease;
+          word-break: keep-all;
         }
 
-        .menu-header-link:hover {
-          color: var(--color-emerald-light);
-        }
-
-        .menu-section {
-          display: flex;
-          flex-direction: column;
-          gap: 8px;
-        }
-
-        .section-title {
-          font-size: 14px;
-          font-weight: 800;
-          color: var(--color-emerald-light);
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
-
-        .submenu-grid {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 10px;
-          padding-left: 8px;
-        }
-
-        .submenu-grid a {
-          font-size: 14px;
-          font-weight: 600;
-          color: var(--color-gray-light);
-          transition: color 0.2s ease;
-        }
-
-        .submenu-grid a:hover {
-          color: var(--color-white);
-        }
-
-        .divider {
-          border: 0;
-          height: 1px;
-          background: rgba(255, 255, 255, 0.15);
-          margin: 24px 0;
+        .mobile-category-link:hover,
+        .mobile-category-link:focus-visible {
+          color: var(--color-orange-accent);
+          transform: translateX(4px);
         }
 
         .sub-menu-links {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 20px;
+          gap: 16px;
+          padding-top: 28px;
           padding-bottom: 40px;
         }
 
@@ -210,18 +204,18 @@ export default function MenuOverlay({ isOpen, onClose }) {
         .auth-links, .association-links {
           display: flex;
           flex-direction: column;
-          gap: 12px;
+          gap: 14px;
         }
 
         .user-email {
-          font-size: 13px;
+          font-size: 12px;
           color: var(--color-gray-medium);
           margin-bottom: 4px;
         }
 
         .menu-sub-item {
-          font-size: 14px;
-          font-weight: 600;
+          font-size: 15px;
+          font-weight: 800;
           color: var(--color-gray-light);
           transition: color 0.2s ease;
           display: inline-block;
@@ -245,6 +239,21 @@ export default function MenuOverlay({ isOpen, onClose }) {
           display: flex;
           align-items: center;
           gap: 6px;
+        }
+
+        @media (min-width: 769px) {
+          .menu-inner {
+            max-width: var(--max-width-content);
+            padding: 96px 20px 60px;
+          }
+
+          .mobile-category-menu {
+            gap: 18px;
+          }
+
+          .mobile-category-link {
+            font-size: clamp(42px, 6vw, 72px);
+          }
         }
       `}</style>
     </div>

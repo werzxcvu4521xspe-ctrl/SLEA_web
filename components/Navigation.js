@@ -122,7 +122,11 @@ export default function Navigation() {
       </header>
 
       {/* Overlays */}
-      <MenuOverlay isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+      <MenuOverlay
+        isOpen={isMenuOpen}
+        isBannerVisible={isBannerVisible}
+        onClose={() => setIsMenuOpen(false)}
+      />
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
     </>
   );
