@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 import MenuOverlay from './MenuOverlay';
 import SearchOverlay from './SearchOverlay';
 
@@ -65,6 +66,7 @@ export default function Navigation() {
   }, []);
 
   const showAdminMenu = userRole === 'super_admin' || userRole === 'staff_admin';
+  const isCategoryActive = (href) => pathname === href || pathname.startsWith(`${href}/`);
 
   return (
     <>
@@ -93,33 +95,13 @@ export default function Navigation() {
                   홈
                 </Link>
               </li>
-              <li>
-                <Link href="/about" className={pathname.startsWith('/about') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
-                  협회소개
-                </Link>
-              </li>
-              <li>
-                <Link href="/activities" className={pathname.startsWith('/activities') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
-                  협회활동
-                </Link>
-              </li>
-              {showAdminMenu && (
-                <li>
-                  <Link href="/members" className={pathname.startsWith('/members') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
-                    회원관리
+              {SERVICE_CATEGORIES.map((category) => (
+                <li key={category.slug}>
+                  <Link href={category.href} className={isCategoryActive(category.href) ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
+                    {category.shortTitle}
                   </Link>
                 </li>
-              )}
-              <li>
-                <Link href="/shop" className={pathname.startsWith('/shop') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
-                  쇼핑몰
-                </Link>
-              </li>
-              <li>
-                <Link href="/archive" className={pathname.startsWith('/archive') ? 'active' : ''} onClick={() => setIsMegaOpen(false)}>
-                  아카이브
-                </Link>
-              </li>
+              ))}
               {showAdminMenu && (
                 <li>
                   <Link href="/admin" className={pathname.startsWith('/admin') ? 'active' : ''} onClick={() => setIsMegaOpen(false)} style={{ color: 'var(--color-orange-accent)' }}>
@@ -175,44 +157,16 @@ export default function Navigation() {
         {/* Mega Menu Overlay */}
         <div className={`mega-menu-overlay ${isMegaOpen ? 'active' : ''}`}>
           <div className="mega-menu-grid">
-            <div className="mega-menu-col">
-              <div className="mega-menu-title">1. 협회소개</div>
-              <Link href="/about#intro" onClick={() => setIsMegaOpen(false)}>소개&설립 목적</Link>
-              <Link href="/about#leaders" onClick={() => setIsMegaOpen(false)}>임원 및 자문 위원</Link>
-              <Link href="/about#mou" onClick={() => setIsMegaOpen(false)}>MOU기관 현황</Link>
-              <Link href="/about#history" onClick={() => setIsMegaOpen(false)}>협회 연혁</Link>
-            </div>
-            
-            <div className="mega-menu-col">
-              <div className="mega-menu-title">2. 협회활동</div>
-              <Link href="/activities?tab=seroday" onClick={() => setIsMegaOpen(false)}>세로데이 (네트워킹)</Link>
-              <Link href="/activities?tab=mentoring" onClick={() => setIsMegaOpen(false)}>멘토링데이 (컨설팅)</Link>
-              <Link href="/activities?tab=education" onClick={() => setIsMegaOpen(false)}>교육 · 특강</Link>
-              <Link href="/activities?tab=popup" onClick={() => setIsMegaOpen(false)}>팝업마켓</Link>
-            </div>
-
-            <div className="mega-menu-col">
-              <div className="mega-menu-title">3. 회원 & 쇼핑몰</div>
-              <Link href="/members?tab=register" onClick={() => setIsMegaOpen(false)}>정회원 등록 신청</Link>
-              <Link href="/members?tab=directory" onClick={() => setIsMegaOpen(false)}>회원 디렉토리</Link>
-              <Link href="/shop?tab=brand" onClick={() => setIsMegaOpen(false)}>브랜드관 (쇼핑몰)</Link>
-              <Link href="/shop?tab=group" onClick={() => setIsMegaOpen(false)}>공동구매 & 추천상품</Link>
-            </div>
-
-            <div className="mega-menu-col">
-              <div className="mega-menu-title">4. 홍보 & 파트너</div>
-              <Link href="/pr?tab=intro" onClick={() => setIsMegaOpen(false)}>기업 소개 & 인터뷰</Link>
-              <Link href="/pr?tab=videos" onClick={() => setIsMegaOpen(false)}>홍보영상 & 쇼츠</Link>
-              <Link href="/partnership" onClick={() => setIsMegaOpen(false)}>MOU 및 파트너십</Link>
-              <Link href="/archive" onClick={() => setIsMegaOpen(false)}>창업가 아카이브</Link>
-            </div>
-
-            <div className="mega-menu-col">
-              <div className="mega-menu-title">5. 커뮤니티 & 지원</div>
-              <Link href="/community" onClick={() => setIsMegaOpen(false)}>자유게시판 (협업)</Link>
-              <Link href="/notice" onClick={() => setIsMegaOpen(false)}>협회 공지사항</Link>
-              <Link href="/support" onClick={() => setIsMegaOpen(false)}>창업지원센터 (자료실)</Link>
-            </div>
+            {SERVICE_CATEGORIES.map((category) => (
+              <div className="mega-menu-col" key={category.slug}>
+                <div className="mega-menu-title">{category.number}. {category.title}</div>
+                {category.topics.slice(0, 4).map((topic) => (
+                  <Link href={category.href} onClick={() => setIsMegaOpen(false)} key={topic}>
+                    {topic}
+                  </Link>
+                ))}
+              </div>
+            ))}
           </div>
         </div>
       </header>

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 
 export default function MenuOverlay({ isOpen, onClose }) {
   const [user, setUser] = useState(null);
@@ -69,54 +70,16 @@ export default function MenuOverlay({ isOpen, onClose }) {
               </Link>
             </li>
             
-            <li className="menu-section">
-              <span className="section-title">1. 협회소개</span>
-              <div className="submenu-grid">
-                <Link href="/about#intro" onClick={onClose}>소개&설립 목적</Link>
-                <Link href="/about#leaders" onClick={onClose}>임원 및 자문 위원</Link>
-                <Link href="/about#mou" onClick={onClose}>MOU기관 현황</Link>
-                <Link href="/about#history" onClick={onClose}>협회 연혁</Link>
-              </div>
-            </li>
-
-            <li className="menu-section">
-              <span className="section-title">2. 협회활동</span>
-              <div className="submenu-grid">
-                <Link href="/activities?tab=seroday" onClick={onClose}>세로데이 (네트워킹)</Link>
-                <Link href="/activities?tab=mentoring" onClick={onClose}>멘토링데이 (컨설팅)</Link>
-                <Link href="/activities?tab=education" onClick={onClose}>교육 · 특강</Link>
-                <Link href="/activities?tab=popup" onClick={onClose}>팝업마켓</Link>
-              </div>
-            </li>
-
-            <li className="menu-section">
-              <span className="section-title">3. 회원 & 쇼핑몰</span>
-              <div className="submenu-grid">
-                {showAdminMenu && <Link href="/members?tab=register" onClick={onClose}>정회원 등록 신청</Link>}
-                {showAdminMenu && <Link href="/members?tab=directory" onClick={onClose}>회원 디렉토리</Link>}
-                <Link href="/shop?tab=brand" onClick={onClose}>브랜드관 (쇼핑몰)</Link>
-                <Link href="/shop?tab=group" onClick={onClose}>공동구매 & 추천상품</Link>
-              </div>
-            </li>
-
-            <li className="menu-section">
-              <span className="section-title">4. 홍보 & 파트너</span>
-              <div className="submenu-grid">
-                <Link href="/pr?tab=intro" onClick={onClose}>기업 소개 & 인터뷰</Link>
-                <Link href="/pr?tab=videos" onClick={onClose}>홍보영상 & 쇼츠</Link>
-                <Link href="/partnership" onClick={onClose}>MOU 및 파트너십</Link>
-                <Link href="/archive" onClick={onClose}>창업가 아카이브</Link>
-              </div>
-            </li>
-
-            <li className="menu-section">
-              <span className="section-title">5. 커뮤니티 & 지원</span>
-              <div className="submenu-grid">
-                <Link href="/community" onClick={onClose}>자유게시판 (협업)</Link>
-                <Link href="/notice" onClick={onClose}>협회 공지사항</Link>
-                <Link href="/support" onClick={onClose}>창업지원센터 (자료실)</Link>
-              </div>
-            </li>
+            {SERVICE_CATEGORIES.map((category) => (
+              <li className="menu-section" key={category.slug}>
+                <span className="section-title">{category.number}. {category.title}</span>
+                <div className="submenu-grid">
+                  {category.topics.map((topic) => (
+                    <Link href={category.href} onClick={onClose} key={topic}>{topic}</Link>
+                  ))}
+                </div>
+              </li>
+            ))}
           </ul>
 
           <hr className="divider" />

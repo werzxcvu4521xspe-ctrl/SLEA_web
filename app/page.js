@@ -3,6 +3,7 @@ import CabinetSection from '@/components/CabinetSection';
 import MapRankingSection from '@/components/MapRankingSection';
 import ArchiveCard from '@/components/ArchiveCard';
 import { isSupabaseConfigured, supabase } from '@/lib/supabaseClient';
+import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 import Link from 'next/link';
 
 // Fallback Mock Data if Supabase fetch is empty/unconfigured
@@ -63,37 +64,17 @@ const FALLBACK_ARCHIVES = [
   }
 ];
 
-const QUICK_LINKS = [
-  {
-    title: '창업가 아카이브',
-    desc: '세종 로컬 브랜드와 대표자, 업종, 지역 정보를 탐색합니다.',
-    href: '/archive',
-    tag: 'Brand DB'
-  },
-  {
-    title: '정회원 가입',
-    desc: '협회 커뮤니티 계정을 만들고 브랜드 등록 절차를 시작합니다.',
-    href: '/signup',
-    tag: 'Member'
-  },
-  {
-    title: '협회활동',
-    desc: '세로데이, 멘토링데이, 교육, 팝업마켓 일정을 확인합니다.',
-    href: '/activities',
-    tag: 'Program'
-  },
-  {
-    title: '창업지원센터',
-    desc: '사업계획서, 피칭덱, 정부지원사업, AI 활용 자료를 모았습니다.',
-    href: '/support',
-    tag: 'Resource'
-  }
-];
+const QUICK_LINKS = SERVICE_CATEGORIES.map((category) => ({
+  title: category.title,
+  desc: category.description,
+  href: category.href,
+  tag: category.eyebrow
+}));
 
 const IMPACT_STATS = [
   { value: '150+', label: '회원·파트너 브랜드' },
   { value: '24회', label: '정기 네트워킹 운영' },
-  { value: '6개', label: '세종 권역 아카이브' },
+  { value: '7개', label: '세로 서비스 카테고리' },
   { value: '12곳', label: '공공·대학 협력 채널' }
 ];
 

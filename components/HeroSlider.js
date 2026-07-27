@@ -13,19 +13,19 @@ const MOCK_SLIDES = [
     id: 1,
     title: '세종 로컬 창업가를 연결하는 공식 협회 플랫폼',
     category: 'Association / Sejong Local',
-    desc: '회원 브랜드 아카이브, 정기 네트워킹, 창업 지원 자료, 파트너십을 한곳에서 연결합니다.',
+    desc: '공지, 세로 데이, 회원사 콘텐츠, AI 창업 지원, 멘토링, 쇼핑, 토크 채널을 한곳에서 연결합니다.',
     image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1400&auto=format&fit=crop',
     link: '/signup',
     cta: '협회 회원으로 시작하기'
   },
   {
     id: 2,
-    title: '창업가의 브랜드 이야기를 아카이브하고 알립니다',
-    category: 'Archive / Brand Story',
-    desc: '세종의 F&B, 문화공간, 공예, 교육, 로컬 제조 브랜드를 검색 가능한 이야기로 정리합니다.',
+    title: '세로 회원사의 브랜드 이야기를 콘텐츠로 알립니다',
+    category: 'Member Stories / Sero',
+    desc: '회원 기업별 인터뷰 영상과 SNS 콘텐츠를 검색 가능한 브랜드 이야기로 정리합니다.',
     image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1400&auto=format&fit=crop',
-    link: '/archive',
-    cta: '창업가 아카이브 보기'
+    link: '/sero-members',
+    cta: '세로 회원사 보기'
   },
   {
     id: 3,
@@ -33,17 +33,17 @@ const MOCK_SLIDES = [
     category: 'Network / Sero Day',
     desc: '정기 네트워킹, 1:1 멘토링, 실무 교육, 팝업마켓으로 창업가의 성장을 실제 기회로 바꿉니다.',
     image: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1400&auto=format&fit=crop',
-    link: '/activities',
-    cta: '협회활동 살펴보기'
+    link: '/sero-day',
+    cta: '세로 데이 신청하기'
   },
   {
     id: 4,
-    title: '공공기관과 지역 파트너가 함께 키우는 로컬 생태계',
-    category: 'Partnership / Support',
-    desc: '세종시 지원사업, 대학·기관 협력, 자료실과 제휴 제안을 통해 지속 가능한 판로를 넓힙니다.',
+    title: '기업 정보를 넣고 사업계획서 초안을 빠르게 만듭니다',
+    category: 'AI Start / Support',
+    desc: '세로 AI 스타트에서 사업계획서 초안과 정부지원사업 추천을 한 번에 확인합니다.',
     image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1400&auto=format&fit=crop',
-    link: '/support',
-    cta: '지원 자료 확인하기'
+    link: '/sero-ai-start',
+    cta: 'AI 스타트 열기'
   }
 ];
 

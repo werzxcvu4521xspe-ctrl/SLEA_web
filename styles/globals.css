@@ -341,7 +341,7 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .quick-link-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -1128,8 +1128,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .mega-menu-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(142px, 1fr));
+  gap: 22px 18px;
   padding: 40px 20px;
   max-width: var(--max-width-content);
   margin: 0 auto;
@@ -1673,7 +1673,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .nav-links {
   display: flex;
-  gap: 32px;
+  gap: clamp(14px, 1.7vw, 24px);
 }
 
 .nav-links li {
@@ -1681,7 +1681,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .nav-links a {
-  font-size: 15px;
+  font-size: clamp(13px, 1vw, 15px);
   font-weight: 700;
   color: var(--color-gray-dark);
   padding: 8px 0;

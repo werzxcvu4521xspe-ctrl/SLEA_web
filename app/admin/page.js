@@ -3,6 +3,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 import Link from 'next/link';
 
 const CONTENT_STORAGE_KEY = 'sejong_site_content_sections';
@@ -326,12 +327,79 @@ const DEFAULT_SITE_SECTIONS = [
   }
 ];
 
+const SERVICE_SECTION_IMAGES = {
+  notice: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?q=80&w=1200&auto=format&fit=crop',
+  'sero-day': 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=1200&auto=format&fit=crop',
+  'sero-members': 'https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1200&auto=format&fit=crop',
+  'sero-ai-start': 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=1200&auto=format&fit=crop',
+  'mentoring-day': 'https://images.unsplash.com/photo-1552664730-d307ca884978?q=80&w=1200&auto=format&fit=crop',
+  'sero-shop': 'https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1200&auto=format&fit=crop',
+  'sero-talk': 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1200&auto=format&fit=crop'
+};
+
+const CURRENT_SITE_SECTIONS = [
+  {
+    id: 'home-hero',
+    page: '홈',
+    area: '메인 히어로',
+    title: '세종 로컬 창업가를 연결하는 공식 협회 플랫폼',
+    subtitle: '공지, 세로 데이, 회원사 콘텐츠, AI 창업 지원, 멘토링, 쇼핑, 토크 채널을 한곳에서 연결합니다.',
+    body: '첫 방문자가 새 7개 서비스 카테고리와 핵심 이동 경로를 바로 이해할 수 있도록 첫 화면 메시지를 관리합니다.',
+    imageUrl: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1400&auto=format&fit=crop',
+    ctaLabel: '협회 회원으로 시작하기',
+    ctaHref: '/signup',
+    status: 'published',
+    updatedAt: '2026-07-28'
+  },
+  ...SERVICE_CATEGORIES.flatMap((category) => (
+    category.topics.map((topic, index) => ({
+      id: `${category.slug}-${index + 1}`,
+      page: category.title,
+      area: topic,
+      title: topic,
+      subtitle: category.description,
+      body: category.features[index] || `${category.title}의 ${topic} 콘텐츠, 대표 이미지, 버튼 문구, 링크와 노출 상태를 관리합니다.`,
+      imageUrl: SERVICE_SECTION_IMAGES[category.slug] || '',
+      ctaLabel: `${category.shortTitle} 열기`,
+      ctaHref: category.href,
+      status: 'published',
+      updatedAt: '2026-07-28'
+    }))
+  )),
+  {
+    id: 'proposal-page',
+    page: '공통',
+    area: '제휴·문의 신청',
+    title: '제휴 및 문의',
+    subtitle: '협회와 함께할 제휴, 후원, 협업 제안을 접수합니다.',
+    body: '제휴 신청 폼 문구, 입력 항목 안내, 개인정보 동의 안내, 제출 버튼 문구를 관리합니다.',
+    imageUrl: '',
+    ctaLabel: '문의하기',
+    ctaHref: '/proposal',
+    status: 'published',
+    updatedAt: '2026-07-28'
+  },
+  {
+    id: 'footer-info',
+    page: '공통',
+    area: '푸터·연락처',
+    title: '세종로컬창업가협회',
+    subtitle: 'Sejong Local Entrepreneur Association',
+    body: '사무국 소개, 이메일, 제휴 문의 안내, 개인정보처리방침 링크 등 공통 하단 정보를 관리합니다.',
+    imageUrl: '',
+    ctaLabel: '문의하기',
+    ctaHref: '/proposal',
+    status: 'published',
+    updatedAt: '2026-07-28'
+  }
+];
+
 const mergeSectionsWithDefaults = (savedSections) => {
-  if (!Array.isArray(savedSections) || savedSections.length === 0) return DEFAULT_SITE_SECTIONS;
+  if (!Array.isArray(savedSections) || savedSections.length === 0) return CURRENT_SITE_SECTIONS;
 
   const savedById = new Map(savedSections.map(section => [section.id, section]));
-  const defaultIds = new Set(DEFAULT_SITE_SECTIONS.map(section => section.id));
-  const mergedDefaults = DEFAULT_SITE_SECTIONS.map(section => ({
+  const defaultIds = new Set(CURRENT_SITE_SECTIONS.map(section => section.id));
+  const mergedDefaults = CURRENT_SITE_SECTIONS.map(section => ({
     ...section,
     ...(savedById.get(section.id) || {})
   }));
@@ -415,8 +483,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null); // 'super_admin', 'staff_admin', 'user', null
   const [activeSubTab, setActiveSubTab] = useState('home'); // 'home', 'approval', 'content', 'category', 'system'
-  const [siteSections, setSiteSections] = useState(DEFAULT_SITE_SECTIONS);
-  const [selectedSectionId, setSelectedSectionId] = useState(DEFAULT_SITE_SECTIONS[0].id);
+  const [siteSections, setSiteSections] = useState(CURRENT_SITE_SECTIONS);
+  const [selectedSectionId, setSelectedSectionId] = useState(CURRENT_SITE_SECTIONS[0].id);
   const [sectionFilter, setSectionFilter] = useState('all');
   const [mentoringRequests, setMentoringRequests] = useState([]);
   const [members, setMembers] = useState(DEFAULT_MEMBERS);
@@ -661,8 +729,8 @@ export default function AdminPage() {
   };
 
   const handleResetSections = () => {
-    setSiteSections(DEFAULT_SITE_SECTIONS);
-    setSelectedSectionId(DEFAULT_SITE_SECTIONS[0].id);
+    setSiteSections(CURRENT_SITE_SECTIONS);
+    setSelectedSectionId(CURRENT_SITE_SECTIONS[0].id);
     localStorage.removeItem(CONTENT_STORAGE_KEY);
     setMsg({ type: 'success', text: '콘텐츠 관리 섹션이 기본값으로 복원되었습니다.' });
   };
