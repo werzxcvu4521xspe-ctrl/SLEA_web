@@ -64,7 +64,7 @@ export default function Footer() {
               <p>이메일: contact@sejonglocal.org | 제휴·회원 문의는 문의하기 페이지를 이용해 주세요.</p>
             </div>
             <p className="copyright">
-              © {new Date().getFullYear()} SEJONG LOCAL. All rights reserved. 본 사이트의 무단 전재 및 배포를 금합니다.
+              © {new Date().getFullYear()} SELO. All rights reserved. 본 사이트의 무단 전재 및 배포를 금합니다.
             </p>
           </div>
           

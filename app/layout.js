@@ -59,7 +59,6 @@ const paletteOverride = `
 
   .nav-links a:hover,
   .nav-links a.active,
-  .logo-text span,
   .tab-btn.active,
   .tab-btn:hover {
     color: #6cbfab !important;
@@ -147,7 +146,7 @@ const paletteOverride = `
 `;
 
 export const metadata = {
-  title: "세종로컬창업가협회 l SEJONG LOCAL",
+  title: "세종로컬창업가협회 l SELO",
   description: "세종시 로컬 크리에이터와 브랜드의 성장 가치와 공간을 기록하는 아카이빙 플랫폼",
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "",

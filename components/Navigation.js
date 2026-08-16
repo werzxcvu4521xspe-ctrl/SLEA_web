@@ -82,7 +82,7 @@ export default function Navigation() {
         <nav className="gnb-bar glass-panel">
           <div className="gnb-inner">
             <Link href="/" className="logo-text">
-              SEJONG <span>LOCAL</span>
+              SELO
             </Link>
 
             {/* Desktop Navigation Links */}

@@ -1698,10 +1698,6 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-condensed);
 }
 
-.logo-text span {
-  color: var(--color-emerald-deep);
-}
-
 .nav-links {
   display: flex;
   gap: clamp(14px, 1.7vw, 24px);
