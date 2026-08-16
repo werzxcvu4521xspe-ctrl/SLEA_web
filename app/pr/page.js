@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 const STORIES = [
@@ -25,19 +25,14 @@ function PRContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get('tab') || 'intro';
-  const [activeTab, setActiveTab] = useState(tabParam);
+  const activeTab = tabParam;
 
   // Active Story modal / detail
   const [selectedStory, setSelectedStory] = useState(null);
   // Video player modal
   const [playingVideo, setPlayingVideo] = useState(null);
 
-  useEffect(() => {
-    setActiveTab(tabParam);
-  }, [tabParam]);
-
   const handleTabChange = (tabName) => {
-    setActiveTab(tabName);
     router.push(`/pr?tab=${tabName}`, { scroll: false });
   };
 
@@ -193,7 +188,7 @@ function PRContent() {
                   >
                     <div className="shorts-bg-image" style={{ backgroundImage: `url("${short.img}")` }} />
                     <div className="shorts-play-btn">▶</div>
-                    <div className="shorts-overlay-gradient">
+                    <div className="shorts-overlay">
                       <h4 style={{ fontSize: '13px', fontWeight: '800', lineHeight: '1.4', marginBottom: '4px' }}>{short.title}</h4>
                       <span style={{ fontSize: '11px', color: '#ccc' }}>👀 {short.views}</span>
                     </div>

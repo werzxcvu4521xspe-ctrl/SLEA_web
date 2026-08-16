@@ -60,7 +60,7 @@ export default function MapWidget({ address, companyName }) {
           position: relative;
           width: 100%;
           height: 180px;
-          background: var(--brand-gradient-soft);
+          background: var(--brand-soft);
           overflow: hidden;
         }
 
@@ -68,11 +68,7 @@ export default function MapWidget({ address, companyName }) {
         .map-placeholder-bg {
           width: 100%;
           height: 100%;
-          background-image: 
-            radial-gradient(var(--color-emerald-pale) 20%, transparent 20%),
-            radial-gradient(var(--color-emerald-pale) 20%, transparent 20%);
-          background-size: 20px 20px;
-          background-position: 0 0, 10px 10px;
+          background-color: var(--color-emerald-pale);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -89,7 +85,7 @@ export default function MapWidget({ address, companyName }) {
           position: absolute;
           width: 50px;
           height: 50px;
-          background-color: rgba(17, 199, 199, 0.28);
+          background-color: rgba(108, 191, 171, 0.28);
           border-radius: 50%;
           z-index: 1;
           animation: pulse 2s infinite;
@@ -183,12 +179,12 @@ export default function MapWidget({ address, companyName }) {
         }
 
         .map-link.kakao {
-          background-color: #fee500;
+          background-color: #ff5a2a;
           color: #191919;
         }
 
         .map-link.kakao:hover {
-          background-color: #e6ce00;
+          background-color: #111111;
         }
 
         .map-link.naver {

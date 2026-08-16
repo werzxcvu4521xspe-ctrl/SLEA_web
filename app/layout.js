@@ -10,24 +10,26 @@ const notoSansKr = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
 });
 
-const gradientColorOverride = `
+const paletteOverride = `
   :root {
-    --color-emerald-deep: #1456c8 !important;
-    --color-emerald-medium: #0a9ee8 !important;
-    --color-emerald-light: #11c7c7 !important;
-    --color-emerald-pale: #f0f9ff !important;
-    --color-brand-navy: #113274 !important;
-    --color-brand-cyan: #08a7d8 !important;
-    --color-brand-green: #00bf63 !important;
-    --color-button-solid: #1456c8 !important;
-    --color-button-solid-hover: #0f48ad !important;
-    --brand-gradient: linear-gradient(105deg, #113274 0%, #1456c8 42%, #08a7d8 68%, #00bf63 100%) !important;
-    --brand-gradient-soft: linear-gradient(135deg, rgba(20, 86, 200, 0.12) 0%, rgba(8, 167, 216, 0.12) 50%, rgba(0, 191, 99, 0.10) 100%) !important;
-    --brand-gradient-hover: linear-gradient(105deg, #0f2b65 0%, #0f68d8 44%, #06b6d4 72%, #00c967 100%) !important;
+    --color-emerald-deep: #6cbfab !important;
+    --color-emerald-medium: #6cbfab !important;
+    --color-emerald-light: #a9ded1 !important;
+    --color-emerald-pale: #effaf7 !important;
+    --color-brand-navy: #111111 !important;
+    --color-brand-cyan: #6cbfab !important;
+    --color-brand-green: #6cbfab !important;
+    --color-button-solid: #ff5a2a !important;
+    --color-button-solid-hover: #111111 !important;
+    --color-orange-accent: #ff5a2a !important;
+    --color-orange-light: #fff1eb !important;
+    --brand-solid: #111111 !important;
+    --brand-soft: #effaf7 !important;
+    --brand-solid-hover: #111111 !important;
   }
 
   .top-banner {
-    background: var(--brand-gradient) !important;
+    background: var(--brand-solid) !important;
   }
 
   .gnb-bar,
@@ -48,13 +50,11 @@ const gradientColorOverride = `
   }
 
   .page-hero-banner {
-    background: var(--brand-gradient) !important;
+    background: var(--brand-solid) !important;
   }
 
   .page-hero-banner::after {
-    background:
-      radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, transparent 62%),
-      radial-gradient(circle at 80% 20%, rgba(0, 191, 99, 0.2) 0%, transparent 70%) !important;
+    display: none !important;
   }
 
   .nav-links a:hover,
@@ -62,16 +62,16 @@ const gradientColorOverride = `
   .logo-text span,
   .tab-btn.active,
   .tab-btn:hover {
-    color: #1456c8 !important;
+    color: #6cbfab !important;
   }
 
   .nav-links a::after,
   .tab-btn.active {
-    border-bottom-color: #1456c8 !important;
+    border-bottom-color: #6cbfab !important;
   }
 
   .nav-links a::after {
-    background: var(--brand-gradient) !important;
+    background: var(--brand-solid) !important;
   }
 
   .menu-btn .bar {
@@ -80,17 +80,16 @@ const gradientColorOverride = `
 
   .map-display,
   .map-visual-box {
-    background: var(--brand-gradient-soft) !important;
+    background: var(--brand-soft) !important;
   }
 
   .map-graphic-bg {
-    background-image:
-      radial-gradient(rgba(10, 158, 232, 0.28) 20%, transparent 20%),
-      radial-gradient(rgba(0, 191, 99, 0.18) 20%, transparent 20%) !important;
+    background-image: none !important;
+    background-color: #effaf7 !important;
   }
 
   .pulse-marker {
-    background-color: rgba(17, 199, 199, 0.28) !important;
+    background-color: rgba(108, 191, 171, 0.28) !important;
   }
 
   .map-link.naver {
@@ -132,18 +131,18 @@ const gradientColorOverride = `
 
   .promo-inner,
   .mega-menu-overlay {
-    background: var(--brand-gradient) !important;
+    background: var(--brand-solid) !important;
   }
 
   .badge-emerald,
   .file-type-icon,
   .step-node.done {
-    background: var(--brand-gradient-soft) !important;
-    color: #1456c8 !important;
+    background: var(--brand-soft) !important;
+    color: #111111 !important;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #1456c8 0%, #00bf63 100%) !important;
+    background: #ff5a2a !important;
   }
 `;
 
@@ -162,7 +161,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={notoSansKr.variable}>
       <body style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-        <style dangerouslySetInnerHTML={{ __html: gradientColorOverride }} />
+        <style dangerouslySetInnerHTML={{ __html: paletteOverride }} />
         <Navigation />
         <main style={{ flex: 1, display: "flex", flexDirection: "column" }}>
           {children}

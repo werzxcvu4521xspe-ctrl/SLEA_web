@@ -485,7 +485,7 @@ export default function NoticePage() {
         }
 
         .notice-kicker {
-          color: #ff4e00;
+          color: #ff5a2a;
           font-size: 16px;
         }
 
@@ -529,9 +529,9 @@ export default function NoticePage() {
         }
 
         .pop-primary-btn {
-          background: #ff4e00;
+          background: #ff5a2a;
           color: #ffffff;
-          border: 1px solid #ff4e00;
+          border: 1px solid #ff5a2a;
         }
 
         .pop-line-btn,
@@ -663,7 +663,7 @@ export default function NoticePage() {
           position: absolute;
           left: 14px;
           top: 14px;
-          background: #ff4e00;
+          background: #ff5a2a;
           color: #ffffff;
           font-size: 12px;
           font-weight: 900;
@@ -693,7 +693,7 @@ export default function NoticePage() {
         }
 
         .notice-meta span:first-child {
-          color: #ff4e00;
+          color: #ff5a2a;
         }
 
         .featured-copy h2 {
@@ -781,7 +781,7 @@ export default function NoticePage() {
 
         .side-eyebrow {
           display: block;
-          color: #ff4e00;
+          color: #ff5a2a;
           font-size: 13px;
           margin-bottom: 10px;
         }
@@ -972,7 +972,7 @@ export default function NoticePage() {
         .pin-toggle input {
           width: 16px;
           height: 16px;
-          accent-color: #ff4e00;
+          accent-color: #ff5a2a;
         }
 
         .notice-detail-modal {

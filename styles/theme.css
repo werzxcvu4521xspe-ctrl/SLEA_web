@@ -1,18 +1,18 @@
 /* 디자인 시스템 컬러 토큰 및 전역 테마 정의 */
 :root {
-  /* Color Palette: Sejong gradient city tone */
-  --color-emerald-deep: #1456c8;
-  --color-emerald-medium: #0a9ee8;
-  --color-emerald-light: #11c7c7;
-  --color-emerald-pale: #eef9ff;
-  --color-brand-navy: #113274;
-  --color-brand-cyan: #08a7d8;
-  --color-brand-green: #00bf63;
-  --color-button-solid: #1456c8;
-  --color-button-solid-hover: #0f48ad;
-  --brand-gradient: linear-gradient(105deg, #113274 0%, #1456c8 42%, #08a7d8 68%, #00bf63 100%);
-  --brand-gradient-soft: linear-gradient(135deg, rgba(20, 86, 200, 0.12) 0%, rgba(8, 167, 216, 0.12) 50%, rgba(0, 191, 99, 0.10) 100%);
-  --brand-gradient-hover: linear-gradient(105deg, #0f2b65 0%, #0f68d8 44%, #06b6d4 72%, #00c967 100%);
+  /* Color Palette: Black, Orange, Mint */
+  --color-emerald-deep: #6cbfab;
+  --color-emerald-medium: #6cbfab;
+  --color-emerald-light: #a9ded1;
+  --color-emerald-pale: #effaf7;
+  --color-brand-navy: #111111;
+  --color-brand-cyan: #6cbfab;
+  --color-brand-green: #6cbfab;
+  --color-button-solid: #ff5a2a;
+  --color-button-solid-hover: #111111;
+  --brand-solid: #111111;
+  --brand-soft: #effaf7;
+  --brand-solid-hover: #111111;
   
   --color-sand-warm: #f2efe8;
   --color-sand-medium: #f6f6f6;
@@ -27,8 +27,8 @@
   --color-gray-light: #e0e0e0;
   
   --color-white: #ffffff;
-  --color-orange-accent: #ff4e00;
-  --color-orange-light: #fff0e8;
+  --color-orange-accent: #ff5a2a;
+  --color-orange-light: #fff1eb;
   
   /* Fonts */
   --font-family-base: 'Noto Sans KR', sans-serif;

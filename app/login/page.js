@@ -137,7 +137,7 @@ export default function LoginPage() {
                 fontWeight: '700',
                 background: 'var(--color-emerald-pale)',
                 color: 'var(--color-emerald-deep)',
-                border: '1px solid rgba(20,86,200,0.2)',
+                border: '1px solid rgba(108, 191, 171, 0.24)',
                 borderRadius: '4px',
                 cursor: 'pointer'
               }}
