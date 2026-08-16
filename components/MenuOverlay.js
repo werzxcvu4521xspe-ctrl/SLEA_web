@@ -127,7 +127,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           left: 0;
           width: 100vw;
           height: calc(100vh - var(--banner-height) - var(--header-height));
-          background: #141414;
+          background: #3f1d14;
           backdrop-filter: var(--glass-blur);
           z-index: 999;
           display: flex;

@@ -951,7 +951,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .map-display {
-  background-color: #dff5ff;
+  background-color: #e8f6f2;
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-gray-light);
   height: 480px;
@@ -964,8 +964,8 @@ h1, h2, h3, h4, h5, h6 {
   flex-grow: 1;
   position: relative;
   background-image: 
-    radial-gradient(#b8ecff 20%, transparent 20%),
-    radial-gradient(#b8ecff 20%, transparent 20%);
+    radial-gradient(#6cbfab 20%, transparent 20%),
+    radial-gradient(#6cbfab 20%, transparent 20%);
   background-size: 30px 30px;
   background-position: 0 0, 15px 15px;
 }

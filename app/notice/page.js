@@ -437,13 +437,13 @@ export default function NoticePage() {
         .notice-pop-page {
           min-height: 100vh;
           background: #ffffff;
-          color: #161616;
+          color: #3f1d14;
           padding-bottom: 96px;
         }
 
         .notice-pop-hero {
           margin-top: 120px;
-          background: #161616;
+          background: #3f1d14;
           color: #ffffff;
           border-bottom: 1px solid #2c2c2c;
         }
@@ -485,7 +485,7 @@ export default function NoticePage() {
         }
 
         .notice-kicker {
-          color: #ff4e00;
+          color: #6cbfab;
           font-size: 16px;
         }
 
@@ -529,9 +529,9 @@ export default function NoticePage() {
         }
 
         .pop-primary-btn {
-          background: #ff4e00;
+          background: #6cbfab;
           color: #ffffff;
-          border: 1px solid #ff4e00;
+          border: 1px solid #6cbfab;
         }
 
         .pop-line-btn,
@@ -551,13 +551,13 @@ export default function NoticePage() {
         }
 
         .pop-primary-btn:hover {
-          background: #161616;
-          border-color: #161616;
+          background: #3f1d14;
+          border-color: #3f1d14;
         }
 
         .notice-pop-hero .pop-primary-btn:hover {
           background: #ffffff;
-          color: #161616;
+          color: #3f1d14;
           border-color: #ffffff;
         }
 
@@ -565,7 +565,7 @@ export default function NoticePage() {
         .modal-close-btn:hover,
         .detail-close-btn:hover {
           background: #ffffff;
-          color: #161616;
+          color: #3f1d14;
           border-color: #ffffff;
         }
 
@@ -604,14 +604,14 @@ export default function NoticePage() {
           right: 0;
           bottom: -1px;
           height: 2px;
-          background: #161616;
+          background: #3f1d14;
           opacity: 0;
           transition: opacity 0.2s ease;
         }
 
         .notice-chip.active,
         .notice-chip:hover {
-          color: #161616;
+          color: #3f1d14;
         }
 
         .notice-chip.active::after,
@@ -663,7 +663,7 @@ export default function NoticePage() {
           position: absolute;
           left: 14px;
           top: 14px;
-          background: #ff4e00;
+          background: #6cbfab;
           color: #ffffff;
           font-size: 12px;
           font-weight: 900;
@@ -693,14 +693,14 @@ export default function NoticePage() {
         }
 
         .notice-meta span:first-child {
-          color: #ff4e00;
+          color: #6cbfab;
         }
 
         .featured-copy h2 {
           font-size: clamp(30px, 4vw, 54px);
           font-weight: 900;
           line-height: 1.18;
-          color: #161616;
+          color: #3f1d14;
           text-align: left;
         }
 
@@ -722,8 +722,8 @@ export default function NoticePage() {
         .text-arrow-btn {
           min-height: auto;
           padding: 0 0 3px;
-          color: #161616;
-          border-bottom: 1px solid #161616;
+          color: #3f1d14;
+          border-bottom: 1px solid #3f1d14;
         }
 
         .notice-content-grid {
@@ -749,7 +749,7 @@ export default function NoticePage() {
         }
 
         .notice-card h3 {
-          color: #161616;
+          color: #3f1d14;
           font-size: 20px;
           font-weight: 900;
           line-height: 1.38;
@@ -781,7 +781,7 @@ export default function NoticePage() {
 
         .side-eyebrow {
           display: block;
-          color: #ff4e00;
+          color: #6cbfab;
           font-size: 13px;
           margin-bottom: 10px;
         }
@@ -789,7 +789,7 @@ export default function NoticePage() {
         .newsletter-box h3,
         .notice-upload-note strong {
           display: block;
-          color: #161616;
+          color: #3f1d14;
           font-size: 22px;
           font-weight: 900;
           line-height: 1.35;
@@ -817,7 +817,7 @@ export default function NoticePage() {
         .notice-subscribe-form label,
         .notice-field label,
         .upload-controls label {
-          color: #161616;
+          color: #3f1d14;
           font-size: 13px;
           font-weight: 900;
         }
@@ -829,7 +829,7 @@ export default function NoticePage() {
           width: 100%;
           border: 1px solid #e0e0e0;
           background: #f6f6f6;
-          color: #161616;
+          color: #3f1d14;
           min-height: 46px;
           padding: 12px;
           font-size: 14px;
@@ -845,7 +845,7 @@ export default function NoticePage() {
         .notice-field input:focus,
         .notice-field select:focus,
         .notice-field textarea:focus {
-          border-color: #161616;
+          border-color: #3f1d14;
           background: #ffffff;
         }
 
@@ -876,7 +876,7 @@ export default function NoticePage() {
           max-height: calc(100vh - 40px);
           overflow-y: auto;
           background: #ffffff;
-          color: #161616;
+          color: #3f1d14;
         }
 
         .notice-write-modal {
@@ -892,20 +892,20 @@ export default function NoticePage() {
         }
 
         .modal-header h2 {
-          color: #161616;
+          color: #3f1d14;
           font-size: 32px;
           font-weight: 900;
         }
 
         .modal-close-btn {
-          color: #161616;
+          color: #3f1d14;
           border-color: #d7d7d7;
         }
 
         .modal-close-btn:hover {
-          background: #161616;
+          background: #3f1d14;
           color: #ffffff;
-          border-color: #161616;
+          border-color: #3f1d14;
         }
 
         .notice-write-form {
@@ -937,7 +937,7 @@ export default function NoticePage() {
           align-items: center;
           justify-content: center;
           overflow: hidden;
-          background: #161616;
+          background: #3f1d14;
           color: #ffffff;
           font-family: var(--font-family-condensed);
           font-size: 22px;
@@ -972,7 +972,7 @@ export default function NoticePage() {
         .pin-toggle input {
           width: 16px;
           height: 16px;
-          accent-color: #ff4e00;
+          accent-color: #6cbfab;
         }
 
         .notice-detail-modal {
@@ -998,7 +998,7 @@ export default function NoticePage() {
         }
 
         .detail-copy h2 {
-          color: #161616;
+          color: #3f1d14;
           font-size: clamp(28px, 4vw, 52px);
           font-weight: 900;
           line-height: 1.16;

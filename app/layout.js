@@ -12,18 +12,20 @@ const notoSansKr = Noto_Sans_KR({
 
 const gradientColorOverride = `
   :root {
-    --color-emerald-deep: #1456c8 !important;
-    --color-emerald-medium: #0a9ee8 !important;
-    --color-emerald-light: #11c7c7 !important;
-    --color-emerald-pale: #f0f9ff !important;
-    --color-brand-navy: #113274 !important;
-    --color-brand-cyan: #08a7d8 !important;
-    --color-brand-green: #00bf63 !important;
-    --color-button-solid: #1456c8 !important;
-    --color-button-solid-hover: #0f48ad !important;
-    --brand-gradient: linear-gradient(105deg, #113274 0%, #1456c8 42%, #08a7d8 68%, #00bf63 100%) !important;
-    --brand-gradient-soft: linear-gradient(135deg, rgba(20, 86, 200, 0.12) 0%, rgba(8, 167, 216, 0.12) 50%, rgba(0, 191, 99, 0.10) 100%) !important;
-    --brand-gradient-hover: linear-gradient(105deg, #0f2b65 0%, #0f68d8 44%, #06b6d4 72%, #00c967 100%) !important;
+    --color-emerald-deep: #3f1d14 !important;
+    --color-emerald-medium: #6cbfab !important;
+    --color-emerald-light: #8bd1c1 !important;
+    --color-emerald-pale: #e8f6f2 !important;
+    --color-brand-navy: #3f1d14 !important;
+    --color-brand-cyan: #6cbfab !important;
+    --color-brand-green: #8bd1c1 !important;
+    --color-button-solid: #3f1d14 !important;
+    --color-button-solid-hover: #5a2a1d !important;
+    --color-orange-accent: #6cbfab !important;
+    --color-orange-light: #e8f6f2 !important;
+    --brand-gradient: linear-gradient(105deg, #3f1d14 0%, #5a2a1d 38%, #6cbfab 100%) !important;
+    --brand-gradient-soft: linear-gradient(135deg, rgba(63, 29, 20, 0.10) 0%, rgba(108, 191, 171, 0.18) 100%) !important;
+    --brand-gradient-hover: linear-gradient(105deg, #2d120c 0%, #4f2419 42%, #79cbb9 100%) !important;
   }
 
   .top-banner {
@@ -33,18 +35,18 @@ const gradientColorOverride = `
   .gnb-bar,
   .header-container.scrolled .gnb-bar {
     background: rgba(255, 255, 255, 0.96) !important;
-    border-bottom: 1px solid #e0e0e0 !important;
-    box-shadow: 0 8px 24px rgba(22, 22, 22, 0.05) !important;
+    border-bottom: 1px solid rgba(63, 29, 20, 0.14) !important;
+    box-shadow: 0 8px 24px rgba(63, 29, 20, 0.06) !important;
   }
 
   .logo-text,
   .icon-btn,
   .mega-trigger-btn {
-    color: #121413 !important;
+    color: #3f1d14 !important;
   }
 
   .nav-links a {
-    color: #525252 !important;
+    color: #6a493f !important;
   }
 
   .page-hero-banner {
@@ -54,7 +56,7 @@ const gradientColorOverride = `
   .page-hero-banner::after {
     background:
       radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, transparent 62%),
-      radial-gradient(circle at 80% 20%, rgba(0, 191, 99, 0.2) 0%, transparent 70%) !important;
+      radial-gradient(circle at 80% 20%, rgba(108, 191, 171, 0.28) 0%, transparent 70%) !important;
   }
 
   .nav-links a:hover,
@@ -62,12 +64,12 @@ const gradientColorOverride = `
   .logo-text span,
   .tab-btn.active,
   .tab-btn:hover {
-    color: #1456c8 !important;
+    color: #3f1d14 !important;
   }
 
   .nav-links a::after,
   .tab-btn.active {
-    border-bottom-color: #1456c8 !important;
+    border-bottom-color: #6cbfab !important;
   }
 
   .nav-links a::after {
@@ -75,7 +77,7 @@ const gradientColorOverride = `
   }
 
   .menu-btn .bar {
-    background-color: #121413 !important;
+    background-color: #3f1d14 !important;
   }
 
   .map-display,
@@ -85,12 +87,12 @@ const gradientColorOverride = `
 
   .map-graphic-bg {
     background-image:
-      radial-gradient(rgba(10, 158, 232, 0.28) 20%, transparent 20%),
-      radial-gradient(rgba(0, 191, 99, 0.18) 20%, transparent 20%) !important;
+      radial-gradient(rgba(108, 191, 171, 0.32) 20%, transparent 20%),
+      radial-gradient(rgba(63, 29, 20, 0.14) 20%, transparent 20%) !important;
   }
 
   .pulse-marker {
-    background-color: rgba(17, 199, 199, 0.28) !important;
+    background-color: rgba(108, 191, 171, 0.32) !important;
   }
 
   .map-link.naver {
@@ -139,11 +141,11 @@ const gradientColorOverride = `
   .file-type-icon,
   .step-node.done {
     background: var(--brand-gradient-soft) !important;
-    color: #1456c8 !important;
+    color: #3f1d14 !important;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #1456c8 0%, #00bf63 100%) !important;
+    background: linear-gradient(180deg, #3f1d14 0%, #6cbfab 100%) !important;
   }
 `;
 

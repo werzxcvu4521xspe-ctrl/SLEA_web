@@ -1710,7 +1710,7 @@ export default function AdminPage() {
                   <div style={{ padding: '20px', background: 'var(--color-sand-light)', borderRadius: '6px' }}>
                     <h4 style={{ fontWeight: '800', marginBottom: '8px' }}>외부 API 및 Supabase 연동 상태</h4>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-                      <span style={{ width: '10px', height: '10px', background: '#44c8f5', borderRadius: '50%' }} />
+                      <span style={{ width: '10px', height: '10px', background: '#6cbfab', borderRadius: '50%' }} />
                       <span style={{ fontSize: '13px', fontWeight: '700' }}>Active (연결 상태 완벽)</span>
                     </div>
                     <button 
