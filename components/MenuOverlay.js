@@ -145,9 +145,9 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
         .menu-inner {
           display: flex;
           flex-direction: column;
-          max-width: 720px;
+          max-width: 680px;
           width: 100%;
-          padding: 28px 20px 44px;
+          padding: 24px 20px 40px;
         }
 
         .scroll-wrapper {
@@ -165,17 +165,17 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: clamp(12px, 3vh, 22px);
-          padding-bottom: 36px;
+          gap: clamp(10px, 2.2vh, 16px);
+          padding-bottom: 28px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.16);
         }
 
         .mobile-category-link {
           display: block;
           color: var(--color-white);
-          font-size: clamp(34px, 12vw, 58px);
+          font-size: clamp(28px, 8.6vw, 42px);
           font-weight: 900;
-          line-height: 0.96;
+          line-height: 1.08;
           letter-spacing: 0;
           transition: color 0.2s ease, transform 0.2s ease;
           word-break: keep-all;
@@ -191,7 +191,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           display: grid;
           grid-template-columns: 1fr;
           gap: 16px;
-          padding-top: 28px;
+          padding-top: 24px;
           padding-bottom: 40px;
         }
 
@@ -244,15 +244,16 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
         @media (min-width: 769px) {
           .menu-inner {
             max-width: var(--max-width-content);
-            padding: 96px 20px 60px;
+            padding: 72px 20px 56px;
           }
 
           .mobile-category-menu {
-            gap: 18px;
+            gap: 14px;
           }
 
           .mobile-category-link {
-            font-size: clamp(42px, 6vw, 72px);
+            font-size: clamp(36px, 4vw, 52px);
+            line-height: 1.06;
           }
         }
       `}</style>

@@ -183,7 +183,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .home-intro-section {
-  padding: 72px 0 84px;
+  padding: 64px 0 76px;
   background-color: var(--color-sand-light);
   border-bottom: 1px solid var(--color-gray-light);
 }
@@ -204,8 +204,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .home-intro-copy h1 {
   max-width: 720px;
-  font-size: 30px;
-  line-height: 1.32;
+  font-size: 28px;
+  line-height: 1.34;
   font-weight: 900;
   letter-spacing: 0;
   color: var(--color-charcoal-deep);
@@ -213,8 +213,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .home-intro-copy p {
   max-width: 640px;
-  font-size: 16px;
-  line-height: 1.75;
+  font-size: 15.5px;
+  line-height: 1.68;
   color: var(--color-gray-dark);
 }
 
@@ -1205,7 +1205,7 @@ h1, h2, h3, h4, h5, h6 {
 .page-hero-banner {
   background: var(--brand-solid);
   color: var(--color-sand-warm);
-  padding: 80px 0 60px 0;
+  padding: 68px 0 52px 0;
   position: relative;
   overflow: hidden;
   margin-top: 100px; /* Accounts for fixed GNB */
@@ -1216,17 +1216,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-hero-title {
-  font-size: 36px;
+  font-size: 32px;
   font-weight: 900;
   margin-bottom: 12px;
+  line-height: 1.22;
   letter-spacing: 0;
 }
 
 .page-hero-desc {
-  font-size: 16px;
+  font-size: 15.5px;
   color: rgba(247, 245, 240, 0.85);
   max-width: 600px;
-  line-height: 1.6;
+  line-height: 1.68;
 }
 
 /* Timeline Components */
@@ -1855,17 +1856,18 @@ h1, h2, h3, h4, h5, h6 {
   }
 
   .home-intro-section {
-    padding: 46px 0 56px;
+    padding: 42px 0 52px;
   }
 
   .home-intro-copy h1 {
-    font-size: 26px;
-    line-height: 1.34;
+    font-size: 24px;
+    line-height: 1.36;
     word-break: keep-all;
   }
 
   .home-intro-copy p {
-    font-size: 15px;
+    font-size: 14.5px;
+    line-height: 1.66;
   }
 
   .showcase-section,
