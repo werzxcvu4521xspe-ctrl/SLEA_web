@@ -1,34 +1,34 @@
 /* 디자인 시스템 컬러 토큰 및 전역 테마 정의 */
 :root {
-  /* Color Palette: Mint & Caput Mortuum */
-  --color-emerald-deep: #3f1d14;
+  /* Color Palette: Public Network Growth */
+  --color-emerald-deep: #6cbfab;
   --color-emerald-medium: #6cbfab;
-  --color-emerald-light: #8bd1c1;
-  --color-emerald-pale: #e8f6f2;
+  --color-emerald-light: #ddf2ec;
+  --color-emerald-pale: #ddf2ec;
   --color-brand-navy: #3f1d14;
   --color-brand-cyan: #6cbfab;
-  --color-brand-green: #8bd1c1;
-  --color-button-solid: #3f1d14;
-  --color-button-solid-hover: #5a2a1d;
-  --brand-gradient: linear-gradient(105deg, #3f1d14 0%, #5a2a1d 38%, #6cbfab 100%);
-  --brand-gradient-soft: linear-gradient(135deg, rgba(63, 29, 20, 0.10) 0%, rgba(108, 191, 171, 0.18) 100%);
-  --brand-gradient-hover: linear-gradient(105deg, #2d120c 0%, #4f2419 42%, #79cbb9 100%);
+  --color-brand-green: #ddf2ec;
+  --color-button-solid: #ff5a2a;
+  --color-button-solid-hover: #3f1d14;
+  --brand-gradient: #3f1d14;
+  --brand-gradient-soft: #ddf2ec;
+  --brand-gradient-hover: #3f1d14;
   
-  --color-sand-warm: #f7f0ec;
-  --color-sand-medium: #f5f3f0;
+  --color-sand-warm: #f8f4ef;
+  --color-sand-medium: #ddf2ec;
   --color-sand-light: #ffffff;
   
-  --color-charcoal-deep: #24120e;
+  --color-charcoal-deep: #181614;
   --color-charcoal-medium: #3f1d14;
-  --color-charcoal-light: #6a493f;
+  --color-charcoal-light: #3f1d14;
   
-  --color-gray-dark: #525252;
-  --color-gray-medium: #8d8d8d;
-  --color-gray-light: #e0e0e0;
+  --color-gray-dark: #181614;
+  --color-gray-medium: #3f1d14;
+  --color-gray-light: #ddf2ec;
   
   --color-white: #ffffff;
-  --color-orange-accent: #6cbfab;
-  --color-orange-light: #e8f6f2;
+  --color-orange-accent: #ff5a2a;
+  --color-orange-light: #f8f4ef;
   
   /* Fonts */
   --font-family-base: 'Noto Sans KR', sans-serif;
@@ -59,13 +59,13 @@
 
 /* Dark Mode Overwrite (기본적으로 다크/라이트 하이브리드 지원) */
 [data-theme='dark'] {
-  --color-sand-light: #24120e;
+  --color-sand-light: #181614;
   --color-sand-warm: #3f1d14;
-  --color-sand-medium: #5a2a1d;
+  --color-sand-medium: #3f1d14;
   
-  --color-charcoal-deep: #faf7f2;
-  --color-charcoal-medium: #ede4d3;
-  --color-charcoal-light: #f4ece1;
+  --color-charcoal-deep: #f8f4ef;
+  --color-charcoal-medium: #ddf2ec;
+  --color-charcoal-light: #ffffff;
   
   --glass-bg: rgba(26, 29, 28, 0.8);
   --glass-border: rgba(255, 255, 255, 0.05);

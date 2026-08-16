@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 const PRODUCTS = [
@@ -21,7 +21,7 @@ function ShopContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get('tab') || 'brand';
-  const [activeTab, setActiveTab] = useState(tabParam);
+  const activeTab = tabParam;
 
   // Brand Shop Category State
   const [subCategory, setSubCategory] = useState('all');
@@ -31,12 +31,7 @@ function ShopContent() {
   const [partnerProduct, setPartnerProduct] = useState('');
   const [partnerSubmitted, setPartnerSubmitted] = useState(false);
 
-  useEffect(() => {
-    setActiveTab(tabParam);
-  }, [tabParam]);
-
   const handleTabChange = (tabName) => {
-    setActiveTab(tabName);
     router.push(`/shop?tab=${tabName}`, { scroll: false });
   };
 
@@ -189,7 +184,7 @@ function ShopContent() {
                       
                       {/* Price info */}
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'baseline', marginTop: '4px' }}>
-                        <span style={{ fontSize: '13px', color: '#888', textDecoration: 'line-through' }}>{gb.normalPrice}</span>
+                        <span style={{ fontSize: '13px', color: '#3f1d14', textDecoration: 'line-through' }}>{gb.normalPrice}</span>
                         <span style={{ fontSize: '18px', fontWeight: '900', color: 'var(--color-orange-accent)' }}>{gb.discountPrice}</span>
                       </div>
 

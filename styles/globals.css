@@ -10,7 +10,7 @@
 html, body {
   height: 100%;
   font-family: var(--font-family-base);
-  background-color: var(--color-white);
+  background-color: var(--color-sand-warm);
   color: var(--color-charcoal-deep);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -951,7 +951,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .map-display {
-  background-color: #e8f6f2;
+  background-color: #ddf2ec;
   border-radius: var(--border-radius-lg);
   border: 1px solid var(--color-gray-light);
   height: 480px;
@@ -965,7 +965,7 @@ h1, h2, h3, h4, h5, h6 {
   position: relative;
   background-image: 
     radial-gradient(#6cbfab 20%, transparent 20%),
-    radial-gradient(#6cbfab 20%, transparent 20%);
+    radial-gradient(#f8f4ef 20%, transparent 20%);
   background-size: 30px 30px;
   background-position: 0 0, 15px 15px;
 }

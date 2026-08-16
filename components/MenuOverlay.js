@@ -183,7 +183,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
 
         .mobile-category-link:hover,
         .mobile-category-link:focus-visible {
-          color: var(--color-orange-accent);
+          color: var(--color-emerald-medium);
           transform: translateX(4px);
         }
 

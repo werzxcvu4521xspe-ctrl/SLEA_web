@@ -183,12 +183,12 @@ export default function MapWidget({ address, companyName }) {
         }
 
         .map-link.kakao {
-          background-color: #fee500;
-          color: #191919;
+          background-color: #ff5a2a;
+          color: #ffffff;
         }
 
         .map-link.kakao:hover {
-          background-color: #e6ce00;
+          background-color: #3f1d14;
         }
 
         .map-link.naver {

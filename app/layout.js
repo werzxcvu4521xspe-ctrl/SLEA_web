@@ -12,20 +12,28 @@ const notoSansKr = Noto_Sans_KR({
 
 const gradientColorOverride = `
   :root {
-    --color-emerald-deep: #3f1d14 !important;
+    --color-emerald-deep: #6cbfab !important;
     --color-emerald-medium: #6cbfab !important;
-    --color-emerald-light: #8bd1c1 !important;
-    --color-emerald-pale: #e8f6f2 !important;
+    --color-emerald-light: #ddf2ec !important;
+    --color-emerald-pale: #ddf2ec !important;
     --color-brand-navy: #3f1d14 !important;
     --color-brand-cyan: #6cbfab !important;
-    --color-brand-green: #8bd1c1 !important;
-    --color-button-solid: #3f1d14 !important;
-    --color-button-solid-hover: #5a2a1d !important;
-    --color-orange-accent: #6cbfab !important;
-    --color-orange-light: #e8f6f2 !important;
-    --brand-gradient: linear-gradient(105deg, #3f1d14 0%, #5a2a1d 38%, #6cbfab 100%) !important;
-    --brand-gradient-soft: linear-gradient(135deg, rgba(63, 29, 20, 0.10) 0%, rgba(108, 191, 171, 0.18) 100%) !important;
-    --brand-gradient-hover: linear-gradient(105deg, #2d120c 0%, #4f2419 42%, #79cbb9 100%) !important;
+    --color-brand-green: #ddf2ec !important;
+    --color-button-solid: #ff5a2a !important;
+    --color-button-solid-hover: #3f1d14 !important;
+    --color-orange-accent: #ff5a2a !important;
+    --color-orange-light: #f8f4ef !important;
+    --color-sand-warm: #f8f4ef !important;
+    --color-sand-medium: #ddf2ec !important;
+    --color-charcoal-deep: #181614 !important;
+    --color-charcoal-medium: #3f1d14 !important;
+    --color-charcoal-light: #3f1d14 !important;
+    --color-gray-dark: #181614 !important;
+    --color-gray-medium: #3f1d14 !important;
+    --color-gray-light: #ddf2ec !important;
+    --brand-gradient: #3f1d14 !important;
+    --brand-gradient-soft: #ddf2ec !important;
+    --brand-gradient-hover: #3f1d14 !important;
   }
 
   .top-banner {
@@ -35,18 +43,18 @@ const gradientColorOverride = `
   .gnb-bar,
   .header-container.scrolled .gnb-bar {
     background: rgba(255, 255, 255, 0.96) !important;
-    border-bottom: 1px solid rgba(63, 29, 20, 0.14) !important;
+    border-bottom: 1px solid #ddf2ec !important;
     box-shadow: 0 8px 24px rgba(63, 29, 20, 0.06) !important;
   }
 
   .logo-text,
   .icon-btn,
   .mega-trigger-btn {
-    color: #3f1d14 !important;
+    color: #181614 !important;
   }
 
   .nav-links a {
-    color: #6a493f !important;
+    color: #181614 !important;
   }
 
   .page-hero-banner {
@@ -64,7 +72,7 @@ const gradientColorOverride = `
   .logo-text span,
   .tab-btn.active,
   .tab-btn:hover {
-    color: #3f1d14 !important;
+    color: #6cbfab !important;
   }
 
   .nav-links a::after,
@@ -77,7 +85,7 @@ const gradientColorOverride = `
   }
 
   .menu-btn .bar {
-    background-color: #3f1d14 !important;
+    background-color: #181614 !important;
   }
 
   .map-display,
@@ -87,8 +95,8 @@ const gradientColorOverride = `
 
   .map-graphic-bg {
     background-image:
-      radial-gradient(rgba(108, 191, 171, 0.32) 20%, transparent 20%),
-      radial-gradient(rgba(63, 29, 20, 0.14) 20%, transparent 20%) !important;
+      radial-gradient(#6cbfab 20%, transparent 20%),
+      radial-gradient(#ddf2ec 20%, transparent 20%) !important;
   }
 
   .pulse-marker {
@@ -141,7 +149,7 @@ const gradientColorOverride = `
   .file-type-icon,
   .step-node.done {
     background: var(--brand-gradient-soft) !important;
-    color: #3f1d14 !important;
+    color: #181614 !important;
   }
 
   ::-webkit-scrollbar-thumb {

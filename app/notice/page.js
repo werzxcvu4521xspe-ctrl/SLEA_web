@@ -437,7 +437,7 @@ export default function NoticePage() {
         .notice-pop-page {
           min-height: 100vh;
           background: #ffffff;
-          color: #3f1d14;
+          color: #181614;
           padding-bottom: 96px;
         }
 
@@ -445,7 +445,7 @@ export default function NoticePage() {
           margin-top: 120px;
           background: #3f1d14;
           color: #ffffff;
-          border-bottom: 1px solid #2c2c2c;
+          border-bottom: 1px solid #ddf2ec;
         }
 
         .notice-hero-inner {
@@ -490,7 +490,7 @@ export default function NoticePage() {
         }
 
         .notice-count {
-          color: #b7b7b7;
+          color: #ddf2ec;
           font-size: 13px;
           font-weight: 800;
         }
@@ -506,7 +506,7 @@ export default function NoticePage() {
 
         .notice-pop-hero p {
           max-width: 680px;
-          color: #d7d7d7;
+          color: #ddf2ec;
           font-size: 17px;
           line-height: 1.7;
         }
@@ -529,9 +529,9 @@ export default function NoticePage() {
         }
 
         .pop-primary-btn {
-          background: #6cbfab;
+          background: #ff5a2a;
           color: #ffffff;
-          border: 1px solid #6cbfab;
+          border: 1px solid #ff5a2a;
         }
 
         .pop-line-btn,
@@ -552,12 +552,12 @@ export default function NoticePage() {
 
         .pop-primary-btn:hover {
           background: #3f1d14;
-          border-color: #3f1d14;
+          border-color: #181614;
         }
 
         .notice-pop-hero .pop-primary-btn:hover {
           background: #ffffff;
-          color: #3f1d14;
+          color: #181614;
           border-color: #ffffff;
         }
 
@@ -565,7 +565,7 @@ export default function NoticePage() {
         .modal-close-btn:hover,
         .detail-close-btn:hover {
           background: #ffffff;
-          color: #3f1d14;
+          color: #181614;
           border-color: #ffffff;
         }
 
@@ -582,7 +582,7 @@ export default function NoticePage() {
           display: flex;
           gap: 8px;
           overflow-x: auto;
-          border-bottom: 1px solid #e0e0e0;
+          border-bottom: 1px solid #ddf2ec;
           margin-bottom: 34px;
         }
 
@@ -591,7 +591,7 @@ export default function NoticePage() {
           flex: 0 0 auto;
           padding: 15px 4px 14px;
           margin-right: 28px;
-          color: #6f6f6f;
+          color: #181614;
           font-size: 16px;
           font-weight: 800;
           white-space: nowrap;
@@ -604,14 +604,14 @@ export default function NoticePage() {
           right: 0;
           bottom: -1px;
           height: 2px;
-          background: #3f1d14;
+          background: #6cbfab;
           opacity: 0;
           transition: opacity 0.2s ease;
         }
 
         .notice-chip.active,
         .notice-chip:hover {
-          color: #3f1d14;
+          color: #6cbfab;
         }
 
         .notice-chip.active::after,
@@ -624,7 +624,7 @@ export default function NoticePage() {
           grid-template-columns: 1fr;
           gap: 22px;
           padding-bottom: 42px;
-          border-bottom: 8px solid #f6f6f6;
+          border-bottom: 8px solid #f8f4ef;
           margin-bottom: 40px;
         }
 
@@ -633,7 +633,7 @@ export default function NoticePage() {
           position: relative;
           width: 100%;
           overflow: hidden;
-          background: #f6f6f6;
+          background: #f8f4ef;
         }
 
         .featured-image {
@@ -663,7 +663,7 @@ export default function NoticePage() {
           position: absolute;
           left: 14px;
           top: 14px;
-          background: #6cbfab;
+          background: #ff5a2a;
           color: #ffffff;
           font-size: 12px;
           font-weight: 900;
@@ -687,7 +687,7 @@ export default function NoticePage() {
           width: 100%;
           justify-content: space-between;
           gap: 12px;
-          color: #6f6f6f;
+          color: #181614;
           font-size: 13px;
           font-weight: 800;
         }
@@ -700,12 +700,12 @@ export default function NoticePage() {
           font-size: clamp(30px, 4vw, 54px);
           font-weight: 900;
           line-height: 1.18;
-          color: #3f1d14;
+          color: #181614;
           text-align: left;
         }
 
         .featured-copy p {
-          color: #525252;
+          color: #181614;
           font-size: 16px;
           line-height: 1.75;
         }
@@ -714,7 +714,7 @@ export default function NoticePage() {
           width: 100%;
           justify-content: space-between;
           gap: 16px;
-          color: #8d8d8d;
+          color: #181614;
           font-size: 13px;
           font-weight: 800;
         }
@@ -722,8 +722,8 @@ export default function NoticePage() {
         .text-arrow-btn {
           min-height: auto;
           padding: 0 0 3px;
-          color: #3f1d14;
-          border-bottom: 1px solid #3f1d14;
+          color: #181614;
+          border-bottom: 1px solid #181614;
         }
 
         .notice-content-grid {
@@ -749,7 +749,7 @@ export default function NoticePage() {
         }
 
         .notice-card h3 {
-          color: #3f1d14;
+          color: #181614;
           font-size: 20px;
           font-weight: 900;
           line-height: 1.38;
@@ -757,7 +757,7 @@ export default function NoticePage() {
         }
 
         .notice-card p {
-          color: #525252;
+          color: #181614;
           font-size: 14px;
           line-height: 1.65;
           display: -webkit-box;
@@ -774,7 +774,7 @@ export default function NoticePage() {
 
         .newsletter-box,
         .notice-upload-note {
-          border: 1px solid #e0e0e0;
+          border: 1px solid #ddf2ec;
           background: #ffffff;
           padding: 24px;
         }
@@ -789,7 +789,7 @@ export default function NoticePage() {
         .newsletter-box h3,
         .notice-upload-note strong {
           display: block;
-          color: #3f1d14;
+          color: #181614;
           font-size: 22px;
           font-weight: 900;
           line-height: 1.35;
@@ -798,7 +798,7 @@ export default function NoticePage() {
 
         .notice-upload-note p,
         .subscribe-success {
-          color: #525252;
+          color: #181614;
           font-size: 14px;
           line-height: 1.7;
         }
@@ -817,7 +817,7 @@ export default function NoticePage() {
         .notice-subscribe-form label,
         .notice-field label,
         .upload-controls label {
-          color: #3f1d14;
+          color: #181614;
           font-size: 13px;
           font-weight: 900;
         }
@@ -827,9 +827,9 @@ export default function NoticePage() {
         .notice-field select,
         .notice-field textarea {
           width: 100%;
-          border: 1px solid #e0e0e0;
-          background: #f6f6f6;
-          color: #3f1d14;
+          border: 1px solid #ddf2ec;
+          background: #f8f4ef;
+          color: #181614;
           min-height: 46px;
           padding: 12px;
           font-size: 14px;
@@ -845,14 +845,14 @@ export default function NoticePage() {
         .notice-field input:focus,
         .notice-field select:focus,
         .notice-field textarea:focus {
-          border-color: #3f1d14;
+          border-color: #181614;
           background: #ffffff;
         }
 
         .notice-empty {
-          border: 1px solid #e0e0e0;
-          background: #f6f6f6;
-          color: #525252;
+          border: 1px solid #ddf2ec;
+          background: #f8f4ef;
+          color: #181614;
           padding: 44px 20px;
           text-align: center;
           font-weight: 900;
@@ -876,7 +876,7 @@ export default function NoticePage() {
           max-height: calc(100vh - 40px);
           overflow-y: auto;
           background: #ffffff;
-          color: #3f1d14;
+          color: #181614;
         }
 
         .notice-write-modal {
@@ -888,24 +888,24 @@ export default function NoticePage() {
           gap: 20px;
           padding-bottom: 20px;
           margin-bottom: 22px;
-          border-bottom: 1px solid #e0e0e0;
+          border-bottom: 1px solid #ddf2ec;
         }
 
         .modal-header h2 {
-          color: #3f1d14;
+          color: #181614;
           font-size: 32px;
           font-weight: 900;
         }
 
         .modal-close-btn {
-          color: #3f1d14;
-          border-color: #d7d7d7;
+          color: #181614;
+          border-color: #ddf2ec;
         }
 
         .modal-close-btn:hover {
           background: #3f1d14;
           color: #ffffff;
-          border-color: #3f1d14;
+          border-color: #181614;
         }
 
         .notice-write-form {
@@ -926,8 +926,8 @@ export default function NoticePage() {
           display: grid;
           grid-template-columns: 1fr;
           gap: 16px;
-          border: 1px solid #e0e0e0;
-          background: #f6f6f6;
+          border: 1px solid #ddf2ec;
+          background: #f8f4ef;
           padding: 14px;
         }
 
@@ -953,13 +953,13 @@ export default function NoticePage() {
 
         .upload-controls input {
           width: 100%;
-          border: 1px dashed #bdbdbd;
+          border: 1px dashed #ddf2ec;
           background: #ffffff;
           padding: 12px;
         }
 
         .upload-controls p {
-          color: #6f6f6f;
+          color: #181614;
           font-size: 13px;
           line-height: 1.5;
         }
@@ -972,7 +972,7 @@ export default function NoticePage() {
         .pin-toggle input {
           width: 16px;
           height: 16px;
-          accent-color: #6cbfab;
+          accent-color: #ff5a2a;
         }
 
         .notice-detail-modal {
@@ -998,20 +998,20 @@ export default function NoticePage() {
         }
 
         .detail-copy h2 {
-          color: #3f1d14;
+          color: #181614;
           font-size: clamp(28px, 4vw, 52px);
           font-weight: 900;
           line-height: 1.16;
         }
 
         .detail-author {
-          color: #8d8d8d;
+          color: #181614;
           font-size: 13px;
           font-weight: 900;
         }
 
         .detail-body {
-          color: #383838;
+          color: #181614;
           font-size: 16px;
           line-height: 1.85;
           white-space: pre-line;

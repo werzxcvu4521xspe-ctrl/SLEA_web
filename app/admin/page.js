@@ -1023,7 +1023,7 @@ export default function AdminPage() {
                       <div key={reg.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px', background: 'var(--color-sand-light)', borderRadius: '4px' }}>
                         <div>
                           <strong style={{ fontSize: '14.5px', color: 'var(--color-charcoal-deep)' }}>{reg.brand}</strong>
-                          <span style={{ fontSize: '12px', color: '#666', marginLeft: '10px' }}>대표: {reg.name} ({reg.category})</span>
+                          <span style={{ fontSize: '12px', color: '#181614', marginLeft: '10px' }}>대표: {reg.name} ({reg.category})</span>
                         </div>
                         <span style={{ fontSize: '12px', color: reg.feePaid ? 'var(--color-emerald-deep)' : 'var(--color-orange-accent)', fontWeight: '800' }}>
                           {reg.feePaid ? '납부 확인됨' : '미납(확인중)'}
@@ -1032,7 +1032,7 @@ export default function AdminPage() {
                     ))}
                   </div>
                 ) : (
-                  <p style={{ color: '#888', fontSize: '13.5px' }}>승인 처리 대기 중인 회원이 없습니다.</p>
+                  <p style={{ color: '#3f1d14', fontSize: '13.5px' }}>승인 처리 대기 중인 회원이 없습니다.</p>
                 )}
               </div>
 
@@ -1127,7 +1127,7 @@ export default function AdminPage() {
                 </table>
               </div>
             ) : (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: '#888' }}>
+              <div style={{ textAlign: 'center', padding: '60px 0', color: '#3f1d14' }}>
                 <span style={{ fontSize: '40px' }}>🎉</span>
                 <p style={{ marginTop: '12px', fontWeight: '700' }}>모든 정회원 신청 승인 심사가 완료되었습니다!</p>
               </div>
@@ -1352,7 +1352,7 @@ export default function AdminPage() {
                 </table>
               </div>
             ) : (
-              <div style={{ textAlign: 'center', padding: '70px 20px', color: '#888' }}>
+              <div style={{ textAlign: 'center', padding: '70px 20px', color: '#3f1d14' }}>
                 <span style={{ fontSize: '44px' }}>📭</span>
                 <p style={{ marginTop: '12px', fontWeight: '800', color: 'var(--color-charcoal-deep)' }}>
                   아직 접수된 멘토링 신청이 없습니다.
@@ -1633,7 +1633,7 @@ export default function AdminPage() {
                     >
                       <div>
                         <strong style={{ fontSize: '15px' }}>{cat.name}</strong>
-                        <span style={{ fontSize: '12px', color: '#888', marginLeft: '10px' }}>({cat.code})</span>
+                        <span style={{ fontSize: '12px', color: '#3f1d14', marginLeft: '10px' }}>({cat.code})</span>
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                         <span style={{ fontSize: '13px', fontWeight: '800', color: 'var(--color-emerald-medium)' }}>
@@ -1716,7 +1716,7 @@ export default function AdminPage() {
                     <button 
                       type="button" 
                       className="subscribe-btn" 
-                      style={{ height: '36px', fontSize: '12px', padding: '0 16px', borderRadius: '4px', background: '#aaa' }}
+                      style={{ height: '36px', fontSize: '12px', padding: '0 16px', borderRadius: '4px', background: '#ddf2ec' }}
                       onClick={() => alert('Supabase 연결 검증을 재개합니다.')}
                     >
                       커넥션 헬스 체크
@@ -1890,12 +1890,12 @@ export default function AdminPage() {
         }
 
         .sim-btn.reset {
-          background-color: #f1f1f1;
-          color: #666;
+          background-color: #f8f4ef;
+          color: #181614;
         }
 
         .sim-btn.reset:hover {
-          background-color: #ddd;
+          background-color: #ddf2ec;
         }
 
         /* Main Content Container */
@@ -2257,12 +2257,12 @@ export default function AdminPage() {
         }
 
         .action-btn.reject:hover:not(:disabled) {
-          background-color: #e54c1c;
+          background-color: #ff5a2a;
         }
 
         .action-btn.disabled {
           background-color: var(--color-sand-medium) !important;
-          color: #999 !important;
+          color: #3f1d14 !important;
           cursor: not-allowed;
           opacity: 0.8;
         }

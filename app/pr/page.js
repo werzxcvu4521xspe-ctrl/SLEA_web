@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 const STORIES = [
@@ -25,19 +25,14 @@ function PRContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get('tab') || 'intro';
-  const [activeTab, setActiveTab] = useState(tabParam);
+  const activeTab = tabParam;
 
   // Active Story modal / detail
   const [selectedStory, setSelectedStory] = useState(null);
   // Video player modal
   const [playingVideo, setPlayingVideo] = useState(null);
 
-  useEffect(() => {
-    setActiveTab(tabParam);
-  }, [tabParam]);
-
   const handleTabChange = (tabName) => {
-    setActiveTab(tabName);
     router.push(`/pr?tab=${tabName}`, { scroll: false });
   };
 
@@ -195,7 +190,7 @@ function PRContent() {
                     <div className="shorts-play-btn">▶</div>
                     <div className="shorts-overlay-gradient">
                       <h4 style={{ fontSize: '13px', fontWeight: '800', lineHeight: '1.4', marginBottom: '4px' }}>{short.title}</h4>
-                      <span style={{ fontSize: '11px', color: '#ccc' }}>👀 {short.views}</span>
+                      <span style={{ fontSize: '11px', color: '#ddf2ec' }}>👀 {short.views}</span>
                     </div>
                   </div>
                 ))}
@@ -207,21 +202,21 @@ function PRContent() {
               <div className="write-form-overlay" onClick={() => setPlayingVideo(null)}>
                 <div 
                   className="glass-panel animate-fade-in" 
-                  style={{ maxWidth: '800px', width: '100%', padding: '0', overflow: 'hidden', background: '#000', border: 'none', position: 'relative' }}
+                  style={{ maxWidth: '800px', width: '100%', padding: '0', overflow: 'hidden', background: '#3f1d14', border: 'none', position: 'relative' }}
                   onClick={e => e.stopPropagation()}
                 >
                   <button 
                     type="button" 
-                    style={{ position: 'absolute', right: '16px', top: '16px', fontSize: '24px', color: '#fff', zIndex: 10 }}
+                    style={{ position: 'absolute', right: '16px', top: '16px', fontSize: '24px', color: '#ffffff', zIndex: 10 }}
                     onClick={() => setPlayingVideo(null)}
                   >
                     ✕
                   </button>
-                  <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: '#111' }}>
-                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', gap: '12px' }}>
+                  <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: '#3f1d14' }}>
+                    <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#ffffff', gap: '12px' }}>
                       <span style={{ fontSize: '32px' }}>🎬</span>
                       <h3>{playingVideo.title}</h3>
-                      <p style={{ fontSize: '13px', color: '#aaa' }}>[샘플 동영상 임베드 영역 - 실제 운영 시 YouTube iframe 연동]</p>
+                      <p style={{ fontSize: '13px', color: '#ddf2ec' }}>[샘플 동영상 임베드 영역 - 실제 운영 시 YouTube iframe 연동]</p>
                     </div>
                   </div>
                 </div>

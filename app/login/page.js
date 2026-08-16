@@ -81,7 +81,7 @@ export default function LoginPage() {
             <Link href="/find-auth?tab=id" className="auth-redirect-link" style={{ fontSize: '12px', color: 'var(--color-gray-dark)', textDecoration: 'none' }}>
               아이디 찾기
             </Link>
-            <span style={{ color: '#ccc', fontSize: '12px' }}>|</span>
+            <span style={{ color: '#ddf2ec', fontSize: '12px' }}>|</span>
             <Link href="/find-auth?tab=password" className="auth-redirect-link" style={{ fontSize: '12px', color: 'var(--color-gray-dark)', textDecoration: 'none' }}>
               비밀번호 재설정
             </Link>
@@ -157,9 +157,9 @@ export default function LoginPage() {
                 padding: '8px',
                 fontSize: '12px',
                 fontWeight: '700',
-                background: '#f1f1f1',
-                color: '#555',
-                border: '1px solid #ddd',
+                background: '#f8f4ef',
+                color: '#181614',
+                border: '1px solid #ddf2ec',
                 borderRadius: '4px',
                 cursor: 'pointer'
               }}

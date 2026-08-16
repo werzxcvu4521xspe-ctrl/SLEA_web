@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
@@ -20,7 +20,7 @@ function MembersContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get('tab') || 'register';
-  const [activeTab, setActiveTab] = useState(tabParam);
+  const activeTab = tabParam;
   const [userRole, setUserRole] = useState(null);
   const [checkingAuth, setCheckingAuth] = useState(true);
 
@@ -57,7 +57,6 @@ function MembersContent() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedType, setSelectedType] = useState('All');
   const [selectedRegion, setSelectedRegion] = useState('All');
-  const [filteredMembers, setFilteredMembers] = useState(INITIAL_MEMBERS);
 
   // Form State
   const [formStep, setFormStep] = useState(1);
@@ -65,17 +64,11 @@ function MembersContent() {
   const [brand, setBrand] = useState('');
   const [collab, setCollab] = useState('');
 
-  useEffect(() => {
-    setActiveTab(tabParam);
-  }, [tabParam]);
-
   const handleTabChange = (tabName) => {
-    setActiveTab(tabName);
     router.push(`/members?tab=${tabName}`, { scroll: false });
   };
 
-  // Run filtering
-  useEffect(() => {
+  const filteredMembers = useMemo(() => {
     let result = INITIAL_MEMBERS;
 
     if (searchQuery.trim() !== '') {
@@ -95,7 +88,7 @@ function MembersContent() {
       result = result.filter(m => m.region === selectedRegion);
     }
 
-    setFilteredMembers(result);
+    return result;
   }, [searchQuery, selectedType, selectedRegion]);
 
   if (checkingAuth) {
@@ -119,7 +112,7 @@ function MembersContent() {
           <Link href="/login" className="subscribe-btn" style={{ padding: '12px 28px', height: 'auto', borderRadius: '4px', textDecoration: 'none', display: 'inline-block' }}>
             관리자 계정으로 로그인 ➔
           </Link>
-          <Link href="/" className="subscribe-btn" style={{ padding: '12px 28px', height: 'auto', borderRadius: '4px', textDecoration: 'none', background: '#aaa', display: 'inline-block' }}>
+          <Link href="/" className="subscribe-btn" style={{ padding: '12px 28px', height: 'auto', borderRadius: '4px', textDecoration: 'none', background: '#ddf2ec', display: 'inline-block' }}>
             홈으로 돌아가기
           </Link>
         </div>
@@ -267,7 +260,7 @@ function MembersContent() {
                       <button 
                         type="button" 
                         className="subscribe-btn" 
-                        style={{ background: '#aaa', flex: 1 }} 
+                        style={{ background: '#ddf2ec', flex: 1 }} 
                         onClick={() => setFormStep(1)}
                       >
                         이전
@@ -289,7 +282,7 @@ function MembersContent() {
                     <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)' }}>3단계: 입회비 확인 및 완료</h3>
                     <p style={{ fontSize: '14.5px', color: 'var(--color-gray-dark)', lineHeight: '1.6' }}>
                       정회원 등록을 마치시려면 아래 계좌로 입회비를 납부해 주시기 바랍니다. <br />
-                      납부 시 입금자명은 <strong>"신청인명+브랜드명"</strong>으로 해주시면 빠른 확인이 가능합니다.
+                      납부 시 입금자명은 <strong>&quot;신청인명+브랜드명&quot;</strong>으로 해주시면 빠른 확인이 가능합니다.
                     </p>
                     <div style={{ background: 'var(--color-sand-light)', padding: '16px', borderRadius: '4px', fontSize: '14px', border: '1px solid var(--color-gray-light)' }}>
                       <strong>우리은행 1005-901-223456</strong><br />
