@@ -60,7 +60,7 @@ export default function MapWidget({ address, companyName }) {
           position: relative;
           width: 100%;
           height: 180px;
-          background: var(--brand-gradient-soft);
+          background: var(--brand-soft);
           overflow: hidden;
         }
 
@@ -68,11 +68,7 @@ export default function MapWidget({ address, companyName }) {
         .map-placeholder-bg {
           width: 100%;
           height: 100%;
-          background-image: 
-            radial-gradient(var(--color-emerald-pale) 20%, transparent 20%),
-            radial-gradient(var(--color-emerald-pale) 20%, transparent 20%);
-          background-size: 20px 20px;
-          background-position: 0 0, 10px 10px;
+          background-color: var(--brand-soft);
           display: flex;
           align-items: center;
           justify-content: center;

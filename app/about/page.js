@@ -94,7 +94,7 @@ export default function AboutPage() {
                 ['역량 강화', '전문가 멘토링, 브랜딩 및 AI 기술 교육을 통해 로컬 브랜드의 경쟁력을 높입니다.'],
                 ['정책 제안', '행정 및 공공기관과 협력하고 현장의 목소리를 반영한 창업 지원 정책을 건의합니다.']
               ].map(([title, desc]) => (
-                <div key={title} style={{ padding: '22px', background: 'var(--brand-gradient-soft)', borderRadius: 'var(--border-radius-md)' }}>
+                <div key={title} style={{ padding: '22px', background: 'var(--brand-soft)', borderRadius: 'var(--border-radius-md)' }}>
                   <h4 style={{ color: 'var(--color-emerald-deep)', marginBottom: '8px' }}>{title}</h4>
                   <p style={{ fontSize: '14px', color: 'var(--color-gray-dark)', lineHeight: '1.65' }}>{desc}</p>
                 </div>
@@ -106,13 +106,13 @@ export default function AboutPage() {
             <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
               <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '12px' }}>협회 미션 (Mission)</h3>
               <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--color-gray-dark)' }}>
-                "세종 로컬 창업가의 목소리를 대변하고, 상생 발전하는 자생적 생태계를 완성하여 로컬을 넘어 세계적인 브랜드로 성장할 수 있는 디딤돌이 된다."
+                &quot;세종 로컬 창업가의 목소리를 대변하고, 상생 발전하는 자생적 생태계를 완성하여 로컬을 넘어 세계적인 브랜드로 성장할 수 있는 디딤돌이 된다.&quot;
               </p>
             </div>
             <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
               <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '12px' }}>협회 비전 (Vision)</h3>
               <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--color-gray-dark)' }}>
-                "대한민국 행정의 중심 세종을 넘어, 로컬 크리에이티브의 허브이자 세계 속의 매력적인 로컬 창업 강소 도시로 도약한다."
+                &quot;대한민국 행정의 중심 세종을 넘어, 로컬 크리에이티브의 허브이자 세계 속의 매력적인 로컬 창업 강소 도시로 도약한다.&quot;
               </p>
             </div>
           </div>

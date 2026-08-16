@@ -107,12 +107,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, var(--color-emerald-deep) 0%, var(--color-brand-green) 100%);
+  background: var(--color-emerald-deep);
   border-radius: var(--border-radius-full);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, var(--color-emerald-medium) 0%, var(--color-brand-green) 100%);
+  background: var(--color-brand-navy);
 }
 
 /* Right Side Scroll Navigator */
@@ -290,10 +290,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-family-condensed);
   font-size: 34px;
   line-height: 1;
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--color-emerald-deep);
 }
 
 .home-stat-item span {
@@ -440,7 +437,7 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: space-between;
   align-items: flex-start;
   padding: 50px;
-  background: var(--brand-gradient);
+  background: var(--brand-solid);
   color: var(--color-sand-warm);
   border: none;
   gap: 30px;
@@ -750,6 +747,14 @@ h1, h2, h3, h4, h5, h6 {
   align-items: flex-end;
   padding-bottom: 60px;
   color: var(--color-white);
+  position: relative;
+  overflow: hidden;
+}
+
+.detail-hero-tint {
+  position: absolute;
+  inset: 0;
+  background: rgba(63, 29, 20, 0.66);
 }
 
 .hero-content {
@@ -758,6 +763,8 @@ h1, h2, h3, h4, h5, h6 {
   align-items: flex-start;
   gap: 12px;
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .back-link {
@@ -963,11 +970,7 @@ h1, h2, h3, h4, h5, h6 {
 .map-graphic-bg {
   flex-grow: 1;
   position: relative;
-  background-image: 
-    radial-gradient(#6cbfab 20%, transparent 20%),
-    radial-gradient(#f8f4ef 20%, transparent 20%);
-  background-size: 30px 30px;
-  background-position: 0 0, 15px 15px;
+  background-color: #ddf2ec;
 }
 
 .map-landmark {
@@ -1200,7 +1203,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Common Page Banner Styles */
 .page-hero-banner {
-  background: var(--brand-gradient);
+  background: var(--brand-solid);
   color: var(--color-sand-warm);
   padding: 80px 0 60px 0;
   position: relative;
@@ -1209,16 +1212,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .page-hero-banner::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 300px;
-  height: 300px;
-  background:
-    radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 64%),
-    radial-gradient(circle at 78% 16%, rgba(0, 191, 99, 0.2) 0%, transparent 72%);
-  pointer-events: none;
+  display: none;
 }
 
 .page-hero-title {
@@ -1447,7 +1441,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .progress-bar-fill {
   height: 100%;
-  background: linear-gradient(90deg, var(--color-emerald-medium) 0%, var(--color-orange-accent) 100%);
+  background: var(--color-orange-accent);
   border-radius: var(--border-radius-full);
 }
 
@@ -1480,10 +1474,10 @@ h1, h2, h3, h4, h5, h6 {
   transform: scale(1.05);
 }
 
-.shorts-overlay-gradient {
+.shorts-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 60%);
+  background: rgba(24, 22, 20, 0.72);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1640,7 +1634,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .top-banner {
   height: var(--banner-height);
-  background: var(--brand-gradient);
+  background: var(--brand-solid);
   color: var(--color-white);
   display: flex;
   align-items: center;

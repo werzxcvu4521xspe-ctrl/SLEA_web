@@ -73,8 +73,9 @@ export default function HeroSlider() {
           <SwiperSlide key={slide.id}>
             <div 
               className="slide-bg"
-              style={{ backgroundImage: `linear-gradient(105deg, rgba(17,50,116,0.94) 0%, rgba(20,86,200,0.8) 42%, rgba(8,167,216,0.56) 68%, rgba(0,191,99,0.42) 100%), url(${slide.image})` }}
+              style={{ backgroundImage: `url(${slide.image})` }}
             >
+              <div className="slide-tint" aria-hidden="true" />
               <div className="slide-content container">
                 <span className="slide-category en-title">{slide.category}</span>
                 <h2 className="slide-title">{slide.title}</h2>
@@ -137,13 +138,22 @@ export default function HeroSlider() {
           height: 100%;
           background-size: cover;
           background-position: center;
+          position: relative;
           display: flex;
           align-items: flex-end;
           padding-bottom: 80px;
         }
 
+        .slide-tint {
+          position: absolute;
+          inset: 0;
+          background: rgba(63, 29, 20, 0.66);
+        }
+
         .slide-content {
           color: var(--color-white);
+          position: relative;
+          z-index: 1;
           max-width: 800px;
           margin-left: auto;
           margin-right: auto;

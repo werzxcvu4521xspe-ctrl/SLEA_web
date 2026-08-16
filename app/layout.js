@@ -10,7 +10,7 @@ const notoSansKr = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
 });
 
-const gradientColorOverride = `
+const paletteOverride = `
   :root {
     --color-emerald-deep: #6cbfab !important;
     --color-emerald-medium: #6cbfab !important;
@@ -31,13 +31,13 @@ const gradientColorOverride = `
     --color-gray-dark: #181614 !important;
     --color-gray-medium: #3f1d14 !important;
     --color-gray-light: #ddf2ec !important;
-    --brand-gradient: #3f1d14 !important;
-    --brand-gradient-soft: #ddf2ec !important;
-    --brand-gradient-hover: #3f1d14 !important;
+    --brand-solid: #3f1d14 !important;
+    --brand-soft: #ddf2ec !important;
+    --brand-solid-hover: #3f1d14 !important;
   }
 
   .top-banner {
-    background: var(--brand-gradient) !important;
+    background: var(--brand-solid) !important;
   }
 
   .gnb-bar,
@@ -58,13 +58,11 @@ const gradientColorOverride = `
   }
 
   .page-hero-banner {
-    background: var(--brand-gradient) !important;
+    background: var(--brand-solid) !important;
   }
 
   .page-hero-banner::after {
-    background:
-      radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, transparent 62%),
-      radial-gradient(circle at 80% 20%, rgba(108, 191, 171, 0.28) 0%, transparent 70%) !important;
+    display: none !important;
   }
 
   .nav-links a:hover,
@@ -81,7 +79,7 @@ const gradientColorOverride = `
   }
 
   .nav-links a::after {
-    background: var(--brand-gradient) !important;
+    background: var(--color-emerald-deep) !important;
   }
 
   .menu-btn .bar {
@@ -90,13 +88,12 @@ const gradientColorOverride = `
 
   .map-display,
   .map-visual-box {
-    background: var(--brand-gradient-soft) !important;
+    background: var(--brand-soft) !important;
   }
 
   .map-graphic-bg {
-    background-image:
-      radial-gradient(#6cbfab 20%, transparent 20%),
-      radial-gradient(#ddf2ec 20%, transparent 20%) !important;
+    background-image: none !important;
+    background-color: #ddf2ec !important;
   }
 
   .pulse-marker {
@@ -142,18 +139,18 @@ const gradientColorOverride = `
 
   .promo-inner,
   .mega-menu-overlay {
-    background: var(--brand-gradient) !important;
+    background: var(--brand-solid) !important;
   }
 
   .badge-emerald,
   .file-type-icon,
   .step-node.done {
-    background: var(--brand-gradient-soft) !important;
+    background: var(--brand-soft) !important;
     color: #181614 !important;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, #3f1d14 0%, #6cbfab 100%) !important;
+    background: #6cbfab !important;
   }
 `;
 
@@ -172,7 +169,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="ko" className={notoSansKr.variable}>
       <body style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-        <style dangerouslySetInnerHTML={{ __html: gradientColorOverride }} />
+        <style dangerouslySetInnerHTML={{ __html: paletteOverride }} />
         <Navigation />
         <main style={{ flex: 1, display: "flex", flexDirection: "column" }}>
           {children}

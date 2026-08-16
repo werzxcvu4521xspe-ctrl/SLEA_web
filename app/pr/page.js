@@ -188,7 +188,7 @@ function PRContent() {
                   >
                     <div className="shorts-bg-image" style={{ backgroundImage: `url("${short.img}")` }} />
                     <div className="shorts-play-btn">▶</div>
-                    <div className="shorts-overlay-gradient">
+                    <div className="shorts-overlay">
                       <h4 style={{ fontSize: '13px', fontWeight: '800', lineHeight: '1.4', marginBottom: '4px' }}>{short.title}</h4>
                       <span style={{ fontSize: '11px', color: '#ddf2ec' }}>👀 {short.views}</span>
                     </div>
