@@ -93,7 +93,8 @@ export default function HeroSlider() {
         .hero-slider-wrapper {
           position: relative;
           width: 100%;
-          height: 640px;
+          height: clamp(520px, calc(100svh - var(--header-height) - var(--banner-height)), 640px);
+          min-height: 520px;
           overflow: hidden;
           background-color: var(--color-charcoal-medium);
         }
@@ -140,8 +141,8 @@ export default function HeroSlider() {
           background-position: center;
           position: relative;
           display: flex;
-          align-items: flex-end;
-          padding-bottom: 80px;
+          align-items: center;
+          padding: 72px 0;
         }
 
         .slide-tint {
@@ -154,7 +155,7 @@ export default function HeroSlider() {
           color: var(--color-white);
           position: relative;
           z-index: 1;
-          max-width: 800px;
+          max-width: 900px;
           margin-left: auto;
           margin-right: auto;
           text-align: left;
@@ -186,7 +187,7 @@ export default function HeroSlider() {
 
         @media (min-width: 768px) {
           .slide-title {
-            font-size: 44px;
+            font-size: 40px;
           }
         }
 
@@ -246,9 +247,9 @@ export default function HeroSlider() {
 
           .slide-bg {
             height: auto !important;
-            min-height: 360px;
-            align-items: flex-end;
-            padding: 70px 0 34px;
+            min-height: 420px;
+            align-items: center;
+            padding: 48px 0 38px;
             background-position: center;
           }
 
