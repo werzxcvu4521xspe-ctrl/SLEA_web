@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 const MENTORING_STORAGE_KEY = 'sejong_mentoring_requests';
@@ -9,7 +9,7 @@ function ActivitiesContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get('tab') || 'seroday';
-  const activeTab = tabParam;
+  const [activeTab, setActiveTab] = useState(tabParam);
 
   // Mentoring Form State
   const [mentorType, setMentorType] = useState('professor');
@@ -17,7 +17,12 @@ function ActivitiesContent() {
   const [mentorDesc, setMentorDesc] = useState('');
   const [mentorSubmitted, setMentorSubmitted] = useState(false);
 
+  useEffect(() => {
+    setActiveTab(tabParam);
+  }, [tabParam]);
+
   const handleTabChange = (tabName) => {
+    setActiveTab(tabName);
     router.push(`/activities?tab=${tabName}`, { scroll: false });
   };
 
@@ -156,7 +161,7 @@ function ActivitiesContent() {
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {seroReviews.map((rev, i) => (
                   <div key={i} style={{ padding: '20px', borderLeft: '4px solid var(--color-orange-accent)', background: 'var(--color-sand-light)', borderRadius: '0 var(--border-radius-md) var(--border-radius-md) 0' }}>
-                    <h4 style={{ fontSize: '15px', fontWeight: '800', marginBottom: '4px' }}>&quot;{rev.title}&quot;</h4>
+                    <h4 style={{ fontSize: '15px', fontWeight: '800', marginBottom: '4px' }}>"{rev.title}"</h4>
                     <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.6', marginBottom: '8px' }}>{rev.text}</p>
                     <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-emerald-medium)' }}>{rev.author}</span>
                   </div>
@@ -253,7 +258,7 @@ function ActivitiesContent() {
                 <div key={i} className="glass-panel" style={{ padding: '24px', backgroundColor: 'var(--color-white)', display: 'flex', flexDirection: 'column', justifyPath: 'space-between' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
                     <span className="badge badge-emerald">{edu.type}</span>
-                    <span className={`badge ${edu.status === '모집중' ? 'badge-apply' : ''}`} style={{ background: edu.status === '마감' ? '#ddf2ec' : '', color: edu.status === '마감' ? '#181614' : '' }}>
+                    <span className={`badge ${edu.status === '모집중' ? 'badge-apply' : ''}`} style={{ background: edu.status === '마감' ? '#ddd' : '', color: edu.status === '마감' ? '#555' : '' }}>
                       {edu.status}
                     </span>
                   </div>
@@ -264,7 +269,7 @@ function ActivitiesContent() {
                   <button 
                     type="button" 
                     className="subscribe-btn" 
-                    style={{ width: '100%', padding: '10px 0', height: 'auto', borderRadius: '4px', background: edu.status === '마감' ? '#ddf2ec' : '', cursor: edu.status === '마감' ? 'not-allowed' : 'pointer' }}
+                    style={{ width: '100%', padding: '10px 0', height: 'auto', borderRadius: '4px', background: edu.status === '마감' ? '#aaa' : '', cursor: edu.status === '마감' ? 'not-allowed' : 'pointer' }}
                     disabled={edu.status === '마감'}
                     onClick={() => alert(`"${edu.title}" 교육 신청 페이지로 이동합니다.`)}
                   >

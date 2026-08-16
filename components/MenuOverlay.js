@@ -127,7 +127,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           left: 0;
           width: 100vw;
           height: calc(100vh - var(--banner-height) - var(--header-height));
-          background: #3f1d14;
+          background: #141414;
           backdrop-filter: var(--glass-blur);
           z-index: 999;
           display: flex;
@@ -183,7 +183,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
 
         .mobile-category-link:hover,
         .mobile-category-link:focus-visible {
-          color: var(--color-emerald-medium);
+          color: var(--color-orange-accent);
           transform: translateX(4px);
         }
 

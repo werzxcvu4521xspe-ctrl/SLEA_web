@@ -432,7 +432,7 @@ export default function SeroServicePage({ slug }) {
           display: inline-flex;
           align-items: center;
           justify-content: center;
-          background: var(--brand-soft);
+          background: var(--brand-gradient-soft);
           color: var(--color-emerald-deep);
           border-radius: 50%;
           font-weight: 900;
@@ -559,7 +559,7 @@ export default function SeroServicePage({ slug }) {
         .topic-list button {
           min-height: 34px;
           padding: 0 12px;
-          background: var(--brand-soft);
+          background: var(--brand-gradient-soft);
           color: var(--color-emerald-deep);
           font-size: 13px;
           font-weight: 900;

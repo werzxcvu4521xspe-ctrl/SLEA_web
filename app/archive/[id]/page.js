@@ -205,9 +205,8 @@ export default async function ArchiveDetailPage({ params }) {
     <div className="detail-page-wrapper">
       <div 
         className="detail-hero-banner"
-        style={{ backgroundImage: `url(${archive.image_url})` }}
+        style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url(${archive.image_url})` }}
       >
-        <div className="detail-hero-tint" aria-hidden="true" />
         <div className="container hero-content">
           <Link href="/archive" className="back-link">← 아카이브 목록으로</Link>
           <span className="category-tag en-title">{archive.category}</span>
