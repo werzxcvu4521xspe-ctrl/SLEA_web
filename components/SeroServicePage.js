@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { SERVICE_CATEGORIES, getServiceCategory } from '@/lib/serviceCategories';
 
@@ -13,9 +13,36 @@ const scheduleItems = [
 ];
 
 const memberContents = [
-  { brand: '밀마루 베이커리', type: 'Interview', title: '쌀빵으로 세종의 아침을 굽는 방법', channel: 'YouTube · Reels' },
-  { brand: '공방 세종', type: 'Shorts', title: '흙과 도시가 만나는 로컬 공예 루틴', channel: 'Instagram · Shorts' },
-  { brand: '조치원 브루어리', type: 'Story', title: '100년 양조장에 새 브랜드를 입히다', channel: 'Blog · YouTube' }
+  {
+    id: 'member-milmaru',
+    brand: '밀마루 베이커리',
+    type: '인터뷰 영상',
+    title: '쌀빵으로 세종의 아침을 굽는 방법',
+    channel: 'YouTube',
+    url: 'https://www.youtube.com/',
+    story: '세종 쌀로 만든 쌀식빵과 친환경 효모종을 연구하는 로컬 베이커리 이야기입니다.',
+    mediaKind: 'video'
+  },
+  {
+    id: 'member-craft',
+    brand: '공방 세종',
+    type: 'Instagram Reels',
+    title: '흙과 도시가 만나는 로컬 공예 루틴',
+    channel: 'Instagram',
+    url: 'https://www.instagram.com/reels/',
+    story: '제작 과정과 작업실 풍경을 짧은 릴스 콘텐츠로 소개합니다.',
+    mediaKind: 'instagram'
+  },
+  {
+    id: 'member-brewery',
+    brand: '조치원 브루어리',
+    type: 'Instagram 게시물',
+    title: '100년 양조장에 새 브랜드를 입히다',
+    channel: 'Instagram',
+    url: 'https://www.instagram.com/',
+    story: '오래된 지역 자산을 현대적인 브랜드 경험으로 다시 연결하는 사례입니다.',
+    mediaKind: 'instagram'
+  }
 ];
 
 const products = [
@@ -39,8 +66,21 @@ const initialTalkPosts = [
 
 function saveItem(key, item) {
   const storageKey = `${STORAGE_PREFIX}${key}`;
-  const previous = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  const previous = readItems(key);
   localStorage.setItem(storageKey, JSON.stringify([item, ...previous]));
+}
+
+function readItems(key) {
+  if (typeof window === 'undefined') {
+    return [];
+  }
+
+  try {
+    const parsed = JSON.parse(localStorage.getItem(`${STORAGE_PREFIX}${key}`) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
 }
 
 export default function SeroServicePage({ slug }) {
@@ -51,6 +91,19 @@ export default function SeroServicePage({ slug }) {
   const [talkPosts, setTalkPosts] = useState(initialTalkPosts);
   const [talkType, setTalkType] = useState('자유 게시판');
   const [aiDraft, setAiDraft] = useState(null);
+  const [memberPosts, setMemberPosts] = useState(memberContents);
+  const [memberMediaFileName, setMemberMediaFileName] = useState('');
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      const savedMemberPosts = readItems('sero-members');
+      if (savedMemberPosts.length > 0) {
+        setMemberPosts([...savedMemberPosts, ...memberContents]);
+      }
+    }, 0);
+
+    return () => window.clearTimeout(timer);
+  }, []);
 
   const cartTotal = useMemo(() => (
     cart.reduce((sum, item) => sum + item.price, 0)
@@ -60,7 +113,7 @@ export default function SeroServicePage({ slug }) {
     const counts = {
       notice: 2,
       'sero-day': scheduleItems.length,
-      'sero-members': memberContents.length,
+      'sero-members': memberPosts.length,
       'sero-ai-start': supportPrograms.length,
       'mentoring-day': 6,
       'sero-shop': products.length,
@@ -68,7 +121,7 @@ export default function SeroServicePage({ slug }) {
     };
 
     return counts[slug] || 0;
-  }, [slug, talkPosts.length]);
+  }, [slug, memberPosts.length, talkPosts.length]);
 
   if (!category) {
     return null;
@@ -119,6 +172,51 @@ export default function SeroServicePage({ slug }) {
     saveItem('sero-talk', post);
     setSubmitted('세로 토크 글이 등록되었습니다.');
     setFormState({});
+  };
+
+  const uploadMemberMedia = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setFormState((prev) => ({
+        ...prev,
+        mediaDataUrl: reader.result,
+        mediaFileType: file.type
+      }));
+      setMemberMediaFileName(file.name);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const createMemberContent = (event) => {
+    event.preventDefault();
+    const brand = formState.brand?.trim() || '회원사';
+    const type = formState.contentType || '인터뷰 영상';
+    const isInstagram = type.includes('Instagram');
+    const item = {
+      id: `member-${Date.now()}`,
+      brand,
+      type,
+      title: formState.title?.trim() || `${brand} 콘텐츠`,
+      channel: isInstagram ? 'Instagram' : (formState.url ? '영상 링크' : '업로드 영상'),
+      url: formState.url?.trim() || '',
+      story: formState.story?.trim() || '회원사의 브랜드 이야기를 소개합니다.',
+      mediaKind: isInstagram ? 'instagram' : 'video',
+      mediaDataUrl: formState.mediaDataUrl || '',
+      mediaFileType: formState.mediaFileType || '',
+      createdAt: new Date().toISOString()
+    };
+
+    setMemberPosts([item, ...memberPosts]);
+    saveItem('sero-members', item);
+    setSubmitted('회원사 콘텐츠가 등록되었습니다.');
+    setFormState({});
+    setMemberMediaFileName('');
+    window.setTimeout(() => setSubmitted(''), 2400);
   };
 
   return (
@@ -199,21 +297,46 @@ export default function SeroServicePage({ slug }) {
             <div className="service-panel">
               <h3>회원사 콘텐츠 큐레이션</h3>
               <div className="content-card-list">
-                {memberContents.map((item) => (
-                  <article key={item.title}>
+                {memberPosts.map((item) => (
+                  <article key={item.id || item.title}>
                     <span>{item.type}</span>
                     <strong>{item.title}</strong>
                     <p>{item.brand} · {item.channel}</p>
+                    {item.mediaDataUrl && item.mediaFileType?.startsWith('video/') && (
+                      <video className="member-video-preview" src={item.mediaDataUrl} controls playsInline />
+                    )}
+                    {item.mediaKind === 'instagram' && item.url && (
+                      <a className="member-link-preview" href={item.url} target="_blank" rel="noreferrer">
+                        Instagram 콘텐츠 열기 ↗
+                      </a>
+                    )}
+                    {item.mediaKind !== 'instagram' && item.url && (
+                      <a className="member-link-preview" href={item.url} target="_blank" rel="noreferrer">
+                        영상 원본 열기 ↗
+                      </a>
+                    )}
+                    <p className="member-story">{item.story}</p>
                   </article>
                 ))}
               </div>
             </div>
-            <form className="service-panel service-form" onSubmit={(event) => submitLocalForm(event, 'sero-members', '회원사 콘텐츠 제보가 저장되었습니다.')}>
-              <h3>인터뷰/SNS 콘텐츠 제보</h3>
+            <form className="service-panel service-form" onSubmit={createMemberContent}>
+              <h3>인터뷰/SNS 콘텐츠 등록</h3>
+              <select value={formState.contentType || '인터뷰 영상'} onChange={(e) => updateField('contentType', e.target.value)}>
+                <option>인터뷰 영상</option>
+                <option>Instagram Reels</option>
+                <option>Instagram 게시물</option>
+              </select>
               <input required value={formState.brand || ''} onChange={(e) => updateField('brand', e.target.value)} placeholder="회원사명" />
-              <input value={formState.url || ''} onChange={(e) => updateField('url', e.target.value)} placeholder="영상 또는 SNS 링크" />
+              <input required value={formState.title || ''} onChange={(e) => updateField('title', e.target.value)} placeholder="콘텐츠 제목" />
+              <input value={formState.url || ''} onChange={(e) => updateField('url', e.target.value)} placeholder="YouTube/Vimeo/Instagram 링크" />
+              <label className="file-upload-field">
+                <span>인터뷰 영상 파일 업로드</span>
+                <input type="file" accept="video/*" onChange={uploadMemberMedia} />
+              </label>
+              {memberMediaFileName && <span className="file-name">{memberMediaFileName}</span>}
               <textarea required value={formState.story || ''} onChange={(e) => updateField('story', e.target.value)} placeholder="소개하고 싶은 브랜드 이야기" />
-              <button type="submit">콘텐츠 제보하기</button>
+              <button type="submit">콘텐츠 등록하기</button>
               {submitted && <span className="form-result">{submitted}</span>}
             </form>
           </section>
@@ -496,6 +619,33 @@ export default function SeroServicePage({ slug }) {
           line-height: 1.55;
         }
 
+        .file-upload-field {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          padding: 13px 12px;
+          border: 1px solid var(--color-gray-light);
+          background: var(--color-sand-light);
+          color: var(--color-charcoal-deep);
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .file-upload-field input {
+          min-height: auto;
+          padding: 0;
+          border: 0;
+          background: transparent;
+          font-size: 13px;
+          font-weight: 700;
+        }
+
+        .file-name {
+          font-size: 12px;
+          font-weight: 900;
+          color: var(--color-gray-dark);
+        }
+
         .form-result {
           font-size: 13px;
           font-weight: 900;
@@ -535,6 +685,31 @@ export default function SeroServicePage({ slug }) {
           font-weight: 900;
           color: var(--color-orange-accent);
           margin-bottom: 6px;
+        }
+
+        .member-video-preview {
+          width: 100%;
+          max-height: 240px;
+          margin: 10px 0;
+          display: block;
+          background: var(--color-charcoal-deep);
+        }
+
+        .member-link-preview {
+          min-height: 34px;
+          margin: 10px 0;
+          padding: 0 12px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid var(--color-charcoal-deep);
+          color: var(--color-charcoal-deep);
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .member-story {
+          margin-top: 8px;
         }
 
         .topic-list {
