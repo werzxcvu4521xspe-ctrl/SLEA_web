@@ -266,40 +266,6 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--color-orange-accent);
 }
 
-.home-stats-panel {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1px;
-  overflow: hidden;
-  border: 1px solid var(--color-gray-light);
-  border-radius: var(--border-radius-md);
-  background: var(--color-gray-light);
-  box-shadow: var(--shadow-subtle);
-}
-
-.home-stat-item {
-  min-height: 120px;
-  padding: 24px;
-  background: var(--color-white);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 8px;
-}
-
-.home-stat-item strong {
-  font-family: var(--font-family-condensed);
-  font-size: 34px;
-  line-height: 1;
-  color: var(--color-orange-accent);
-}
-
-.home-stat-item span {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--color-gray-dark);
-}
-
 .quick-link-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -371,7 +337,7 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (min-width: 1024px) {
   .home-intro-grid {
-    grid-template-columns: minmax(0, 1.2fr) minmax(360px, 0.8fr);
+    grid-template-columns: minmax(0, 760px);
   }
 
   .quick-link-grid {

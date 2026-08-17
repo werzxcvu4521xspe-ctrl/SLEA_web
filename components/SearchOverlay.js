@@ -17,23 +17,27 @@ export default function SearchOverlay({ isOpen, onClose }) {
       }, 100);
     } else {
       document.body.style.overflow = '';
-      setKeyword('');
     }
     return () => {
       document.body.style.overflow = '';
     };
   }, [isOpen]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!keyword.trim()) return;
-    router.push(`/archive?search=${encodeURIComponent(keyword.trim())}`);
+  const handleClose = () => {
+    setKeyword('');
     onClose();
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!keyword.trim()) return;
+    router.push(`/sero-members?search=${encodeURIComponent(keyword.trim())}`);
+    handleClose();
+  };
+
   const handleTagClick = (tag) => {
-    router.push(`/archive?category=${encodeURIComponent(tag)}`);
-    onClose();
+    router.push(`/sero-members?category=${encodeURIComponent(tag)}`);
+    handleClose();
   };
 
   if (!isOpen) return null;
@@ -47,7 +51,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
             <input
               ref={inputRef}
               type="text"
-              placeholder="창업가 이름, 공간명 또는 키워드를 검색해 보세요."
+              placeholder="회원사, 브랜드, 콘텐츠 키워드를 검색해 보세요."
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               className="search-input"
@@ -61,7 +65,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
               🔍
             </button>
           </form>
-          <button type="button" className="close-btn" onClick={onClose} aria-label="검색 닫기">
+          <button type="button" className="close-btn" onClick={handleClose} aria-label="검색 닫기">
             ✕
           </button>
         </div>
@@ -70,7 +74,7 @@ export default function SearchOverlay({ isOpen, onClose }) {
         <div className="recommend-keywords-section">
           <p className="section-title">추천 검색어</p>
           <div className="tag-cloud">
-            {['F&B', '카페', '조치원', '로컬제조', '디자인', '공유공간', '세종빵집', '친환경', '스타트업'].map((tag) => (
+            {['회원사', '인터뷰', 'SNS 콘텐츠', '브랜드 스토리', 'F&B', '공예', '교육', '스타트업'].map((tag) => (
               <button 
                 key={tag} 
                 type="button" 

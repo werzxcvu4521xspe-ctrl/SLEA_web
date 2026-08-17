@@ -9,35 +9,35 @@ export default function Footer() {
         {/* Top Link Cards */}
         <div className="footer-links-grid">
           <div className="link-card">
-            <h4 className="en-title">AD & BUSINESS</h4>
+            <h4 className="en-title">NOTICE</h4>
             <div className="card-desc">
-              <span className="bold-label">제휴 및 광고 문의</span>
-              세종시 로컬 브랜드 활성화를 위한 대외 기관 및 기업들의 제안을 환영합니다.
-            </div>
-            <Link href="/proposal" className="card-action-btn">
-              문의하기 →
-            </Link>
-          </div>
-
-          <div className="link-card">
-            <h4 className="en-title">NEWS & STORY</h4>
-            <div className="card-desc">
-              <span className="bold-label">로컬 창업 스토리 제보</span>
-              세종시에서 전하고 싶은 재미있는 창업 소식이나 브랜드 오픈 정보가 있다면 제보해 주세요.
+              <span className="bold-label">공지사항</span>
+              협회 공지, 활동 소식, 행사 모집과 지원사업 안내를 확인합니다.
             </div>
             <Link href="/notice" className="card-action-btn">
-              제보하기 →
+              확인하기 →
             </Link>
           </div>
 
           <div className="link-card">
-            <h4 className="en-title">ARCHIVING</h4>
+            <h4 className="en-title">JOIN</h4>
             <div className="card-desc">
-              <span className="bold-label">창업 정보 등록 신청</span>
-              세종로컬창업가협회의 일원이 되어 브랜드 가치를 널리 알리고 협회 네트워킹에 참여하세요.
+              <span className="bold-label">정회원 가입</span>
+              SELO 회원으로 등록하고 네트워킹, 멘토링, 콘텐츠 지원을 시작합니다.
             </div>
             <Link href="/signup" className="card-action-btn">
-              신청하기 →
+              가입하기 →
+            </Link>
+          </div>
+
+          <div className="link-card">
+            <h4 className="en-title">TALK</h4>
+            <div className="card-desc">
+              <span className="bold-label">세로 토크</span>
+              자유 게시판, MOU 제안, 콜라보 프로젝트를 한곳에서 연결합니다.
+            </div>
+            <Link href="/sero-talk" className="card-action-btn">
+              이동하기 →
             </Link>
           </div>
         </div>

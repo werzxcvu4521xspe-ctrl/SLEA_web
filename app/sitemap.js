@@ -4,16 +4,17 @@ export default async function sitemap() {
   // List of static paths in the application
   const routes = [
     '',
-    '/about',
-    '/activities',
-    '/shop',
-    '/pr',
-    '/community',
     '/notice',
-    '/partnership',
-    '/support',
-    '/map',
-    '/archive',
+    '/sero-day',
+    '/sero-members',
+    '/sero-ai-start',
+    '/mentoring-day',
+    '/sero-shop',
+    '/sero-talk',
+    '/signup',
+    '/login',
+    '/terms',
+    '/privacy',
   ];
 
   return routes.map((route) => ({
