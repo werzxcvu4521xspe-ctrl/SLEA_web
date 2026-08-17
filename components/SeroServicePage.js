@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { MEMBER_CONTENT_FILTERS, MEMBER_CONTENTS } from '@/lib/memberContents';
 import { SERVICE_CATEGORIES, getServiceCategory } from '@/lib/serviceCategories';
 
 const STORAGE_PREFIX = 'sejong_sero_service_';
@@ -11,108 +12,6 @@ const scheduleItems = [
   { title: '제18회 세로 데이', meta: '2026.08.28 · 나성동 로컬허브', desc: '회원사 3분 브랜드 소개, 업종별 라운드테이블, 협업 매칭 네트워킹' },
   { title: '제19회 세로 데이', meta: '2026.09.25 · 조치원 청년창업거리', desc: '원도심 상권 협업, 팝업 운영 경험 공유, 현장 투어' },
   { title: '제20회 세로 데이', meta: '2026.10.30 · 세종창조경제혁신센터', desc: '투자/지원사업 발표 피칭과 공공기관 네트워킹' }
-];
-
-const memberContents = [
-  {
-    id: 'member-milmaru',
-    brand: '밀마루 베이커리',
-    type: '인터뷰 영상',
-    title: '쌀빵으로 세종의 아침을 굽는 방법',
-    channel: 'YouTube',
-    url: 'https://www.youtube.com/',
-    story: '세종 쌀로 만든 쌀식빵과 친환경 효모종을 연구하는 로컬 베이커리 이야기입니다.',
-    mediaKind: 'video',
-    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200&auto=format&fit=crop',
-    date: '2026-08-18',
-    popularity: 82
-  },
-  {
-    id: 'member-dowon',
-    brand: '디저트 카페 도원',
-    type: '인터뷰 영상',
-    title: '조치원 복숭아로 계절 디저트를 만드는 법',
-    channel: 'YouTube',
-    url: 'https://www.youtube.com/',
-    story: '지역 농가와 협업해 복숭아잼, 타르트, 선물세트를 만드는 카페 운영 스토리입니다.',
-    mediaKind: 'video',
-    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=1200&auto=format&fit=crop',
-    date: '2026-08-12',
-    popularity: 91
-  },
-  {
-    id: 'member-craft',
-    brand: '공방 세종',
-    type: 'Instagram Reels',
-    title: '흙과 도시가 만나는 로컬 공예 루틴',
-    channel: 'Instagram',
-    url: 'https://www.instagram.com/reels/',
-    story: '제작 과정과 작업실 풍경을 짧은 릴스 콘텐츠로 소개합니다.',
-    mediaKind: 'instagram',
-    image: 'https://images.unsplash.com/photo-1493106819501-66d381c466f1?q=80&w=1200&auto=format&fit=crop',
-    date: '2026-08-09',
-    popularity: 64
-  },
-  {
-    id: 'member-studio',
-    brand: '세종 프린트 스튜디오',
-    type: 'Instagram Reels',
-    title: '로컬 브랜드 패키지를 인쇄하는 하루',
-    channel: 'Instagram',
-    url: 'https://www.instagram.com/reels/',
-    story: '명함, 라벨, 패키지 샘플이 완성되는 작업 과정을 릴스로 보여주는 콘텐츠입니다.',
-    mediaKind: 'instagram',
-    image: 'https://images.unsplash.com/photo-1586717799252-bd134ad00e26?q=80&w=1200&auto=format&fit=crop',
-    date: '2026-08-04',
-    popularity: 73
-  },
-  {
-    id: 'member-brewery',
-    brand: '조치원 브루어리',
-    type: 'Instagram 게시물',
-    title: '100년 양조장에 새 브랜드를 입히다',
-    channel: 'Instagram',
-    url: 'https://www.instagram.com/',
-    story: '오래된 지역 자산을 현대적인 브랜드 경험으로 다시 연결하는 사례입니다.',
-    mediaKind: 'instagram',
-    image: 'https://images.unsplash.com/photo-1532635224-cf024e66d122?q=80&w=1200&auto=format&fit=crop',
-    date: '2026-07-31',
-    popularity: 88
-  },
-  {
-    id: 'member-stay',
-    brand: '스테이 금강',
-    type: 'Instagram 게시물',
-    title: '숙박 공간에서 지역 상품을 큐레이션하는 방식',
-    channel: 'Instagram',
-    url: 'https://www.instagram.com/',
-    story: '객실 안에서 세종 로컬 상품을 경험하고 구매로 이어지게 만드는 공간 콘텐츠입니다.',
-    mediaKind: 'instagram',
-    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop',
-    date: '2026-07-25',
-    popularity: 57
-  },
-  {
-    id: 'member-flower',
-    brand: '나성 플라워랩',
-    type: '브랜드 필름',
-    title: '행사 꽃 장식에서 로컬 클래스까지 확장하기',
-    channel: 'YouTube · Instagram',
-    url: 'https://www.youtube.com/',
-    story: '기업 행사, 원데이 클래스, 정기 구독 서비스를 연결하는 플라워 브랜드 이야기입니다.',
-    mediaKind: 'video',
-    image: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1200&auto=format&fit=crop',
-    date: '2026-07-18',
-    popularity: 69
-  }
-];
-
-const memberContentFilters = [
-  { label: 'ALL', value: '전체' },
-  { label: 'INTERVIEW', value: '인터뷰 영상' },
-  { label: 'REELS', value: 'Instagram Reels' },
-  { label: 'POST', value: 'Instagram 게시물' },
-  { label: 'BRAND FILM', value: '브랜드 필름' }
 ];
 
 const products = [
@@ -162,8 +61,8 @@ export default function SeroServicePage({ slug }) {
 
   const filteredMemberContents = useMemo(() => {
     const contents = memberFilter === '전체'
-      ? memberContents
-      : memberContents.filter((item) => item.type === memberFilter);
+      ? MEMBER_CONTENTS
+      : MEMBER_CONTENTS.filter((item) => item.type === memberFilter);
 
     return [...contents].sort((a, b) => {
       if (memberSort === 'popular') {
@@ -178,7 +77,7 @@ export default function SeroServicePage({ slug }) {
     const counts = {
       notice: 2,
       'sero-day': scheduleItems.length,
-      'sero-members': memberContents.length,
+      'sero-members': MEMBER_CONTENTS.length,
       'sero-ai-start': 0,
       'mentoring-day': 6,
       'sero-shop': products.length,
@@ -302,7 +201,7 @@ export default function SeroServicePage({ slug }) {
           <section className="member-editorial">
             <div className="member-filter-list">
               <div className="member-filter-buttons">
-                {memberContentFilters.map((filter) => (
+                {MEMBER_CONTENT_FILTERS.map((filter) => (
                   <button
                     key={filter.value}
                     type="button"
@@ -338,17 +237,17 @@ export default function SeroServicePage({ slug }) {
 
             <div className="member-content-grid">
               {filteredMemberContents.map((item) => (
-                <article key={item.id || item.title} className="member-content-card">
-                  <a className="member-card-image" href={item.url} target="_blank" rel="noreferrer">
+                <Link key={item.id || item.title} href={`/sero-members/${item.id}`} className="member-content-card">
+                  <span className="member-card-image">
                     <img src={item.image} alt={item.title} loading="lazy" />
                     <span>{item.type}</span>
-                  </a>
+                  </span>
                   <div className="member-card-copy">
                     <strong>{item.title}</strong>
                     <p>{item.story}</p>
                     <span>{item.brand} · {item.channel}</span>
                   </div>
-                </article>
+                </Link>
               ))}
             </div>
           </section>
