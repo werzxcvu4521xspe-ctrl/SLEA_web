@@ -123,40 +123,36 @@ export default function NoticePage() {
 
   return (
     <div className="notice-pop-page">
-      <section className="notice-pop-hero">
+      <section className="notice-pop-hero page-hero-banner">
         <div className="container notice-hero-inner">
           <div className="notice-kicker-row">
-            <span className="notice-kicker">Sejong Local Notice</span>
+            <span className="section-label en-title" style={{ color: 'var(--color-orange-accent)' }}>
+              Sejong Local Notice
+            </span>
             <span className="notice-count">{notices.length} posts</span>
           </div>
-          <h1>협회 공지 채널</h1>
-          <p>
-            행사, 교육, 지원사업, 공모전 소식을 이미지와 함께 빠르게 올리고,
-            카드형 피드로 한눈에 확인합니다.
-          </p>
-          <div className="notice-hero-actions">
-            <button type="button" className="pop-primary-btn" onClick={() => setIsWriteOpen(true)}>
-              공지 올리기
-            </button>
-            <button type="button" className="pop-line-btn" onClick={() => setSelectedCategory('전체')}>
-              전체 보기
-            </button>
-          </div>
+          <h1 className="page-hero-title">공지사항</h1>
+          <p className="page-hero-desc">협회 공지사항과 협회 활동 소식을 이미지 콘텐츠로 빠르게 확인합니다.</p>
         </div>
       </section>
 
       <main className="container notice-pop-main">
-        <div className="notice-category-strip" aria-label="공지 카테고리">
-          {categories.map(category => (
-            <button
-              key={category}
-              type="button"
-              className={`notice-chip ${selectedCategory === category ? 'active' : ''}`}
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </button>
-          ))}
+        <div className="notice-toolbar">
+          <div className="notice-category-strip" aria-label="공지 카테고리">
+            {categories.map(category => (
+              <button
+                key={category}
+                type="button"
+                className={`notice-chip ${selectedCategory === category ? 'active' : ''}`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+          <button type="button" className="notice-upload-btn" onClick={() => setIsWriteOpen(true)}>
+            공지 올리기
+          </button>
         </div>
 
         {featuredNotice && (
@@ -363,24 +359,19 @@ export default function NoticePage() {
         }
 
         .notice-pop-hero {
-          margin-top: 120px;
-          background: #161616;
-          color: #ffffff;
-          border-bottom: 1px solid #2c2c2c;
+          margin-top: 100px;
+          background: var(--brand-solid);
+          color: var(--color-sand-warm);
+          border-bottom: 0;
         }
 
         .notice-hero-inner {
-          min-height: 390px;
           display: flex;
           flex-direction: column;
-          justify-content: flex-end;
           gap: 18px;
-          padding-top: 72px;
-          padding-bottom: 56px;
         }
 
         .notice-kicker-row,
-        .notice-hero-actions,
         .notice-meta,
         .notice-author-row,
         .modal-header,
@@ -393,11 +384,10 @@ export default function NoticePage() {
         .notice-kicker-row {
           justify-content: space-between;
           gap: 16px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.22);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.18);
           padding-bottom: 14px;
         }
 
-        .notice-kicker,
         .side-eyebrow {
           font-family: var(--font-family-condensed);
           text-transform: uppercase;
@@ -405,40 +395,16 @@ export default function NoticePage() {
           font-weight: 900;
         }
 
-        .notice-kicker {
-          color: #ff5a2a;
-          font-size: 16px;
-        }
-
         .notice-count {
           color: #b7b7b7;
           font-size: 13px;
-          font-weight: 800;
-        }
-
-        .notice-pop-hero h1 {
-          max-width: 880px;
-          font-family: var(--font-family-condensed);
-          font-size: clamp(56px, 8vw, 98px);
           font-weight: 900;
-          line-height: 0.95;
-          color: #ffffff;
-        }
-
-        .notice-pop-hero p {
-          max-width: 680px;
-          color: #d7d7d7;
-          font-size: 17px;
-          line-height: 1.7;
-        }
-
-        .notice-hero-actions {
-          gap: 10px;
-          flex-wrap: wrap;
+          white-space: nowrap;
         }
 
         .pop-primary-btn,
         .pop-line-btn,
+        .notice-upload-btn,
         .text-arrow-btn,
         .modal-close-btn {
           min-height: 46px;
@@ -454,6 +420,13 @@ export default function NoticePage() {
           border: 1px solid #ff5a2a;
         }
 
+        .notice-upload-btn {
+          flex: 0 0 auto;
+          background: #161616;
+          color: #ffffff;
+          border: 1px solid #161616;
+        }
+
         .pop-line-btn,
         .modal-close-btn {
           background: transparent;
@@ -463,6 +436,7 @@ export default function NoticePage() {
 
         .pop-primary-btn:hover,
         .pop-line-btn:hover,
+        .notice-upload-btn:hover,
         .text-arrow-btn:hover,
         .modal-close-btn:hover {
           transform: translateY(-2px);
@@ -473,10 +447,9 @@ export default function NoticePage() {
           border-color: #161616;
         }
 
-        .notice-pop-hero .pop-primary-btn:hover {
-          background: #ffffff;
-          color: #161616;
-          border-color: #ffffff;
+        .notice-upload-btn:hover {
+          background: #ff5a2a;
+          border-color: #ff5a2a;
         }
 
         .pop-line-btn:hover,
@@ -495,12 +468,20 @@ export default function NoticePage() {
           padding-top: 34px;
         }
 
+        .notice-toolbar {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 20px;
+          border-bottom: 1px solid #e0e0e0;
+          margin-bottom: 34px;
+        }
+
         .notice-category-strip {
           display: flex;
           gap: 8px;
           overflow-x: auto;
-          border-bottom: 1px solid #e0e0e0;
-          margin-bottom: 34px;
+          min-width: 0;
         }
 
         .notice-chip {
@@ -927,13 +908,15 @@ export default function NoticePage() {
             margin-top: 92px;
           }
 
-          .notice-hero-inner {
-            min-height: 320px;
-            padding-bottom: 36px;
+          .notice-toolbar {
+            flex-direction: column;
+            gap: 14px;
+            padding-bottom: 18px;
           }
 
-          .notice-pop-hero p {
-            font-size: 15px;
+          .notice-upload-btn {
+            width: 100%;
+            justify-content: center;
           }
 
           .notice-chip {
