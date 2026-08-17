@@ -85,6 +85,8 @@ const memberContents = [
   }
 ];
 
+const memberContentFilters = ['전체', '인터뷰 영상', '브랜드 필름', 'Instagram Reels', 'Instagram 게시물'];
+
 const products = [
   { id: 'rice-bread', name: '세종 쌀식빵 세트', brand: '밀마루 베이커리', price: 24000, category: 'F&B' },
   { id: 'ceramic-cup', name: '로컬 흙 머그컵', brand: '공방 세종', price: 32000, category: 'Craft' },
@@ -123,10 +125,19 @@ export default function SeroServicePage({ slug }) {
   const [cart, setCart] = useState([]);
   const [talkPosts, setTalkPosts] = useState(initialTalkPosts);
   const [talkType, setTalkType] = useState('자유 게시판');
+  const [memberFilter, setMemberFilter] = useState('전체');
 
   const cartTotal = useMemo(() => (
     cart.reduce((sum, item) => sum + item.price, 0)
   ), [cart]);
+
+  const filteredMemberContents = useMemo(() => {
+    if (memberFilter === '전체') {
+      return memberContents;
+    }
+
+    return memberContents.filter((item) => item.type === memberFilter);
+  }, [memberFilter]);
 
   const servicePostCount = useMemo(() => {
     const counts = {
@@ -255,34 +266,33 @@ export default function SeroServicePage({ slug }) {
         )}
 
         {slug === 'sero-members' && (
-          <section className="action-grid wide-left">
-            <div className="service-panel">
-              <h3>회원사 인터뷰 콘텐츠</h3>
-              <div className="content-card-list">
-                {memberContents.filter((item) => item.mediaKind === 'video').map((item) => (
-                  <article key={item.id || item.title}>
-                    <span>{item.type}</span>
-                    <strong>{item.title}</strong>
-                    <p>{item.brand} · {item.channel}</p>
-                    <p className="member-story">{item.story}</p>
-                    <a className="member-link-preview" href={item.url} target="_blank" rel="noreferrer">
-                      콘텐츠 보기 ↗
-                    </a>
-                  </article>
+          <section className="action-grid">
+            <div className="service-panel member-content-panel">
+              <div className="panel-heading-row">
+                <h3>회원사 콘텐츠</h3>
+                <span>{filteredMemberContents.length}개 콘텐츠</span>
+              </div>
+              <div className="topic-list member-filter-list">
+                {memberContentFilters.map((filter) => (
+                  <button
+                    key={filter}
+                    type="button"
+                    className={memberFilter === filter ? 'active' : ''}
+                    onClick={() => setMemberFilter(filter)}
+                  >
+                    {filter}
+                  </button>
                 ))}
               </div>
-            </div>
-            <div className="service-panel">
-              <h3>Instagram 콘텐츠</h3>
               <div className="content-card-list">
-                {memberContents.filter((item) => item.mediaKind === 'instagram').map((item) => (
+                {filteredMemberContents.map((item) => (
                   <article key={item.id || item.title}>
                     <span>{item.type}</span>
                     <strong>{item.title}</strong>
                     <p>{item.brand} · {item.channel}</p>
                     <p className="member-story">{item.story}</p>
                     <a className="member-link-preview" href={item.url} target="_blank" rel="noreferrer">
-                      Instagram에서 보기 ↗
+                      {item.mediaKind === 'instagram' ? 'Instagram에서 보기 ↗' : '콘텐츠 보기 ↗'}
                     </a>
                   </article>
                 ))}
@@ -491,6 +501,25 @@ export default function SeroServicePage({ slug }) {
           margin-bottom: 14px;
         }
 
+        .panel-heading-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 16px;
+        }
+
+        .panel-heading-row h3 {
+          margin-bottom: 0;
+        }
+
+        .panel-heading-row span {
+          color: var(--color-gray-dark);
+          font-size: 13px;
+          font-weight: 900;
+          white-space: nowrap;
+        }
+
         .service-panel p,
         .mini-list p {
           font-size: 14px;
@@ -602,6 +631,10 @@ export default function SeroServicePage({ slug }) {
           margin-top: 8px;
         }
 
+        .member-content-panel {
+          grid-column: 1 / -1;
+        }
+
         .topic-list {
           display: flex;
           flex-wrap: wrap;
@@ -622,6 +655,10 @@ export default function SeroServicePage({ slug }) {
         .topic-list button.active {
           background: var(--color-button-solid);
           color: var(--color-white);
+        }
+
+        .member-filter-list {
+          margin-bottom: 20px;
         }
 
         .product-grid {
@@ -650,6 +687,12 @@ export default function SeroServicePage({ slug }) {
 
           .product-grid {
             grid-template-columns: repeat(3, 1fr);
+          }
+
+          .member-content-panel .content-card-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            align-items: stretch;
           }
         }
       `}</style>
