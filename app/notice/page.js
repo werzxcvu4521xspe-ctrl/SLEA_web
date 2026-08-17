@@ -419,7 +419,7 @@ export default function NoticePage() {
         .notice-pop-hero h1 {
           max-width: 880px;
           font-family: var(--font-family-condensed);
-          font-size: clamp(56px, 9vw, 118px);
+          font-size: clamp(56px, 8vw, 98px);
           font-weight: 900;
           line-height: 0.95;
           color: #ffffff;
