@@ -120,19 +120,6 @@ export default function SeroServicePage({ slug }) {
       </section>
 
       <main className="container service-main">
-        <nav className="service-category-strip" aria-label="세로 서비스 카테고리">
-          {SERVICE_CATEGORIES.map((item) => (
-            <Link
-              key={item.slug}
-              href={item.href}
-              className={`service-chip ${item.slug === category.slug ? 'active' : ''}`}
-            >
-              <span>{item.number}</span>
-              {item.shortTitle}
-            </Link>
-          ))}
-        </nav>
-
         <section className="service-overview">
           <div className="service-copy">
             <span className="section-label en-title">Service Topic</span>
@@ -339,43 +326,6 @@ export default function SeroServicePage({ slug }) {
       <style jsx>{`
         .service-main {
           padding: 38px 20px 96px;
-        }
-
-        .service-category-strip {
-          display: flex;
-          gap: 10px;
-          overflow-x: auto;
-          padding-bottom: 14px;
-          margin-bottom: 34px;
-          border-bottom: 1px solid var(--color-gray-light);
-        }
-
-        .service-chip {
-          flex: 0 0 auto;
-          min-height: 42px;
-          padding: 0 16px;
-          display: inline-flex;
-          align-items: center;
-          gap: 8px;
-          border: 1px solid var(--color-gray-light);
-          color: var(--color-gray-dark);
-          background: var(--color-white);
-          font-size: 13px;
-          font-weight: 900;
-        }
-
-        .service-chip span {
-          color: var(--color-orange-accent);
-        }
-
-        .service-chip.active {
-          background: var(--color-button-solid);
-          border-color: var(--color-button-solid);
-          color: var(--color-white);
-        }
-
-        .service-chip.active span {
-          color: var(--color-white);
         }
 
         .service-overview {
