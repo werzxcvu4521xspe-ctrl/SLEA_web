@@ -1888,3 +1888,31 @@ h1, h2, h3, h4, h5, h6 {
   background-size: 16px;
   padding-right: 36px;
 }
+
+/* Menu overlay category list keeps the bold original navigation treatment. */
+.menu-overlay .mobile-category-menu {
+  gap: clamp(12px, 2.6vh, 18px) !important;
+}
+
+.menu-overlay .mobile-category-link {
+  display: block !important;
+  color: var(--color-white) !important;
+  font-size: clamp(40px, 11vw, 72px) !important;
+  font-weight: 900 !important;
+  line-height: 1.08 !important;
+  letter-spacing: 0 !important;
+  word-break: keep-all !important;
+}
+
+.menu-overlay .mobile-category-link.active,
+.menu-overlay .mobile-category-link:hover,
+.menu-overlay .mobile-category-link:focus-visible {
+  color: var(--color-orange-accent) !important;
+}
+
+@media (min-width: 769px) {
+  .menu-overlay .mobile-category-link {
+    font-size: clamp(44px, 5vw, 76px) !important;
+    line-height: 1.06 !important;
+  }
+}
