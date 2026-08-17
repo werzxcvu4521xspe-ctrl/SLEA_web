@@ -1,5 +1,6 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element */
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { SERVICE_CATEGORIES, getServiceCategory } from '@/lib/serviceCategories';
@@ -21,7 +22,10 @@ const memberContents = [
     channel: 'YouTube',
     url: 'https://www.youtube.com/',
     story: '세종 쌀로 만든 쌀식빵과 친환경 효모종을 연구하는 로컬 베이커리 이야기입니다.',
-    mediaKind: 'video'
+    mediaKind: 'video',
+    image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200&auto=format&fit=crop',
+    date: '2026-08-18',
+    popularity: 82
   },
   {
     id: 'member-dowon',
@@ -31,7 +35,10 @@ const memberContents = [
     channel: 'YouTube',
     url: 'https://www.youtube.com/',
     story: '지역 농가와 협업해 복숭아잼, 타르트, 선물세트를 만드는 카페 운영 스토리입니다.',
-    mediaKind: 'video'
+    mediaKind: 'video',
+    image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?q=80&w=1200&auto=format&fit=crop',
+    date: '2026-08-12',
+    popularity: 91
   },
   {
     id: 'member-craft',
@@ -41,7 +48,10 @@ const memberContents = [
     channel: 'Instagram',
     url: 'https://www.instagram.com/reels/',
     story: '제작 과정과 작업실 풍경을 짧은 릴스 콘텐츠로 소개합니다.',
-    mediaKind: 'instagram'
+    mediaKind: 'instagram',
+    image: 'https://images.unsplash.com/photo-1493106819501-66d381c466f1?q=80&w=1200&auto=format&fit=crop',
+    date: '2026-08-09',
+    popularity: 64
   },
   {
     id: 'member-studio',
@@ -51,7 +61,10 @@ const memberContents = [
     channel: 'Instagram',
     url: 'https://www.instagram.com/reels/',
     story: '명함, 라벨, 패키지 샘플이 완성되는 작업 과정을 릴스로 보여주는 콘텐츠입니다.',
-    mediaKind: 'instagram'
+    mediaKind: 'instagram',
+    image: 'https://images.unsplash.com/photo-1586717799252-bd134ad00e26?q=80&w=1200&auto=format&fit=crop',
+    date: '2026-08-04',
+    popularity: 73
   },
   {
     id: 'member-brewery',
@@ -61,7 +74,10 @@ const memberContents = [
     channel: 'Instagram',
     url: 'https://www.instagram.com/',
     story: '오래된 지역 자산을 현대적인 브랜드 경험으로 다시 연결하는 사례입니다.',
-    mediaKind: 'instagram'
+    mediaKind: 'instagram',
+    image: 'https://images.unsplash.com/photo-1532635224-cf024e66d122?q=80&w=1200&auto=format&fit=crop',
+    date: '2026-07-31',
+    popularity: 88
   },
   {
     id: 'member-stay',
@@ -71,7 +87,10 @@ const memberContents = [
     channel: 'Instagram',
     url: 'https://www.instagram.com/',
     story: '객실 안에서 세종 로컬 상품을 경험하고 구매로 이어지게 만드는 공간 콘텐츠입니다.',
-    mediaKind: 'instagram'
+    mediaKind: 'instagram',
+    image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop',
+    date: '2026-07-25',
+    popularity: 57
   },
   {
     id: 'member-flower',
@@ -81,11 +100,20 @@ const memberContents = [
     channel: 'YouTube · Instagram',
     url: 'https://www.youtube.com/',
     story: '기업 행사, 원데이 클래스, 정기 구독 서비스를 연결하는 플라워 브랜드 이야기입니다.',
-    mediaKind: 'video'
+    mediaKind: 'video',
+    image: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1200&auto=format&fit=crop',
+    date: '2026-07-18',
+    popularity: 69
   }
 ];
 
-const memberContentFilters = ['전체', '인터뷰 영상', '브랜드 필름', 'Instagram Reels', 'Instagram 게시물'];
+const memberContentFilters = [
+  { label: 'ALL', value: '전체' },
+  { label: 'INTERVIEW', value: '인터뷰 영상' },
+  { label: 'REELS', value: 'Instagram Reels' },
+  { label: 'POST', value: 'Instagram 게시물' },
+  { label: 'BRAND FILM', value: '브랜드 필름' }
+];
 
 const products = [
   { id: 'rice-bread', name: '세종 쌀식빵 세트', brand: '밀마루 베이커리', price: 24000, category: 'F&B' },
@@ -126,18 +154,25 @@ export default function SeroServicePage({ slug }) {
   const [talkPosts, setTalkPosts] = useState(initialTalkPosts);
   const [talkType, setTalkType] = useState('자유 게시판');
   const [memberFilter, setMemberFilter] = useState('전체');
+  const [memberSort, setMemberSort] = useState('latest');
 
   const cartTotal = useMemo(() => (
     cart.reduce((sum, item) => sum + item.price, 0)
   ), [cart]);
 
   const filteredMemberContents = useMemo(() => {
-    if (memberFilter === '전체') {
-      return memberContents;
-    }
+    const contents = memberFilter === '전체'
+      ? memberContents
+      : memberContents.filter((item) => item.type === memberFilter);
 
-    return memberContents.filter((item) => item.type === memberFilter);
-  }, [memberFilter]);
+    return [...contents].sort((a, b) => {
+      if (memberSort === 'popular') {
+        return b.popularity - a.popularity;
+      }
+
+      return new Date(b.date).getTime() - new Date(a.date).getTime();
+    });
+  }, [memberFilter, memberSort]);
 
   const servicePostCount = useMemo(() => {
     const counts = {
@@ -204,26 +239,24 @@ export default function SeroServicePage({ slug }) {
       </section>
 
       <main className="container service-main">
-        <section className="service-overview">
-          <div className="service-copy">
-            <span className="section-label en-title">Service Topic</span>
-            <h2>{category.topics.join(' · ')}</h2>
-            <p>
-              {slug === 'sero-members'
-                ? '회원사의 인터뷰 영상, 릴스, 게시물 콘텐츠를 한눈에 탐색할 수 있도록 정리했습니다.'
-                : '이 카테고리에서 바로 필요한 업무를 시작할 수 있도록 신청, 작성, 저장, 추천 기능을 함께 구성했습니다.'}
-            </p>
-          </div>
+        {slug !== 'sero-members' && (
+          <section className="service-overview">
+            <div className="service-copy">
+              <span className="section-label en-title">Service Topic</span>
+              <h2>{category.topics.join(' · ')}</h2>
+              <p>이 카테고리에서 바로 필요한 업무를 시작할 수 있도록 신청, 작성, 저장, 추천 기능을 함께 구성했습니다.</p>
+            </div>
 
-          <div className="feature-grid">
-            {category.features.map((feature) => (
-              <div key={feature} className="feature-card">
-                <span>✓</span>
-                <strong>{feature}</strong>
-              </div>
-            ))}
-          </div>
-        </section>
+            <div className="feature-grid">
+              {category.features.map((feature) => (
+                <div key={feature} className="feature-card">
+                  <span>✓</span>
+                  <strong>{feature}</strong>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
 
         {slug === 'notice' && (
           <section className="action-grid">
@@ -266,37 +299,57 @@ export default function SeroServicePage({ slug }) {
         )}
 
         {slug === 'sero-members' && (
-          <section className="action-grid">
-            <div className="service-panel member-content-panel">
-              <div className="panel-heading-row">
-                <h3>회원사 콘텐츠</h3>
-                <span>{filteredMemberContents.length}개 콘텐츠</span>
-              </div>
-              <div className="topic-list member-filter-list">
+          <section className="member-editorial">
+            <div className="member-filter-list">
+              <div className="member-filter-buttons">
                 {memberContentFilters.map((filter) => (
                   <button
-                    key={filter}
+                    key={filter.value}
                     type="button"
-                    className={memberFilter === filter ? 'active' : ''}
-                    onClick={() => setMemberFilter(filter)}
+                    className={memberFilter === filter.value ? 'active' : ''}
+                    onClick={() => setMemberFilter(filter.value)}
                   >
-                    {filter}
+                    {filter.label}
                   </button>
                 ))}
               </div>
-              <div className="content-card-list">
-                {filteredMemberContents.map((item) => (
-                  <article key={item.id || item.title}>
-                    <span>{item.type}</span>
-                    <strong>{item.title}</strong>
-                    <p>{item.brand} · {item.channel}</p>
-                    <p className="member-story">{item.story}</p>
-                    <a className="member-link-preview" href={item.url} target="_blank" rel="noreferrer">
-                      {item.mediaKind === 'instagram' ? 'Instagram에서 보기 ↗' : '콘텐츠 보기 ↗'}
-                    </a>
-                  </article>
-                ))}
+            </div>
+
+            <div className="member-sort-row">
+              <span>{filteredMemberContents.length} posts</span>
+              <div>
+                <button
+                  type="button"
+                  className={memberSort === 'latest' ? 'active' : ''}
+                  onClick={() => setMemberSort('latest')}
+                >
+                  최신순
+                </button>
+                <i aria-hidden="true" />
+                <button
+                  type="button"
+                  className={memberSort === 'popular' ? 'active' : ''}
+                  onClick={() => setMemberSort('popular')}
+                >
+                  인기순
+                </button>
               </div>
+            </div>
+
+            <div className="member-content-grid">
+              {filteredMemberContents.map((item) => (
+                <article key={item.id || item.title} className="member-content-card">
+                  <a className="member-card-image" href={item.url} target="_blank" rel="noreferrer">
+                    <img src={item.image} alt={item.title} loading="lazy" />
+                    <span>{item.type}</span>
+                  </a>
+                  <div className="member-card-copy">
+                    <strong>{item.title}</strong>
+                    <p>{item.story}</p>
+                    <span>{item.brand} · {item.channel}</span>
+                  </div>
+                </article>
+              ))}
             </div>
           </section>
         )}
@@ -501,25 +554,6 @@ export default function SeroServicePage({ slug }) {
           margin-bottom: 14px;
         }
 
-        .panel-heading-row {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 16px;
-          margin-bottom: 16px;
-        }
-
-        .panel-heading-row h3 {
-          margin-bottom: 0;
-        }
-
-        .panel-heading-row span {
-          color: var(--color-gray-dark);
-          font-size: 13px;
-          font-weight: 900;
-          white-space: nowrap;
-        }
-
         .service-panel p,
         .mini-list p {
           font-size: 14px;
@@ -614,27 +648,6 @@ export default function SeroServicePage({ slug }) {
           margin-bottom: 6px;
         }
 
-        .member-link-preview {
-          min-height: 34px;
-          margin: 10px 0;
-          padding: 0 12px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          border: 1px solid var(--color-charcoal-deep);
-          color: var(--color-charcoal-deep);
-          font-size: 12px;
-          font-weight: 900;
-        }
-
-        .member-story {
-          margin-top: 8px;
-        }
-
-        .member-content-panel {
-          grid-column: 1 / -1;
-        }
-
         .topic-list {
           display: flex;
           flex-wrap: wrap;
@@ -657,14 +670,158 @@ export default function SeroServicePage({ slug }) {
           color: var(--color-white);
         }
 
-        .member-filter-list {
-          margin-bottom: 20px;
-        }
-
         .product-grid {
           display: grid;
           grid-template-columns: 1fr;
           gap: 12px;
+        }
+
+        .member-editorial {
+          padding-bottom: 72px;
+        }
+
+        .member-filter-list {
+          padding-bottom: 34px;
+          border-bottom: 1px solid var(--color-gray-light);
+          margin-bottom: 26px;
+        }
+
+        .member-filter-buttons {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+
+        .member-filter-buttons button {
+          min-height: 44px;
+          padding: 0 16px;
+          border: 1px solid var(--color-gray-light);
+          background: var(--color-white);
+          color: #9b9b9b;
+          font-size: 15px;
+          font-weight: 900;
+          letter-spacing: 0;
+        }
+
+        .member-filter-buttons button.active {
+          border-color: var(--color-charcoal-deep);
+          background: var(--color-charcoal-deep);
+          color: var(--color-white);
+        }
+
+        .member-sort-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 34px;
+        }
+
+        .member-sort-row > span {
+          color: var(--color-gray-dark);
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .member-sort-row div {
+          display: inline-flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .member-sort-row button {
+          color: #b8b8b8;
+          font-size: 16px;
+          font-weight: 900;
+        }
+
+        .member-sort-row button.active {
+          color: var(--color-charcoal-deep);
+        }
+
+        .member-sort-row i {
+          width: 1px;
+          height: 18px;
+          background: var(--color-gray-light);
+        }
+
+        .member-content-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 44px;
+        }
+
+        .member-content-card {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .member-card-image {
+          position: relative;
+          display: block;
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          overflow: hidden;
+          background: var(--color-sand-light);
+        }
+
+        .member-card-image img {
+          width: 100%;
+          height: 100%;
+          display: block;
+          object-fit: cover;
+          transition: transform 220ms ease;
+        }
+
+        .member-content-card:hover .member-card-image img {
+          transform: scale(1.035);
+        }
+
+        .member-card-image span {
+          position: absolute;
+          top: 16px;
+          left: 16px;
+          min-height: 34px;
+          padding: 0 10px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid rgba(255, 255, 255, 0.82);
+          background: rgba(24, 22, 20, 0.32);
+          color: var(--color-white);
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .member-card-copy {
+          padding-top: 18px;
+        }
+
+        .member-card-copy strong {
+          display: block;
+          color: var(--color-charcoal-deep);
+          font-size: 24px;
+          font-weight: 900;
+          line-height: 1.36;
+          letter-spacing: 0;
+          word-break: keep-all;
+        }
+
+        .member-card-copy p {
+          margin-top: 10px;
+          color: var(--color-charcoal-deep);
+          font-size: 16px;
+          line-height: 1.65;
+          font-weight: 700;
+          word-break: keep-all;
+        }
+
+        .member-card-copy span {
+          display: block;
+          margin-top: 14px;
+          color: var(--color-gray-dark);
+          font-size: 13px;
+          font-weight: 900;
         }
 
         @media (min-width: 768px) {
@@ -689,10 +846,21 @@ export default function SeroServicePage({ slug }) {
             grid-template-columns: repeat(3, 1fr);
           }
 
-          .member-content-panel .content-card-list {
+          .member-content-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             align-items: stretch;
+            gap: 64px 32px;
+          }
+
+          .member-filter-buttons button {
+            min-height: 54px;
+            padding: 0 18px;
+            font-size: 18px;
+          }
+
+          .member-card-copy strong {
+            font-size: 26px;
           }
         }
       `}</style>
