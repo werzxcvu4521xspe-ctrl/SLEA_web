@@ -1897,9 +1897,9 @@ h1, h2, h3, h4, h5, h6 {
 .menu-overlay .mobile-category-link {
   display: block !important;
   color: var(--color-white) !important;
-  font-size: clamp(40px, 11vw, 72px) !important;
+  font-size: clamp(30px, 8.8vw, 54px) !important;
   font-weight: 900 !important;
-  line-height: 1.08 !important;
+  line-height: 1.1 !important;
   letter-spacing: 0 !important;
   word-break: keep-all !important;
 }
@@ -1912,7 +1912,7 @@ h1, h2, h3, h4, h5, h6 {
 
 @media (min-width: 769px) {
   .menu-overlay .mobile-category-link {
-    font-size: clamp(44px, 5vw, 76px) !important;
-    line-height: 1.06 !important;
+    font-size: clamp(36px, 4vw, 58px) !important;
+    line-height: 1.08 !important;
   }
 }

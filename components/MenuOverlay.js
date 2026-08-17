@@ -172,9 +172,9 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
         .mobile-category-link {
           display: block;
           color: var(--color-white);
-          font-size: clamp(40px, 11vw, 72px);
+          font-size: clamp(30px, 8.8vw, 54px);
           font-weight: 900;
-          line-height: 1.08;
+          line-height: 1.1;
           letter-spacing: 0;
           transition: color 0.2s ease, transform 0.2s ease;
           word-break: keep-all;
@@ -246,8 +246,8 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           }
 
           .mobile-category-link {
-            font-size: clamp(44px, 5vw, 76px);
-            line-height: 1.06;
+            font-size: clamp(36px, 4vw, 58px);
+            line-height: 1.08;
           }
         }
       `}</style>
