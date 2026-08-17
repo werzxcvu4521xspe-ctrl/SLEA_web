@@ -56,6 +56,20 @@ export default function SeroServicePage({ slug }) {
     cart.reduce((sum, item) => sum + item.price, 0)
   ), [cart]);
 
+  const servicePostCount = useMemo(() => {
+    const counts = {
+      notice: 2,
+      'sero-day': scheduleItems.length,
+      'sero-members': memberContents.length,
+      'sero-ai-start': supportPrograms.length,
+      'mentoring-day': 6,
+      'sero-shop': products.length,
+      'sero-talk': talkPosts.length
+    };
+
+    return counts[slug] || 0;
+  }, [slug, talkPosts.length]);
+
   if (!category) {
     return null;
   }
@@ -110,10 +124,13 @@ export default function SeroServicePage({ slug }) {
   return (
     <div className="sero-service-page">
       <section className="page-hero-banner">
-        <div className="container">
-          <span className="section-label en-title" style={{ color: 'var(--color-orange-accent)' }}>
-            {category.eyebrow}
-          </span>
+        <div className="container service-hero-inner">
+          <div className="service-hero-kicker-row">
+            <span className="section-label en-title" style={{ color: 'var(--color-orange-accent)' }}>
+              {category.eyebrow}
+            </span>
+            <span className="service-post-count">{servicePostCount} posts</span>
+          </div>
           <h1 className="page-hero-title">{category.title}</h1>
           <p className="page-hero-desc">{category.description}</p>
         </div>
@@ -324,6 +341,28 @@ export default function SeroServicePage({ slug }) {
       </main>
 
       <style jsx>{`
+        .service-hero-inner {
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        }
+
+        .service-hero-kicker-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          padding-bottom: 14px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .service-post-count {
+          color: #b7b7b7;
+          font-size: 13px;
+          font-weight: 900;
+          white-space: nowrap;
+        }
+
         .service-main {
           padding: 38px 20px 96px;
         }
