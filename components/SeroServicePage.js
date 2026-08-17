@@ -51,13 +51,6 @@ const products = [
   { id: 'peach-jam', name: '조치원 복숭아잼 2종', brand: '디저트 카페 도원', price: 18000, category: 'F&B' }
 ];
 
-const supportPrograms = [
-  '소상공인 로컬브랜드 창출 지원사업',
-  '세종 청년창업 성장 패키지',
-  '로컬 크리에이터 협업 프로젝트 지원',
-  '중소기업 온라인 판로 지원사업'
-];
-
 const initialTalkPosts = [
   { id: 1, type: '자유 게시판', title: '8월 팝업 행사 같이 나갈 F&B 브랜드를 찾습니다.', author: '도원' },
   { id: 2, type: 'MOU 제안', title: '대학 창업동아리와 회원사 현장실습 연계를 제안합니다.', author: '운영팀' },
@@ -90,7 +83,6 @@ export default function SeroServicePage({ slug }) {
   const [cart, setCart] = useState([]);
   const [talkPosts, setTalkPosts] = useState(initialTalkPosts);
   const [talkType, setTalkType] = useState('자유 게시판');
-  const [aiDraft, setAiDraft] = useState(null);
   const [memberPosts, setMemberPosts] = useState(memberContents);
   const [memberMediaFileName, setMemberMediaFileName] = useState('');
 
@@ -114,7 +106,7 @@ export default function SeroServicePage({ slug }) {
       notice: 2,
       'sero-day': scheduleItems.length,
       'sero-members': memberPosts.length,
-      'sero-ai-start': supportPrograms.length,
+      'sero-ai-start': 0,
       'mentoring-day': 6,
       'sero-shop': products.length,
       'sero-talk': talkPosts.length
@@ -142,22 +134,6 @@ export default function SeroServicePage({ slug }) {
     setSubmitted(message);
     setFormState({});
     window.setTimeout(() => setSubmitted(''), 2400);
-  };
-
-  const generateAiDraft = (event) => {
-    event.preventDefault();
-    const company = formState.company || '우리 기업';
-    const item = formState.item || '대표 상품';
-    const target = formState.target || '세종 지역 고객';
-    const issue = formState.issue || '판로 확대와 브랜드 인지도 향상';
-
-    setAiDraft({
-      summary: `${company}은 ${item}을 중심으로 ${target}에게 로컬 기반의 차별화된 가치를 제공하는 기업입니다.`,
-      problem: `${target}은 신뢰할 수 있는 지역 상품과 브랜드 스토리를 발견하기 어렵고, ${issue} 과제가 남아 있습니다.`,
-      solution: `${company}은 협회 아카이브, 세로 쇼핑, 세로 데이 네트워킹을 활용해 상품 경험과 브랜드 콘텐츠를 함께 확산합니다.`,
-      roadmap: ['1개월: 브랜드/상품 정보 정리', '2개월: SNS 콘텐츠와 상세페이지 제작', '3개월: 지원사업 신청 및 협업 프로젝트 추진'],
-      programs: supportPrograms
-    });
   };
 
   const createTalkPost = (event) => {
@@ -343,34 +319,10 @@ export default function SeroServicePage({ slug }) {
         )}
 
         {slug === 'sero-ai-start' && (
-          <section className="action-grid wide-left">
-            <form className="service-panel service-form" onSubmit={generateAiDraft}>
-              <h3>AI 사업계획서 초안 생성</h3>
-              <input required value={formState.company || ''} onChange={(e) => updateField('company', e.target.value)} placeholder="기업명" />
-              <input required value={formState.item || ''} onChange={(e) => updateField('item', e.target.value)} placeholder="대표 상품/서비스" />
-              <input value={formState.target || ''} onChange={(e) => updateField('target', e.target.value)} placeholder="주요 고객" />
-              <textarea value={formState.issue || ''} onChange={(e) => updateField('issue', e.target.value)} placeholder="현재 해결하고 싶은 문제" />
-              <button type="submit">초안 생성하기</button>
-            </form>
-            <div className="service-panel ai-result">
-              <h3>생성 결과</h3>
-              {aiDraft ? (
-                <>
-                  <strong>사업 요약</strong>
-                  <p>{aiDraft.summary}</p>
-                  <strong>문제 정의</strong>
-                  <p>{aiDraft.problem}</p>
-                  <strong>해결 전략</strong>
-                  <p>{aiDraft.solution}</p>
-                  <strong>실행 로드맵</strong>
-                  <ul>{aiDraft.roadmap.map((item) => <li key={item}>{item}</li>)}</ul>
-                  <strong>추천 지원사업</strong>
-                  <ul>{aiDraft.programs.map((item) => <li key={item}>{item}</li>)}</ul>
-                </>
-              ) : (
-                <p>기업 정보를 입력하면 사업계획서 초안과 추천 지원사업이 이곳에 표시됩니다.</p>
-              )}
-            </div>
+          <section className="service-panel service-ready-panel">
+            <span className="section-label en-title">Coming Soon</span>
+            <h3>준비중입니다.</h3>
+            <p>세로 AI 스타트 콘텐츠와 기능은 현재 준비중입니다.</p>
           </section>
         )}
 
