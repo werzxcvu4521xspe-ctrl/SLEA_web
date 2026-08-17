@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 
 export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose }) {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const checkRole = (session) => {
@@ -68,7 +70,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
               <Link
                 key={category.slug}
                 href={category.href}
-                className="mobile-category-link"
+                className={`mobile-category-link ${pathname === category.href ? 'active' : ''}`}
                 onClick={onClose}
               >
                 {category.title}
@@ -162,7 +164,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: clamp(10px, 2.2vh, 16px);
+          gap: clamp(12px, 2.6vh, 18px);
           padding-bottom: 28px;
           border-bottom: 1px solid rgba(255, 255, 255, 0.16);
         }
@@ -170,12 +172,16 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
         .mobile-category-link {
           display: block;
           color: var(--color-white);
-          font-size: clamp(28px, 8.6vw, 42px);
+          font-size: clamp(40px, 11vw, 72px);
           font-weight: 900;
           line-height: 1.08;
           letter-spacing: 0;
           transition: color 0.2s ease, transform 0.2s ease;
           word-break: keep-all;
+        }
+
+        .mobile-category-link.active {
+          color: var(--color-orange-accent);
         }
 
         .mobile-category-link:hover,
@@ -240,7 +246,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           }
 
           .mobile-category-link {
-            font-size: clamp(36px, 4vw, 52px);
+            font-size: clamp(44px, 5vw, 76px);
             line-height: 1.06;
           }
         }
