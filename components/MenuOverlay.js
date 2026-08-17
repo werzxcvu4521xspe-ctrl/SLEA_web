@@ -98,9 +98,6 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
                   </Link>
                 </>
               )}
-              <Link href="/mypage" className="menu-sub-item bookmark-link" onClick={onClose}>
-                북마크
-              </Link>
             </div>
 
             <div className="association-links">
@@ -110,7 +107,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
                 </Link>
               )}
               <Link href="/proposal" className="menu-sub-item icon-link" onClick={onClose}>
-                협업 및 광고 제휴
+                협업 및 광고 문의
               </Link>
               <Link href="/mypage" className="menu-sub-item icon-link" onClick={onClose}>
                 로컬 창업 정보 등록 신청
@@ -188,22 +185,18 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
         }
 
         .sub-menu-links {
-          display: grid;
-          grid-template-columns: 1fr;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
           gap: 16px;
           padding-top: 24px;
           padding-bottom: 40px;
         }
 
-        @media (min-width: 480px) {
-          .sub-menu-links {
-            grid-template-columns: 1fr 1fr;
-          }
-        }
-
         .auth-links, .association-links {
           display: flex;
           flex-direction: column;
+          align-items: flex-start;
           gap: 14px;
         }
 
@@ -228,11 +221,6 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
 
         .logout-btn {
           color: var(--color-orange-accent);
-        }
-
-        .bookmark-link {
-          margin-top: 4px;
-          color: var(--color-sand-medium);
         }
 
         .icon-link {
