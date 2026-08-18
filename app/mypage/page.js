@@ -1,600 +1,546 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { BOOKMARK_STORAGE_KEY } from '@/components/BookmarkButton';
 import { supabase } from '@/lib/supabaseClient';
+
+const SHOP_STORAGE_KEY = 'sejong_sero_service_sero-shop';
+const MENTORING_STORAGE_KEY = 'sejong_sero_service_mentoring-day';
+const TALK_STORAGE_KEY = 'sejong_sero_service_sero-talk';
+
+const readStoredList = (key) => {
+  if (typeof window === 'undefined') return [];
+
+  try {
+    const parsed = JSON.parse(localStorage.getItem(key) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    localStorage.removeItem(key);
+    return [];
+  }
+};
+
+const writeStoredList = (key, items) => {
+  localStorage.setItem(key, JSON.stringify(items));
+};
+
+const getReactionStats = (item, index) => {
+  const source = String(item.id || item.title || index);
+  const seed = source.split('').reduce((sum, char) => sum + char.charCodeAt(0), 0);
+  return {
+    views: 90 + (seed % 320),
+    comments: 2 + (seed % 18),
+    likes: 12 + (seed % 74)
+  };
+};
 
 export default function MyPage() {
   const router = useRouter();
-  
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
-  const [userRole, setUserRole] = useState('visitor'); // visitor, entrepreneur, admin
-  const [userName, setUserName] = useState('');
+  const [bookmarks, setBookmarks] = useState([]);
+  const [shopItems, setShopItems] = useState([]);
+  const [mentoringItems, setMentoringItems] = useState([]);
+  const [talkPosts, setTalkPosts] = useState([]);
+  const [shopForm, setShopForm] = useState({
+    product: '',
+    brand: '',
+    price: '',
+    imageUrl: '',
+    description: ''
+  });
+  const [message, setMessage] = useState('');
 
-  // Brand form state
-  const [brandId, setBrandId] = useState(null);
-  const [companyName, setCompanyName] = useState('');
-  const [representative, setRepresentative] = useState('');
-  const [category, setCategory] = useState('F&B');
-  const [imageUrl, setImageUrl] = useState('');
-  const [address, setAddress] = useState('');
-  const [shortDesc, setShortDesc] = useState('');
-  const [story, setStory] = useState('');
-  const [websiteUrl, setWebsiteUrl] = useState('');
-  const [snsUrl, setSnsUrl] = useState('');
-  const [brandStatus, setBrandStatus] = useState(null); // null, pending, approved, rejected
-  
-  const [msg, setMsg] = useState({ type: '', text: '' });
-  const [formLoading, setFormLoading] = useState(false);
+  const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'SELO 회원';
+
+  const refreshDashboard = () => {
+    setBookmarks(readStoredList(BOOKMARK_STORAGE_KEY));
+    setShopItems(readStoredList(SHOP_STORAGE_KEY));
+    setMentoringItems(readStoredList(MENTORING_STORAGE_KEY));
+    setTalkPosts(readStoredList(TALK_STORAGE_KEY));
+  };
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true);
-      
+    const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        // Redirection if no login session
-        router.push('/login');
+
+      if (!session?.user) {
+        router.replace('/login');
         return;
       }
 
-      const currentUser = session.user;
-      setUser(currentUser);
-      setUserName(currentUser.user_metadata?.name || '가입회원');
-      const role = currentUser.user_metadata?.role || 'visitor';
-      setUserRole(role);
-
-      // If entrepreneur, fetch their registered brand details
-      if (role === 'entrepreneur' || role === 'admin') {
-        const { data: brand, error } = await supabase
-          .from('archives')
-          .select('*')
-          .eq('owner_id', currentUser.id)
-          .maybeSingle();
-
-        if (brand) {
-          setBrandId(brand.id);
-          setCompanyName(brand.company_name || '');
-          setRepresentative(brand.representative || '');
-          setCategory(brand.category || 'F&B');
-          setImageUrl(brand.image_url || '');
-          setAddress(brand.address || '');
-          setShortDesc(brand.short_desc || '');
-          setStory(brand.story || '');
-          setWebsiteUrl(brand.website_url || '');
-          setSnsUrl(brand.sns_url || '');
-          setBrandStatus(brand.status);
-        }
-      }
+      setUser(session.user);
+      refreshDashboard();
       setLoading(false);
     };
 
-    fetchUserData();
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) {
+        router.replace('/login');
+        return;
+      }
+      setUser(session.user);
+      refreshDashboard();
+      setLoading(false);
+    });
+
+    window.addEventListener('selo_bookmark_update', refreshDashboard);
+    return () => {
+      subscription.unsubscribe();
+      window.removeEventListener('selo_bookmark_update', refreshDashboard);
+    };
   }, [router]);
 
-  const handleRegisterBrand = async (e) => {
-    e.preventDefault();
-    setMsg({ type: '', text: '' });
-    setFormLoading(true);
+  const mentoringBriefs = useMemo(() => (
+    mentoringItems.map((item, index) => ({
+      ...item,
+      step: index % 3 === 0 ? '접수 완료' : index % 3 === 1 ? '멘토 매칭중' : '일정 조율중',
+      next: index % 3 === 0 ? '담당자가 상담 분야를 검토합니다.' : index % 3 === 1 ? '전문가 후보를 확인하고 있습니다.' : '가능한 상담 시간을 조율합니다.'
+    }))
+  ), [mentoringItems]);
 
-    try {
-      const payload = {
-        owner_id: user.id,
-        company_name: companyName.trim(),
-        representative: representative.trim(),
-        category,
-        image_url: imageUrl.trim() || 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?q=80&w=600&auto=format&fit=crop',
-        address: address.trim(),
-        short_desc: shortDesc.trim(),
-        story: story.trim(),
-        website_url: websiteUrl.trim(),
-        sns_url: snsUrl.trim(),
-        status: 'pending' // Submitting resets status to pending for admin approval
-      };
-
-      let error = null;
-
-      if (brandId) {
-        // Update
-        const { error: err } = await supabase
-          .from('archives')
-          .update(payload)
-          .eq('id', brandId);
-        error = err;
-      } else {
-        // Insert
-        const { error: err } = await supabase
-          .from('archives')
-          .insert([payload]);
-        error = err;
-      }
-
-      if (error) {
-        // Fallback or explain if database tables aren't created yet in user's Supabase instance
-        if (error.code === '42P01') {
-          setMsg({
-            type: 'success',
-            text: '💡 [데모 모드] Supabase 테이블이 구성되지 않았으나, 브랜드 등록 요청이 브라우저 시뮬레이션으로 완료되었습니다! (어드민 승인 페이지에서 확인 가능)'
-          });
-          setBrandStatus('pending');
-          // Mock local storage mock database to support complete demo flow
-          const mockItem = { id: brandId || Math.random().toString(), ...payload };
-          localStorage.setItem('sejong_mock_brand', JSON.stringify(mockItem));
-        } else {
-          setMsg({ type: 'error', text: `등록 중 오류 발생: ${error.message}` });
-        }
-      } else {
-        setMsg({ type: 'success', text: '브랜드 정보 등록/수정 요청이 전송되었습니다! 협회 승인 후 노출됩니다.' });
-        setBrandStatus('pending');
-      }
-    } catch (err) {
-      setMsg({ type: 'error', text: '서버 에러가 발생했습니다.' });
-    } finally {
-      setFormLoading(false);
-    }
-  };
+  const talkReports = useMemo(() => (
+    talkPosts.map((post, index) => ({
+      ...post,
+      ...getReactionStats(post, index)
+    }))
+  ), [talkPosts]);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
   };
 
+  const updateShopField = (field, value) => {
+    setShopForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleShopImageUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateShopField('imageUrl', reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const submitShopItem = (event) => {
+    event.preventDefault();
+    if (!shopForm.product.trim() || !shopForm.brand.trim()) return;
+
+    const nextItem = {
+      id: `mypage-shop-${Date.now()}`,
+      ...shopForm,
+      product: shopForm.product.trim(),
+      brand: shopForm.brand.trim(),
+      price: shopForm.price.trim(),
+      description: shopForm.description.trim(),
+      authorEmail: user.email,
+      status: '검토중',
+      createdAt: new Date().toISOString()
+    };
+
+    const nextItems = [nextItem, ...shopItems];
+    writeStoredList(SHOP_STORAGE_KEY, nextItems);
+    setShopItems(nextItems);
+    setShopForm({ product: '', brand: '', price: '', imageUrl: '', description: '' });
+    setMessage('쇼핑 콘텐츠 등록 신청이 저장되었습니다.');
+    window.setTimeout(() => setMessage(''), 2600);
+  };
+
+  const removeBookmark = (id) => {
+    const nextBookmarks = bookmarks.filter((item) => item.id !== id);
+    writeStoredList(BOOKMARK_STORAGE_KEY, nextBookmarks);
+    setBookmarks(nextBookmarks);
+  };
+
   if (loading) {
     return (
-      <div className="mypage-loading">
-        <div className="spinner"></div>
-        <p>사용자 세션 데이터를 확인하고 있습니다...</p>
+      <main className="mypage-loading">
+        <p>로그인 상태를 확인하고 있습니다.</p>
         <style jsx>{`
           .mypage-loading {
-            flex-grow: 1;
+            min-height: 70vh;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 80px 20px;
-            background-color: var(--color-sand-light);
-            gap: 20px;
-          }
-          .spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid var(--color-gray-light);
-            border-top-color: var(--color-emerald-deep);
-            border-radius: 50%;
-            animation: spin 1s infinite linear;
-          }
-          @keyframes spin {
-            100% { transform: rotate(360deg); }
+            background: #111111;
+            color: #ffffff;
+            font-weight: 900;
           }
         `}</style>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className="mypage-wrapper container">
-      {/* Header Profile summary */}
-      <div className="profile-banner glass-panel">
-        <div className="profile-avatar">👤</div>
-        <div className="profile-details">
-          <h2>{userName}님 환영합니다</h2>
-          <div className="badge-row">
-            <span className="email-lbl">{user?.email}</span>
-            <span className="badge badge-emerald">
-              {userRole === 'admin'
-                ? '👑 협회 최고 관리자'
-                : userRole === 'entrepreneur'
-                ? '🏪 로컬 창업가 회원'
-                : '👥 일반 방문자 회원'}
-            </span>
+    <main className="mypage">
+      <section className="mypage-hero">
+        <div className="dashboard-container">
+          <div>
+            <span className="eyebrow">MY SELO</span>
+            <h1>마이페이지</h1>
+            <p>{userName}님의 저장 콘텐츠, 등록 신청, 멘토링 진행, 세로토크 반응을 확인합니다.</p>
           </div>
+          <button type="button" onClick={handleLogout}>로그아웃</button>
         </div>
-        <div className="profile-actions">
-          {userRole === 'admin' && (
-            <button type="button" className="admin-nav-btn" onClick={() => router.push('/admin')}>
-              ⚙️ 승인 관리자 페이지
-            </button>
-          )}
-          <button type="button" className="logout-btn" onClick={handleLogout}>
-            로그아웃
-          </button>
-        </div>
-      </div>
+      </section>
 
-      {/* Main workspace panels */}
-      <div className="mypage-content-grid">
-        {/* If Visitor, show Bookmarks */}
-        {userRole === 'visitor' ? (
-          <div className="mypage-panel-full glass-panel">
-            <h3 className="panel-title">🔖 나의 북마크 목록</h3>
-            <div className="empty-bookmarks">
-              <span className="star-icon">⭐️</span>
-              <h4>저장된 아카이브가 없습니다.</h4>
-              <p>마음에 드는 창업가 카드의 북마크를 눌러 저장해 보세요.</p>
-            </div>
+      <section className="dashboard-container dashboard-grid">
+        <article className="panel wide">
+          <div className="panel-title-row">
+            <span>BOOKMARK</span>
+            <strong>{bookmarks.length}개 저장됨</strong>
           </div>
-        ) : (
-          /* If Entrepreneur, show Brand Registration Form */
-          <div className="mypage-panel-full glass-panel">
-            <div className="panel-header-row">
-              <h3 className="panel-title">🏪 나의 로컬 브랜드 아카이빙 관리</h3>
-              {brandStatus && (
-                <div className={`status-badge ${brandStatus}`}>
-                  상태: {brandStatus === 'approved' ? '✅ 승인완료' : brandStatus === 'rejected' ? '❌ 반려됨' : '🕒 대기중'}
+          <div className="bookmark-grid">
+            {bookmarks.map((item) => (
+              <div key={item.id} className="bookmark-card">
+                {item.imageUrl && <img src={item.imageUrl} alt={`${item.title} 썸네일`} />}
+                <div>
+                  <span>{item.type}</span>
+                  <Link href={item.href}>{item.title}</Link>
+                  <p>{item.excerpt}</p>
+                  <button type="button" onClick={() => removeBookmark(item.id)}>삭제</button>
                 </div>
-              )}
-            </div>
-
-            {msg.text && (
-              <div className={`alert-box ${msg.type}`}>
-                {msg.text}
+              </div>
+            ))}
+            {bookmarks.length === 0 && (
+              <div className="empty-state">
+                공지사항 또는 세로 회원사 콘텐츠 상세 페이지에서 북마크를 눌러 저장해 보세요.
               </div>
             )}
-
-            <form className="brand-reg-form" onSubmit={handleRegisterBrand}>
-              <div className="form-row">
-                <div className="form-group">
-                  <label>기업/브랜드명 *</label>
-                  <input
-                    type="text"
-                    required
-                    value={companyName}
-                    onChange={(e) => setCompanyName(e.target.value)}
-                    placeholder="예: 디저트 카페 도원"
-                  />
-                </div>
-                <div className="form-group">
-                  <label>대표자명 *</label>
-                  <input
-                    type="text"
-                    required
-                    value={representative}
-                    onChange={(e) => setRepresentative(e.target.value)}
-                    placeholder="예: 이민수"
-                  />
-                </div>
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>업종 카테고리 *</label>
-                  <select value={category} onChange={(e) => setCategory(e.target.value)}>
-                    <option value="F&B">F&B (식음료)</option>
-                    <option value="Craft">로컬제조 (공예/디자인)</option>
-                    <option value="Culture">문화/예술/체험</option>
-                    <option value="Space">공유공간/대관</option>
-                    <option value="Tech">IT / 스마트 테크</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>대표 이미지 URL</label>
-                  <input
-                    type="url"
-                    value={imageUrl}
-                    onChange={(e) => setImageUrl(e.target.value)}
-                    placeholder="https://images.unsplash.com/..."
-                  />
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label>소재지 주소 (상세 주소 포함) *</label>
-                <input
-                  type="text"
-                  required
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
-                  placeholder="예: 세종특별자치시 조치원읍 으뜸길 12"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>한 줄 브랜드 소개 (검색 노출용) *</label>
-                <input
-                  type="text"
-                  required
-                  value={shortDesc}
-                  onChange={(e) => setShortDesc(e.target.value)}
-                  placeholder="예: 조치원 특산 복숭아잼을 만드는 아기자기한 디저트 카페"
-                />
-              </div>
-
-              <div className="form-group">
-                <label>상세 브랜드 스토리 (Markdown 작성 지원) *</label>
-                <textarea
-                  required
-                  rows={8}
-                  value={story}
-                  onChange={(e) => setStory(e.target.value)}
-                  placeholder="## 브랜드 탄생 스토리&#10;&#10;창업하게 된 배경과 제품의 장점을 설명해 주세요."
-                />
-              </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>공식 웹사이트 URL</label>
-                  <input
-                    type="url"
-                    value={websiteUrl}
-                    onChange={(e) => setWebsiteUrl(e.target.value)}
-                    placeholder="https://..."
-                  />
-                </div>
-                <div className="form-group">
-                  <label>공식 SNS URL (인스타그램 등)</label>
-                  <input
-                    type="url"
-                    value={snsUrl}
-                    onChange={(e) => setSnsUrl(e.target.value)}
-                    placeholder="https://instagram.com/..."
-                  />
-                </div>
-              </div>
-
-              <button type="submit" disabled={formLoading} className="form-submit-btn">
-                {formLoading ? '저장 처리 중...' : brandId ? '브랜드 정보 업데이트 신청' : '신규 브랜드 아카이빙 등록 신청'}
-              </button>
-            </form>
           </div>
-        )}
-      </div>
+        </article>
+
+        <article className="panel">
+          <div className="panel-title-row">
+            <span>SHOP UPLOAD</span>
+            <strong>상품 콘텐츠 등록</strong>
+          </div>
+          <form className="dashboard-form" onSubmit={submitShopItem}>
+            <input required value={shopForm.product} onChange={(event) => updateShopField('product', event.target.value)} placeholder="상품명" />
+            <input required value={shopForm.brand} onChange={(event) => updateShopField('brand', event.target.value)} placeholder="브랜드/회원사명" />
+            <input value={shopForm.price} onChange={(event) => updateShopField('price', event.target.value)} placeholder="가격 예: 22,900원" />
+            <input type="file" accept="image/*" onChange={handleShopImageUpload} />
+            <textarea value={shopForm.description} onChange={(event) => updateShopField('description', event.target.value)} placeholder="상품 소개" />
+            <button type="submit">쇼핑 콘텐츠 저장</button>
+            {message && <em>{message}</em>}
+          </form>
+          <div className="mini-list">
+            {shopItems.slice(0, 3).map((item) => (
+              <div key={item.id}>
+                <strong>{item.product}</strong>
+                <span>{item.brand} · {item.status || '검토중'}</span>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        <article className="panel">
+          <div className="panel-title-row">
+            <span>MENTORING</span>
+            <strong>진행사항 브리핑</strong>
+          </div>
+          <div className="timeline-list">
+            {mentoringBriefs.slice(0, 4).map((item) => (
+              <div key={item.id || item.createdAt}>
+                <span>{item.step}</span>
+                <strong>{item.brand || '멘토링 신청'}</strong>
+                <p>{item.field || '상담 분야'} · {item.next}</p>
+              </div>
+            ))}
+            {mentoringBriefs.length === 0 && (
+              <div className="empty-state">아직 저장된 멘토링 신청이 없습니다.</div>
+            )}
+          </div>
+          <Link href="/mentoring-day" className="text-link">멘토링 신청하러 가기 →</Link>
+        </article>
+
+        <article className="panel wide">
+          <div className="panel-title-row">
+            <span>SERO TALK</span>
+            <strong>내 게시물 반응</strong>
+          </div>
+          <div className="reaction-grid">
+            {talkReports.map((post) => (
+              <div key={post.id} className="reaction-card">
+                <span>{post.type}</span>
+                <strong>{post.title}</strong>
+                <div>
+                  <b>{post.views}</b> 조회
+                  <b>{post.comments}</b> 댓글
+                  <b>{post.likes}</b> 좋아요
+                </div>
+              </div>
+            ))}
+            {talkReports.length === 0 && (
+              <div className="empty-state">세로 토크에 올린 게시물이 아직 없습니다.</div>
+            )}
+          </div>
+          <Link href="/sero-talk" className="text-link">세로 토크 글쓰기 →</Link>
+        </article>
+      </section>
 
       <style jsx>{`
-        .mypage-wrapper {
-          padding-top: 40px;
-          padding-bottom: 100px;
+        .mypage {
+          background: #f8f8f8;
+          color: #161616;
+          min-height: 100vh;
+        }
+
+        .dashboard-container {
+          width: min(100%, 1440px);
+          margin: 0 auto;
+          padding-left: clamp(20px, 4vw, 56px);
+          padding-right: clamp(20px, 4vw, 56px);
+        }
+
+        .mypage-hero {
+          margin-top: var(--header-height);
+          background: #111111;
+          color: #ffffff;
+        }
+
+        .mypage-hero .dashboard-container {
+          min-height: 300px;
           display: flex;
-          flex-direction: column;
-          gap: 40px;
-        }
-
-        .profile-banner {
-          background-color: var(--color-white);
-          border: 1px solid var(--color-gray-light);
-          padding: 30px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 20px;
-        }
-
-        @media (min-width: 768px) {
-          .profile-banner {
-            flex-direction: row;
-            justify-content: space-between;
-          }
-        }
-
-        .profile-avatar {
-          font-size: 48px;
-          width: 80px;
-          height: 80px;
-          background-color: var(--color-sand-medium);
-          border-radius: 50%;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .profile-details {
-          flex-grow: 1;
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .profile-details h2 {
-          font-size: 22px;
-          color: var(--color-charcoal-deep);
-        }
-
-        .badge-row {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-          flex-wrap: wrap;
-        }
-
-        .email-lbl {
-          font-size: 14px;
-          color: var(--color-gray-dark);
-        }
-
-        .profile-actions {
-          display: flex;
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-
-        .logout-btn {
-          border: 1px solid var(--color-orange-accent);
-          color: var(--color-orange-accent);
-          padding: 10px 20px;
-          border-radius: var(--border-radius-sm);
-          font-weight: 700;
-        }
-
-        .logout-btn:hover {
-          background-color: var(--color-orange-light);
-        }
-
-        .admin-nav-btn {
-          background-color: var(--color-emerald-deep);
-          color: var(--color-white);
-          padding: 10px 20px;
-          border-radius: var(--border-radius-sm);
-          font-weight: 700;
-        }
-
-        .admin-nav-btn:hover {
-          background-color: var(--color-emerald-medium);
-        }
-
-        .mypage-content-grid {
-          width: 100%;
-        }
-
-        .mypage-panel-full {
-          background-color: var(--color-white);
-          border: 1px solid var(--color-gray-light);
-          padding: 30px;
-        }
-
-        .panel-header-row {
-          display: flex;
+          align-items: flex-end;
           justify-content: space-between;
-          align-items: center;
-          border-bottom: 2px solid var(--color-emerald-deep);
-          padding-bottom: 12px;
-          margin-bottom: 30px;
-          flex-wrap: wrap;
-          gap: 10px;
+          gap: 24px;
+          padding-top: 80px;
+          padding-bottom: 48px;
         }
 
-        .panel-title {
+        .eyebrow,
+        .panel-title-row span {
+          display: block;
+          margin-bottom: 14px;
+          color: #ff5a2a;
+          font-family: var(--font-family-condensed);
+          font-size: 15px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+        }
+
+        h1 {
+          color: #ffffff;
+          font-family: var(--font-family-condensed);
+          font-size: clamp(48px, 7vw, 104px);
+          font-weight: 900;
+          line-height: 1;
+        }
+
+        .mypage-hero p {
+          max-width: 760px;
+          margin-top: 18px;
+          color: #d7d7d7;
           font-size: 18px;
+          font-weight: 700;
+          line-height: 1.6;
+          word-break: keep-all;
+        }
+
+        .mypage-hero button,
+        .dashboard-form button,
+        .bookmark-card button {
+          min-height: 44px;
+          padding: 0 18px;
+          background: #ff5a2a;
+          color: #ffffff;
+          font-weight: 900;
+        }
+
+        .dashboard-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: 22px;
+          padding-top: 42px;
+          padding-bottom: 96px;
+        }
+
+        .panel {
+          background: #ffffff;
+          border: 1px solid #e0e0e0;
+          padding: clamp(24px, 3vw, 38px);
+        }
+
+        .panel-title-row {
+          display: flex;
+          align-items: flex-start;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 24px;
+          border-bottom: 1px solid #e0e0e0;
+          padding-bottom: 18px;
+        }
+
+        .panel-title-row strong {
+          font-family: var(--font-family-condensed);
+          font-size: clamp(24px, 2.4vw, 36px);
+          font-weight: 900;
+          line-height: 1.1;
+        }
+
+        .bookmark-grid,
+        .reaction-grid {
+          display: grid;
+          grid-template-columns: repeat(1, minmax(0, 1fr));
+          gap: 16px;
+        }
+
+        .bookmark-card {
+          display: grid;
+          grid-template-columns: 120px minmax(0, 1fr);
+          gap: 18px;
+          border: 1px solid #e6e6e6;
+          padding: 14px;
+        }
+
+        .bookmark-card img {
+          width: 100%;
+          height: 120px;
+          object-fit: cover;
+        }
+
+        .bookmark-card span,
+        .reaction-card span,
+        .mini-list span,
+        .timeline-list span {
+          color: #ff5a2a;
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .bookmark-card a,
+        .reaction-card strong,
+        .mini-list strong,
+        .timeline-list strong {
+          display: block;
+          margin: 6px 0;
+          color: #161616;
+          font-size: 18px;
+          font-weight: 900;
+          line-height: 1.35;
+        }
+
+        .bookmark-card p,
+        .timeline-list p {
+          color: #666666;
+          font-size: 14px;
+          line-height: 1.6;
+        }
+
+        .bookmark-card button {
+          min-height: 34px;
+          margin-top: 10px;
+          background: #111111;
+          font-size: 13px;
+        }
+
+        .dashboard-form,
+        .mini-list,
+        .timeline-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+
+        .dashboard-form input,
+        .dashboard-form textarea {
+          width: 100%;
+          border: 1px solid #d8d8d8;
+          padding: 13px 14px;
+          font: inherit;
+          font-weight: 700;
+          background: #ffffff;
+        }
+
+        .dashboard-form textarea {
+          min-height: 118px;
+          resize: vertical;
+        }
+
+        .dashboard-form em {
+          color: #ff5a2a;
+          font-style: normal;
+          font-weight: 900;
+        }
+
+        .mini-list {
+          margin-top: 22px;
+          border-top: 1px solid #e0e0e0;
+          padding-top: 16px;
+        }
+
+        .mini-list div,
+        .timeline-list div,
+        .reaction-card {
+          border: 1px solid #e6e6e6;
+          padding: 16px;
+        }
+
+        .reaction-card div {
+          display: flex;
+          gap: 16px;
+          flex-wrap: wrap;
+          color: #666666;
+          font-size: 14px;
           font-weight: 800;
         }
 
-        .status-badge {
-          font-size: 13px;
-          font-weight: 700;
-          padding: 6px 12px;
-          border-radius: var(--border-radius-sm);
+        .reaction-card b {
+          color: #161616;
+          margin-right: -10px;
         }
 
-        .status-badge.pending {
-          background-color: var(--color-sand-medium);
-          color: var(--color-charcoal-deep);
+        .empty-state {
+          border: 1px dashed #cfcfcf;
+          padding: 24px;
+          color: #666666;
+          font-weight: 800;
+          line-height: 1.6;
         }
 
-        .status-badge.approved {
-          background-color: var(--color-emerald-pale);
-          color: var(--color-emerald-deep);
+        .text-link {
+          display: inline-flex;
+          margin-top: 18px;
+          color: #161616;
+          font-weight: 900;
+          border-bottom: 2px solid #ff5a2a;
         }
 
-        .status-badge.rejected {
-          background-color: var(--color-orange-light);
-          color: var(--color-orange-accent);
-        }
+        @media (min-width: 980px) {
+          .dashboard-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
 
-        .empty-bookmarks {
-          padding: 80px 20px;
-          text-align: center;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 12px;
-        }
+          .panel.wide {
+            grid-column: span 2;
+          }
 
-        .star-icon {
-          font-size: 40px;
-        }
-
-        .empty-bookmarks h4 {
-          font-size: 16px;
-          font-weight: 700;
-          color: var(--color-charcoal-deep);
-        }
-
-        .empty-bookmarks p {
-          font-size: 14px;
-          color: var(--color-gray-dark);
-        }
-
-        .brand-reg-form {
-          display: flex;
-          flex-direction: column;
-          gap: 20px;
-        }
-
-        .form-row {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 20px;
-        }
-
-        @media (min-width: 768px) {
-          .form-row {
-            grid-template-columns: 1fr 1fr;
+          .bookmark-grid,
+          .reaction-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
         }
 
-        .form-group {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
+        @media (max-width: 640px) {
+          .mypage-hero .dashboard-container {
+            align-items: flex-start;
+            flex-direction: column;
+          }
 
-        .form-group label {
-          font-size: 12px;
-          font-weight: 700;
-          color: var(--color-gray-dark);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-          border: 1px solid var(--color-gray-light);
-          border-radius: var(--border-radius-sm);
-          padding: 12px;
-          outline: none;
-          font-size: 14px;
-          font-weight: 600;
-          background-color: var(--color-sand-light);
-          font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-          border-color: var(--color-emerald-deep);
-          background-color: var(--color-white);
-        }
-
-        .form-submit-btn {
-          height: 52px;
-          background-color: var(--color-emerald-deep);
-          color: var(--color-white);
-          font-size: 15px;
-          font-weight: 700;
-          border-radius: var(--border-radius-sm);
-          transition: background-color 0.2s ease;
-          margin-top: 10px;
-        }
-
-        .form-submit-btn:hover {
-          background-color: var(--color-emerald-medium);
-        }
-
-        .form-submit-btn:disabled {
-          background-color: var(--color-gray-medium);
-          cursor: not-allowed;
-        }
-
-        .alert-box {
-          padding: 16px;
-          border-radius: var(--border-radius-sm);
-          font-size: 14px;
-          font-weight: 600;
-          margin-bottom: 24px;
-          line-height: 1.5;
-        }
-
-        .alert-box.success {
-          background-color: var(--color-emerald-pale);
-          color: var(--color-emerald-deep);
-          border: 1px solid var(--color-emerald-light);
-        }
-
-        .alert-box.error {
-          background-color: var(--color-orange-light);
-          color: var(--color-orange-accent);
-          border: 1px solid var(--color-orange-accent);
+          .bookmark-card {
+            grid-template-columns: 1fr;
+          }
         }
       `}</style>
-    </div>
+    </main>
   );
 }

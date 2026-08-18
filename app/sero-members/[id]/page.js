@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import BookmarkButton from '@/components/BookmarkButton';
 import { getMemberContent, MEMBER_CONTENTS } from '@/lib/memberContents';
 
 export default function MemberContentDetailPage() {
@@ -82,7 +83,19 @@ export default function MemberContentDetailPage() {
           </div>
           <h1>{content.title}</h1>
           <p>{content.story}</p>
-          <span className="detail-author">by {content.brand}</span>
+          <div className="detail-action-row">
+            <span className="detail-author">by {content.brand}</span>
+            <BookmarkButton
+              item={{
+                id: `member-${content.id}`,
+                type: '세로 회원사',
+                title: content.title,
+                excerpt: content.story,
+                href: `/sero-members/${content.id}`,
+                imageUrl: content.image
+              }}
+            />
+          </div>
         </div>
       </header>
 
@@ -181,6 +194,15 @@ export default function MemberContentDetailPage() {
 
         .detail-meta-row span {
           color: #ff5a2a;
+        }
+
+        .detail-action-row {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          flex-wrap: wrap;
         }
 
         .member-detail-hero h1 {

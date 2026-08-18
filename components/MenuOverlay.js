@@ -126,6 +126,11 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
                   관리자 대시보드
                 </Link>
               )}
+              {!user && (
+                <Link href="/mypage" className="menu-sub-item icon-link" onClick={onClose}>
+                  마이페이지
+                </Link>
+              )}
               <Link href="/proposal" className="menu-sub-item icon-link" onClick={onClose}>
                 협업 및 광고 문의
               </Link>

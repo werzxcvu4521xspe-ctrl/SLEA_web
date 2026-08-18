@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
+import BookmarkButton from '@/components/BookmarkButton';
 import {
   DEFAULT_NOTICE_IMAGE,
   DEFAULT_NOTICES,
@@ -114,7 +115,19 @@ export default function NoticeDetailPage() {
           </div>
           <h1>{notice.title}</h1>
           <p>{notice.excerpt}</p>
-          <span className="detail-author">by {notice.author}</span>
+          <div className="detail-action-row">
+            <span className="detail-author">by {notice.author}</span>
+            <BookmarkButton
+              item={{
+                id: `notice-${notice.id}`,
+                type: '공지사항',
+                title: notice.title,
+                excerpt: notice.excerpt,
+                href: `/notice/${notice.id}`,
+                imageUrl: notice.imageUrl || DEFAULT_NOTICE_IMAGE
+              }}
+            />
+          </div>
         </div>
       </header>
 
@@ -192,6 +205,15 @@ export default function NoticeDetailPage() {
           font-weight: 900;
           border-bottom: 1px solid rgba(255, 255, 255, 0.18);
           padding-bottom: 14px;
+        }
+
+        .detail-action-row {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          flex-wrap: wrap;
         }
 
         .detail-meta-row span {
