@@ -8,10 +8,55 @@ import { SERVICE_CATEGORIES, getServiceCategory } from '@/lib/serviceCategories'
 
 const STORAGE_PREFIX = 'sejong_sero_service_';
 
-const scheduleItems = [
-  { title: '제18회 세로 데이', meta: '2026.08.28 · 나성동 로컬허브', desc: '회원사 3분 브랜드 소개, 업종별 라운드테이블, 협업 매칭 네트워킹' },
-  { title: '제19회 세로 데이', meta: '2026.09.25 · 조치원 청년창업거리', desc: '원도심 상권 협업, 팝업 운영 경험 공유, 현장 투어' },
-  { title: '제20회 세로 데이', meta: '2026.10.30 · 세종창조경제혁신센터', desc: '투자/지원사업 발표 피칭과 공공기관 네트워킹' }
+const seroDayPrograms = [
+  {
+    id: 'sero-day-network-18',
+    title: '제18회 세로 데이: 로컬 브랜드 네트워킹',
+    type: '네트워킹',
+    status: '접수중',
+    date: '2026.08.28 금요일 19:00',
+    place: '나성동 로컬허브',
+    capacity: '30명',
+    imageUrl: 'https://images.unsplash.com/photo-1515169067865-5387ec356754?q=80&w=1200&auto=format&fit=crop',
+    summary: '회원사 3분 브랜드 소개와 업종별 라운드테이블로 서로의 고객, 채널, 자원을 연결합니다.',
+    description: '세종 로컬 창업가들이 한자리에 모여 브랜드를 소개하고 협업 가능성을 찾는 정기 네트워킹 프로그램입니다. 참여자는 짧은 브랜드 소개, 그룹별 대화, 협업 제안 시간을 통해 바로 실행 가능한 연결 지점을 정리합니다.'
+  },
+  {
+    id: 'sero-day-market-tour',
+    title: '원도심 상권 협업 투어',
+    type: '현장 투어',
+    status: '접수중',
+    date: '2026.09.12 토요일 14:00',
+    place: '조치원 청년창업거리',
+    capacity: '20명',
+    imageUrl: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1200&auto=format&fit=crop',
+    summary: '원도심 공간과 브랜드를 함께 둘러보고 팝업, 공동 프로모션, 콘텐츠 협업 아이디어를 찾습니다.',
+    description: '조치원 원도심의 창업 공간과 로컬 브랜드를 직접 방문하며 현장에서 협업 가능성을 발굴합니다. 상권 운영자, 공간 운영자, 회원 브랜드가 함께 참여해 팝업 운영과 지역 캠페인 아이디어를 구체화합니다.'
+  },
+  {
+    id: 'sero-day-pop-up',
+    title: '가을 팝업마켓 참여 브랜드 모집',
+    type: '팝업마켓',
+    status: '접수중',
+    date: '2026.09.25 금요일 17:00',
+    place: '세종 중앙공원',
+    capacity: '12팀',
+    imageUrl: 'https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?q=80&w=1200&auto=format&fit=crop',
+    summary: '회원사 상품을 시민에게 소개하는 팝업마켓 운영 설명회와 참가 브랜드 매칭을 진행합니다.',
+    description: '가을 시즌 공동 팝업마켓을 준비하는 회원사를 위한 사전 설명 프로그램입니다. 부스 구성, 판매 운영, 공동 홍보 방식, 결제/정산 안내를 공유하고 참가 브랜드 간 교차 판매 아이디어를 정리합니다.'
+  },
+  {
+    id: 'sero-day-pitching',
+    title: '지원사업 피칭 리허설 데이',
+    type: '피칭',
+    status: '접수 예정',
+    date: '2026.10.30 금요일 18:30',
+    place: '세종창조경제혁신센터',
+    capacity: '15팀',
+    imageUrl: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1200&auto=format&fit=crop',
+    summary: '정부지원사업 발표를 앞둔 회원사를 위해 사업계획서 핵심 메시지와 발표 흐름을 점검합니다.',
+    description: '지원사업 발표와 투자 미팅을 준비하는 회원사를 위한 피칭 리허설 프로그램입니다. 사업 소개, 시장 문제, 수익 모델, 실행 계획을 짧은 발표로 정리하고 운영진과 동료 창업가의 피드백을 받습니다.'
+  }
 ];
 
 const products = [
@@ -77,6 +122,9 @@ export default function SeroServicePage({ slug }) {
   const [talkType, setTalkType] = useState('자유 게시판');
   const [memberFilter, setMemberFilter] = useState('전체');
   const [memberSort, setMemberSort] = useState('latest');
+  const [seroDayFilter, setSeroDayFilter] = useState('전체');
+  const [selectedSeroProgramId, setSelectedSeroProgramId] = useState(seroDayPrograms[0].id);
+  const [activeSeroProgram, setActiveSeroProgram] = useState(null);
 
   const cartTotal = useMemo(() => (
     cart.reduce((sum, item) => sum + item.price, 0)
@@ -96,10 +144,24 @@ export default function SeroServicePage({ slug }) {
     });
   }, [memberFilter, memberSort]);
 
+  const seroDayFilters = useMemo(() => (
+    ['전체', ...Array.from(new Set(seroDayPrograms.map((program) => program.type)))]
+  ), []);
+
+  const filteredSeroDayPrograms = useMemo(() => (
+    seroDayFilter === '전체'
+      ? seroDayPrograms
+      : seroDayPrograms.filter((program) => program.type === seroDayFilter)
+  ), [seroDayFilter]);
+
+  const selectedSeroProgram = useMemo(() => (
+    seroDayPrograms.find((program) => program.id === selectedSeroProgramId) || seroDayPrograms[0]
+  ), [selectedSeroProgramId]);
+
   const servicePostCount = useMemo(() => {
     const counts = {
       notice: 2,
-      'sero-day': scheduleItems.length,
+      'sero-day': seroDayPrograms.length,
       'sero-members': MEMBER_CONTENTS.length,
       'sero-ai-start': 0,
       'mentoring-day': 6,
@@ -145,6 +207,23 @@ export default function SeroServicePage({ slug }) {
     setFormState({});
   };
 
+  const submitSeroDayApplication = (event) => {
+    event.preventDefault();
+    const item = {
+      id: `sero-day-${Date.now()}`,
+      programId: selectedSeroProgram.id,
+      programTitle: selectedSeroProgram.title,
+      programDate: selectedSeroProgram.date,
+      programPlace: selectedSeroProgram.place,
+      ...formState,
+      createdAt: new Date().toISOString()
+    };
+    saveItem('sero-day', item);
+    setSubmitted(`${selectedSeroProgram.title} 신청이 저장되었습니다.`);
+    setFormState({});
+    window.setTimeout(() => setSubmitted(''), 2600);
+  };
+
   return (
     <div className="sero-service-page">
       <section className="page-hero-banner">
@@ -187,27 +266,178 @@ export default function SeroServicePage({ slug }) {
         )}
 
         {slug === 'sero-day' && (
-          <section className="action-grid wide-left">
-            <div className="service-panel">
-              <h3>다가오는 세로 데이</h3>
-              <div className="mini-list">
-                {scheduleItems.map((item) => (
-                  <article key={item.title}>
-                    <strong>{item.title}</strong>
-                    <span>{item.meta}</span>
-                    <p>{item.desc}</p>
-                  </article>
+          <section className="sero-program-section">
+            <div className="member-filter-list sero-program-filter">
+              <div className="member-filter-buttons">
+                {seroDayFilters.map((filter) => (
+                  <button
+                    key={filter}
+                    type="button"
+                    className={seroDayFilter === filter ? 'active' : ''}
+                    onClick={() => setSeroDayFilter(filter)}
+                  >
+                    {filter}
+                  </button>
                 ))}
               </div>
             </div>
-            <form className="service-panel service-form" onSubmit={(event) => submitLocalForm(event, 'sero-day', '세로 데이 참가 신청이 저장되었습니다.')}>
-              <h3>네트워킹 참가 신청</h3>
-              <input required value={formState.name || ''} onChange={(e) => updateField('name', e.target.value)} placeholder="대표자명" />
-              <input required value={formState.brand || ''} onChange={(e) => updateField('brand', e.target.value)} placeholder="브랜드/기업명" />
-              <textarea required value={formState.interest || ''} onChange={(e) => updateField('interest', e.target.value)} placeholder="만나고 싶은 분야 또는 협업 관심사" />
-              <button type="submit">참가 신청 저장</button>
-              {submitted && <span className="form-result">{submitted}</span>}
-            </form>
+
+            <div className="sero-program-layout">
+              <div className="sero-program-content">
+                <div className="member-sort-row">
+                  <span>{filteredSeroDayPrograms.length} programs</span>
+                  <div>
+                    <button type="button" className="active">신청 가능</button>
+                    <i aria-hidden="true" />
+                    <button type="button">최신 일정</button>
+                  </div>
+                </div>
+
+                <div className="sero-program-grid">
+                  {filteredSeroDayPrograms.map((program) => (
+                    <article key={program.id} className="sero-program-card">
+                      <button type="button" className="sero-program-image" onClick={() => setActiveSeroProgram(program)}>
+                        <img src={program.imageUrl} alt={program.title} loading="lazy" />
+                        <span>{program.type}</span>
+                      </button>
+                      <div className="sero-program-copy">
+                        <button type="button" onClick={() => setActiveSeroProgram(program)}>
+                          {program.title}
+                        </button>
+                        <p>{program.summary}</p>
+                        <div className="sero-program-meta">
+                          <span>{program.date}</span>
+                          <span>{program.place}</span>
+                          <span>정원 {program.capacity}</span>
+                        </div>
+                        <div className="sero-program-actions">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedSeroProgramId(program.id);
+                              setFormState((prev) => ({ ...prev, programId: program.id }));
+                            }}
+                          >
+                            신청 선택하기 →
+                          </button>
+                          <span className={program.status === '접수중' ? 'open' : 'upcoming'}>
+                            {program.status}
+                          </span>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              </div>
+
+              <form className="sero-application-panel service-form" onSubmit={submitSeroDayApplication}>
+                <div className="application-heading">
+                  <span>Program Application</span>
+                  <h3>프로그램 신청</h3>
+                </div>
+
+                <label>
+                  <span>신청 프로그램 *</span>
+                  <select
+                    required
+                    value={selectedSeroProgramId}
+                    onChange={(e) => setSelectedSeroProgramId(e.target.value)}
+                  >
+                    {seroDayPrograms.map((program) => (
+                      <option key={program.id} value={program.id}>
+                        [{program.type}] {program.title}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <div className="selected-program-summary">
+                  <strong>{selectedSeroProgram.title}</strong>
+                  <span>{selectedSeroProgram.date}</span>
+                  <p>{selectedSeroProgram.place} · 정원 {selectedSeroProgram.capacity}</p>
+                </div>
+
+                <div className="form-two-col">
+                  <label>
+                    <span>신청자명 *</span>
+                    <input required value={formState.name || ''} onChange={(e) => updateField('name', e.target.value)} placeholder="예: 홍길동" />
+                  </label>
+                  <label>
+                    <span>연락처 *</span>
+                    <input required type="tel" value={formState.phone || ''} onChange={(e) => updateField('phone', e.target.value)} placeholder="010-0000-0000" />
+                  </label>
+                </div>
+
+                <label>
+                  <span>브랜드/기업명 *</span>
+                  <input required value={formState.brand || ''} onChange={(e) => updateField('brand', e.target.value)} placeholder="브랜드 또는 기업명" />
+                </label>
+
+                <label>
+                  <span>참여 인원 *</span>
+                  <input required type="number" min="1" max="10" value={formState.participants || '1'} onChange={(e) => updateField('participants', e.target.value)} />
+                </label>
+
+                <label>
+                  <span>만나고 싶은 분야 / 협업 관심사</span>
+                  <textarea value={formState.interest || ''} onChange={(e) => updateField('interest', e.target.value)} placeholder="예: F&B 브랜드와 공동 팝업을 논의하고 싶어요." />
+                </label>
+
+                <label className="consent-check">
+                  <input
+                    type="checkbox"
+                    required
+                    checked={Boolean(formState.consent)}
+                    onChange={(e) => updateField('consent', e.target.checked)}
+                  />
+                  <span>신청 안내를 위해 이름과 연락처를 수집하는 것에 동의합니다.</span>
+                </label>
+
+                <button type="submit" disabled={selectedSeroProgram.status !== '접수중'}>
+                  {selectedSeroProgram.status === '접수중' ? '프로그램 신청 저장' : '접수 예정입니다'}
+                </button>
+                {submitted && <span className="form-result">{submitted}</span>}
+              </form>
+            </div>
+
+            {activeSeroProgram && (
+              <div className="program-modal-backdrop" onClick={() => setActiveSeroProgram(null)}>
+                <div className="program-modal" onClick={(event) => event.stopPropagation()}>
+                  <button type="button" className="modal-close" onClick={() => setActiveSeroProgram(null)}>Close</button>
+                  <div className="program-modal-image">
+                    <img src={activeSeroProgram.imageUrl} alt={activeSeroProgram.title} />
+                  </div>
+                  <div className="program-modal-copy">
+                    <span>{activeSeroProgram.type} / {activeSeroProgram.status}</span>
+                    <h3>{activeSeroProgram.title}</h3>
+                    <dl>
+                      <div>
+                        <dt>일시</dt>
+                        <dd>{activeSeroProgram.date}</dd>
+                      </div>
+                      <div>
+                        <dt>장소</dt>
+                        <dd>{activeSeroProgram.place}</dd>
+                      </div>
+                      <div>
+                        <dt>정원</dt>
+                        <dd>{activeSeroProgram.capacity}</dd>
+                      </div>
+                    </dl>
+                    <p>{activeSeroProgram.description}</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedSeroProgramId(activeSeroProgram.id);
+                        setActiveSeroProgram(null);
+                      }}
+                    >
+                      이 프로그램 신청하기 →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </section>
         )}
 
@@ -610,6 +840,362 @@ export default function SeroServicePage({ slug }) {
           line-height: 1.7;
         }
 
+        .sero-program-section {
+          padding-bottom: 84px;
+        }
+
+        .sero-program-filter {
+          margin-bottom: 30px;
+        }
+
+        .sero-program-layout {
+          display: grid;
+          grid-template-columns: minmax(0, 1fr);
+          gap: 44px;
+          align-items: start;
+        }
+
+        .sero-program-grid {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 52px 32px;
+        }
+
+        .sero-program-card {
+          min-width: 0;
+        }
+
+        .sero-program-image {
+          position: relative;
+          display: block;
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          overflow: hidden;
+          background: var(--color-sand-light);
+          cursor: pointer;
+        }
+
+        .sero-program-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 220ms ease;
+        }
+
+        .sero-program-card:hover .sero-program-image img {
+          transform: scale(1.035);
+        }
+
+        .sero-program-image span {
+          position: absolute;
+          top: 16px;
+          left: 16px;
+          min-height: 34px;
+          padding: 0 12px;
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid rgba(255, 255, 255, 0.85);
+          background: rgba(24, 22, 20, 0.38);
+          color: var(--color-white);
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .sero-program-copy {
+          padding-top: 18px;
+        }
+
+        .sero-program-copy > button {
+          display: block;
+          width: 100%;
+          text-align: left;
+          color: var(--color-charcoal-deep);
+          font-size: 24px;
+          font-weight: 900;
+          line-height: 1.36;
+          letter-spacing: 0;
+          word-break: keep-all;
+        }
+
+        .sero-program-copy > button:hover {
+          color: var(--color-orange-accent);
+        }
+
+        .sero-program-copy p {
+          margin-top: 10px;
+          color: var(--color-charcoal-deep);
+          font-size: 16px;
+          line-height: 1.65;
+          font-weight: 700;
+          word-break: keep-all;
+        }
+
+        .sero-program-meta {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px 14px;
+          margin-top: 16px;
+          padding-top: 14px;
+          border-top: 1px solid var(--color-gray-light);
+        }
+
+        .sero-program-meta span {
+          color: var(--color-gray-dark);
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .sero-program-actions {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 14px;
+          margin-top: 18px;
+        }
+
+        .sero-program-actions button {
+          color: var(--color-orange-accent);
+          font-size: 14px;
+          font-weight: 900;
+          border-bottom: 2px solid transparent;
+          padding-bottom: 3px;
+        }
+
+        .sero-program-actions button:hover {
+          border-bottom-color: var(--color-orange-accent);
+        }
+
+        .sero-program-actions span {
+          min-height: 28px;
+          padding: 0 10px;
+          display: inline-flex;
+          align-items: center;
+          background: #111;
+          color: var(--color-white);
+          font-size: 12px;
+          font-weight: 900;
+          white-space: nowrap;
+        }
+
+        .sero-program-actions span.upcoming {
+          background: var(--color-gray-light);
+          color: var(--color-gray-dark);
+        }
+
+        .sero-application-panel {
+          position: sticky;
+          top: 120px;
+          padding: 28px;
+          background: var(--color-white);
+          border: 1px solid var(--color-gray-light);
+          box-shadow: var(--shadow-subtle);
+        }
+
+        .application-heading {
+          padding-bottom: 18px;
+          border-bottom: 1px solid var(--color-gray-light);
+          margin-bottom: 6px;
+        }
+
+        .application-heading span {
+          color: var(--color-orange-accent);
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .application-heading h3 {
+          margin-top: 6px;
+          margin-bottom: 0;
+          font-size: 28px;
+        }
+
+        .sero-application-panel label {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+          color: var(--color-charcoal-deep);
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .selected-program-summary {
+          padding: 16px;
+          background: var(--color-sand-light);
+          border: 1px solid var(--color-gray-light);
+        }
+
+        .selected-program-summary strong,
+        .selected-program-summary span,
+        .selected-program-summary p {
+          display: block;
+        }
+
+        .selected-program-summary strong {
+          color: var(--color-charcoal-deep);
+          font-size: 15px;
+          font-weight: 900;
+          line-height: 1.45;
+        }
+
+        .selected-program-summary span {
+          margin-top: 8px;
+          color: var(--color-orange-accent);
+          font-size: 12px;
+          font-weight: 900;
+        }
+
+        .selected-program-summary p {
+          margin-top: 4px;
+          color: var(--color-gray-dark);
+          font-size: 13px;
+          font-weight: 800;
+        }
+
+        .form-two-col {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 12px;
+        }
+
+        .consent-check {
+          flex-direction: row !important;
+          align-items: flex-start;
+          padding: 14px;
+          background: var(--color-sand-light);
+          border: 1px solid var(--color-gray-light);
+          color: var(--color-gray-dark) !important;
+          line-height: 1.55;
+        }
+
+        .consent-check input {
+          width: 16px;
+          min-height: 16px;
+          margin-top: 2px;
+          accent-color: var(--color-orange-accent);
+        }
+
+        .program-modal-backdrop {
+          position: fixed;
+          inset: 0;
+          z-index: 80;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 22px;
+          background: rgba(17, 17, 17, 0.72);
+        }
+
+        .program-modal {
+          position: relative;
+          width: min(920px, 100%);
+          max-height: 88vh;
+          overflow-y: auto;
+          display: grid;
+          grid-template-columns: minmax(260px, 0.85fr) minmax(0, 1.15fr);
+          gap: 0;
+          background: var(--color-white);
+          border: 1px solid var(--color-gray-light);
+          box-shadow: 0 28px 80px rgba(0, 0, 0, 0.28);
+        }
+
+        .modal-close {
+          position: absolute;
+          top: 16px;
+          right: 16px;
+          z-index: 2;
+          min-height: 42px;
+          padding: 0 16px;
+          background: rgba(17, 17, 17, 0.72);
+          border: 1px solid rgba(255, 255, 255, 0.45);
+          color: var(--color-white);
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .program-modal-image {
+          min-height: 420px;
+          background: var(--color-sand-light);
+        }
+
+        .program-modal-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .program-modal-copy {
+          padding: 42px;
+          display: flex;
+          flex-direction: column;
+          gap: 22px;
+        }
+
+        .program-modal-copy > span {
+          color: var(--color-orange-accent);
+          font-size: 11px;
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
+
+        .program-modal-copy h3 {
+          color: var(--color-charcoal-deep);
+          font-size: clamp(28px, 3.4vw, 44px);
+          font-weight: 900;
+          line-height: 1.16;
+          letter-spacing: 0;
+          word-break: keep-all;
+        }
+
+        .program-modal-copy dl {
+          display: grid;
+          gap: 10px;
+          padding: 18px 0;
+          border-top: 1px solid var(--color-gray-light);
+          border-bottom: 1px solid var(--color-gray-light);
+        }
+
+        .program-modal-copy dl div {
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+        }
+
+        .program-modal-copy dt,
+        .program-modal-copy dd {
+          font-size: 13px;
+          font-weight: 900;
+        }
+
+        .program-modal-copy dt {
+          color: var(--color-gray-dark);
+        }
+
+        .program-modal-copy dd {
+          color: var(--color-charcoal-deep);
+          text-align: right;
+        }
+
+        .program-modal-copy p {
+          color: var(--color-gray-dark);
+          font-size: 15px;
+          line-height: 1.8;
+          font-weight: 700;
+        }
+
+        .program-modal-copy > button {
+          min-height: 48px;
+          align-self: flex-start;
+          padding: 0 20px;
+          background: var(--color-orange-accent);
+          color: var(--color-white);
+          font-size: 14px;
+          font-weight: 900;
+        }
+
         .product-grid {
           display: grid;
           grid-template-columns: 1fr;
@@ -861,6 +1447,14 @@ export default function SeroServicePage({ slug }) {
             grid-template-columns: minmax(0, 1fr);
           }
 
+          .sero-program-layout {
+            grid-template-columns: minmax(0, 1fr) minmax(320px, 0.42fr);
+          }
+
+          .sero-program-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
           .product-grid {
             grid-template-columns: repeat(3, 1fr);
           }
@@ -880,6 +1474,32 @@ export default function SeroServicePage({ slug }) {
 
           .member-card-copy strong {
             font-size: 26px;
+          }
+        }
+
+        @media (min-width: 1180px) {
+          .sero-program-grid {
+            grid-template-columns: repeat(3, 1fr);
+          }
+        }
+
+        @media (max-width: 767px) {
+          .form-two-col,
+          .program-modal {
+            grid-template-columns: 1fr;
+          }
+
+          .sero-application-panel {
+            position: static;
+            padding: 22px;
+          }
+
+          .program-modal-image {
+            min-height: 260px;
+          }
+
+          .program-modal-copy {
+            padding: 28px 22px;
           }
         }
       `}</style>
