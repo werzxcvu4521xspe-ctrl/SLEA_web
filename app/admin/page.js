@@ -1392,8 +1392,11 @@ export default function AdminPage() {
             <div className="content-manager-grid">
               <aside className="section-index-panel glass-panel">
                 <div className="section-index-header">
-                  <h3>섹션 목록</h3>
-                  <span>전체 {siteSections.length}개 / 표시 {filteredSections.length}개</span>
+                  <div>
+                    <span className="toolbar-eyebrow">Sitemap</span>
+                    <h3>실제 메뉴 구조</h3>
+                  </div>
+                  <span>전체 {siteSections.length}개</span>
                 </div>
 
                 <div className="section-filter-row">
@@ -1410,7 +1413,7 @@ export default function AdminPage() {
                         if (nextSection) setSelectedSectionId(nextSection.id);
                       }}
                     >
-                      {pageName === 'all' ? '전체' : pageName}
+                      {pageName === 'all' ? '전체 페이지' : pageName}
                     </button>
                   ))}
                 </div>
@@ -1423,8 +1426,10 @@ export default function AdminPage() {
                       className={`section-list-item ${selectedSectionId === section.id ? 'active' : ''}`}
                       onClick={() => setSelectedSectionId(section.id)}
                     >
-                      <span className="section-page-tag">{section.page}</span>
-                      <strong>{section.area}</strong>
+                      <div className="section-list-main">
+                        <span className="section-page-tag">{section.page}</span>
+                        <strong>{section.area}</strong>
+                      </div>
                       <small>{section.title}</small>
                       <small className="section-link-path">{section.ctaHref}</small>
                       <span className={`section-status ${section.status}`}>
@@ -1454,30 +1459,60 @@ export default function AdminPage() {
                   </select>
                 </div>
 
-                <div className="editor-form-grid">
+                <div className="visual-edit-shell">
+                  <div className="visual-edit-preview">
+                    <div className="preview-browser-bar">
+                      <strong>SELO</strong>
+                      <div>
+                        <span>{selectedSection.page}</span>
+                        <span>{selectedSection.area}</span>
+                      </div>
+                    </div>
+                    <div className="preview-hero-card">
+                      <div className="preview-hero-media">
+                        {selectedSection.imageUrl ? (
+                          <img src={selectedSection.imageUrl} alt={`${selectedSection.area} 미리보기`} />
+                        ) : (
+                          <div className="empty-preview">이미지 없음</div>
+                        )}
+                      </div>
+                      <div className="preview-hero-copy">
+                        <span>{selectedSection.page} / {selectedSection.area}</span>
+                        <h4>{selectedSection.title}</h4>
+                        <p>{selectedSection.subtitle}</p>
+                        <small>{selectedSection.body}</small>
+                        <Link href={selectedSection.ctaHref || '/'} className="preview-cta">
+                          {selectedSection.ctaLabel || '바로가기'} →
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="editor-fields">
-                    <div className="form-group">
-                      <label htmlFor="section-page">페이지명</label>
-                      <input
-                        id="section-page"
-                        type="text"
-                        value={selectedSection.page}
-                        onChange={(e) => handleSectionFieldChange('page', e.target.value)}
-                      />
+                    <div className="form-row-pair">
+                      <div className="form-group">
+                        <label htmlFor="section-page">상단 메뉴명</label>
+                        <input
+                          id="section-page"
+                          type="text"
+                          value={selectedSection.page}
+                          onChange={(e) => handleSectionFieldChange('page', e.target.value)}
+                        />
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="section-area">페이지 안 섹션명</label>
+                        <input
+                          id="section-area"
+                          type="text"
+                          value={selectedSection.area}
+                          onChange={(e) => handleSectionFieldChange('area', e.target.value)}
+                        />
+                      </div>
                     </div>
 
                     <div className="form-group">
-                      <label htmlFor="section-area">섹션명</label>
-                      <input
-                        id="section-area"
-                        type="text"
-                        value={selectedSection.area}
-                        onChange={(e) => handleSectionFieldChange('area', e.target.value)}
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="section-title">대표 제목</label>
+                      <label htmlFor="section-title">화면에 크게 보이는 제목</label>
                       <input
                         id="section-title"
                         type="text"
@@ -1487,7 +1522,7 @@ export default function AdminPage() {
                     </div>
 
                     <div className="form-group">
-                      <label htmlFor="section-subtitle">보조 문구</label>
+                      <label htmlFor="section-subtitle">제목 아래 설명 문구</label>
                       <input
                         id="section-subtitle"
                         type="text"
@@ -1500,31 +1535,9 @@ export default function AdminPage() {
                       <label htmlFor="section-body">본문 및 운영 메모</label>
                       <textarea
                         id="section-body"
-                        rows="5"
+                        rows="4"
                         value={selectedSection.body}
                         onChange={(e) => handleSectionFieldChange('body', e.target.value)}
-                      />
-                    </div>
-
-                    <div className="form-group section-upload-group">
-                      <label htmlFor="section-image-file">대표 사진 업로드</label>
-                      <input
-                        id="section-image-file"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleSectionImageUpload}
-                      />
-                      <small>로컬 이미지 파일을 선택하면 이 섹션의 대표 사진으로 저장됩니다.</small>
-                    </div>
-
-                    <div className="form-group">
-                      <label htmlFor="section-image">대표 사진 데이터</label>
-                      <textarea
-                        id="section-image"
-                        rows="3"
-                        placeholder="로컬 업로드 이미지 데이터 또는 기존 이미지 주소"
-                        value={selectedSection.imageUrl}
-                        onChange={(e) => handleSectionFieldChange('imageUrl', e.target.value)}
                       />
                     </div>
 
@@ -1539,7 +1552,7 @@ export default function AdminPage() {
                         />
                       </div>
                       <div className="form-group">
-                        <label htmlFor="section-cta-href">버튼 링크</label>
+                        <label htmlFor="section-cta-href">연결 링크</label>
                         <input
                           id="section-cta-href"
                           type="text"
@@ -1548,24 +1561,29 @@ export default function AdminPage() {
                         />
                       </div>
                     </div>
-                  </div>
 
-                  <div className="editor-preview">
-                    <div className="preview-image-box">
-                      {selectedSection.imageUrl ? (
-                        <img src={selectedSection.imageUrl} alt={`${selectedSection.area} 미리보기`} />
-                      ) : (
-                        <div className="empty-preview">이미지 없음</div>
-                      )}
-                    </div>
-                    <div className="preview-copy">
-                      <span>{selectedSection.page} / {selectedSection.area}</span>
-                      <h4>{selectedSection.title}</h4>
-                      <p>{selectedSection.subtitle}</p>
-                      <small>{selectedSection.body}</small>
-                      <Link href={selectedSection.ctaHref || '/'} className="preview-cta">
-                        {selectedSection.ctaLabel || '바로가기'} →
-                      </Link>
+                    <div className="image-edit-grid">
+                      <div className="form-group section-upload-group">
+                        <label htmlFor="section-image-file">대표 사진 업로드</label>
+                        <input
+                          id="section-image-file"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleSectionImageUpload}
+                        />
+                        <small>로컬 이미지 파일을 선택하면 오른쪽 미리보기에 바로 반영됩니다.</small>
+                      </div>
+
+                      <div className="form-group">
+                        <label htmlFor="section-image">이미지 데이터/주소</label>
+                        <textarea
+                          id="section-image"
+                          rows="3"
+                          placeholder="로컬 업로드 이미지 데이터 또는 기존 이미지 주소"
+                          value={selectedSection.imageUrl}
+                          onChange={(e) => handleSectionFieldChange('imageUrl', e.target.value)}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2359,7 +2377,7 @@ export default function AdminPage() {
 
         .content-manager-grid {
           display: grid;
-          grid-template-columns: 320px minmax(0, 1fr);
+          grid-template-columns: 340px minmax(0, 1fr);
           gap: 24px;
           align-items: start;
         }
@@ -2369,6 +2387,11 @@ export default function AdminPage() {
           background-color: var(--color-white);
           border-radius: var(--border-radius-md);
           padding: 22px;
+        }
+
+        .section-index-panel {
+          position: sticky;
+          top: 24px;
         }
 
         .section-index-header,
@@ -2399,26 +2422,27 @@ export default function AdminPage() {
         }
 
         .section-filter-row {
-          display: flex;
-          gap: 6px;
-          flex-wrap: wrap;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 8px;
           margin-bottom: 16px;
         }
 
         .section-filter-chip {
           border: 1px solid var(--color-gray-light);
-          border-radius: var(--border-radius-full);
-          padding: 6px 10px;
-          font-size: 11.5px;
+          border-radius: var(--border-radius-sm);
+          padding: 10px 12px;
+          font-size: 12px;
           font-weight: 800;
           color: var(--color-gray-dark);
           background-color: var(--color-white);
+          text-align: left;
         }
 
         .section-filter-chip.active {
           color: var(--color-white);
-          background-color: var(--color-emerald-deep);
-          border-color: var(--color-emerald-deep);
+          background-color: var(--color-charcoal-deep);
+          border-color: var(--color-charcoal-deep);
         }
 
         .section-list {
@@ -2433,10 +2457,10 @@ export default function AdminPage() {
           position: relative;
           width: 100%;
           text-align: left;
-          padding: 14px;
+          padding: 14px 78px 14px 14px;
           border: 1px solid var(--color-gray-light);
-          border-radius: var(--border-radius-md);
-          background-color: var(--color-sand-light);
+          border-radius: var(--border-radius-sm);
+          background-color: var(--color-white);
           display: flex;
           flex-direction: column;
           align-items: flex-start;
@@ -2444,9 +2468,15 @@ export default function AdminPage() {
         }
 
         .section-list-item.active {
-          border-color: var(--color-emerald-light);
-          background-color: var(--color-white);
-          box-shadow: var(--shadow-subtle);
+          border-color: var(--color-orange-accent);
+          box-shadow: inset 4px 0 0 var(--color-orange-accent), var(--shadow-subtle);
+        }
+
+        .section-list-main {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          flex-wrap: wrap;
         }
 
         .section-page-tag {
@@ -2454,8 +2484,8 @@ export default function AdminPage() {
           width: fit-content;
           padding: 3px 8px;
           border-radius: var(--border-radius-sm);
-          background-color: var(--color-emerald-pale);
-          color: var(--color-emerald-deep);
+          background-color: rgba(255, 90, 42, 0.1);
+          color: var(--color-orange-accent);
           font-size: 11px;
           font-weight: 900;
         }
@@ -2489,7 +2519,7 @@ export default function AdminPage() {
         }
 
         .section-status.published {
-          background-color: var(--color-emerald-deep);
+          background-color: var(--color-charcoal-deep);
           color: var(--color-white);
         }
 
@@ -2527,23 +2557,97 @@ export default function AdminPage() {
           line-height: 1.5;
         }
 
-        .editor-form-grid {
+        .visual-edit-shell {
           display: grid;
-          grid-template-columns: minmax(0, 1fr) 320px;
+          grid-template-columns: minmax(360px, 0.9fr) minmax(420px, 1.1fr);
           gap: 24px;
+          align-items: start;
         }
 
-        .editor-fields,
-        .preview-copy {
+        .visual-edit-preview {
+          position: sticky;
+          top: 24px;
+          border: 1px solid var(--color-gray-light);
+          border-radius: var(--border-radius-md);
+          overflow: hidden;
+          background-color: var(--color-charcoal-deep);
+          box-shadow: var(--shadow-subtle);
+        }
+
+        .preview-browser-bar {
+          min-height: 64px;
+          padding: 18px 20px;
+          background-color: var(--color-white);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 18px;
+          border-bottom: 1px solid var(--color-gray-light);
+        }
+
+        .preview-browser-bar strong {
+          color: var(--color-charcoal-deep);
+          font-size: 22px;
+          font-weight: 950;
+          letter-spacing: -0.02em;
+        }
+
+        .preview-browser-bar div {
+          display: flex;
+          gap: 12px;
+          color: var(--color-gray-dark);
+          font-size: 12px;
+          font-weight: 900;
+          white-space: nowrap;
+        }
+
+        .preview-hero-card {
+          background-color: var(--color-charcoal-deep);
+        }
+
+        .preview-hero-media {
+          width: 100%;
+          aspect-ratio: 16 / 9;
+          background-color: #222;
+          overflow: hidden;
+        }
+
+        .preview-hero-media img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          filter: brightness(0.78);
+        }
+
+        .preview-hero-copy {
+          min-height: 300px;
+          padding: 28px;
           display: flex;
           flex-direction: column;
-          gap: 14px;
+          gap: 18px;
         }
 
         .mini-field-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
           gap: 14px;
+        }
+
+        .form-row-pair,
+        .image-edit-grid {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 14px;
+        }
+
+        .editor-fields {
+          display: flex;
+          flex-direction: column;
+          gap: 14px;
+          padding: 22px;
+          border: 1px solid var(--color-gray-light);
+          border-radius: var(--border-radius-md);
+          background-color: var(--color-white);
         }
 
         .editor-preview {
@@ -2580,32 +2684,50 @@ export default function AdminPage() {
           padding: 18px;
         }
 
-        .preview-copy span {
+        .preview-copy span,
+        .preview-hero-copy span {
           color: var(--color-orange-accent);
           font-size: 11px;
           font-weight: 900;
+          text-transform: uppercase;
+          letter-spacing: 0.02em;
         }
 
-        .preview-copy h4 {
-          color: var(--color-charcoal-deep);
-          font-size: 18px;
-          line-height: 1.35;
+        .preview-copy h4,
+        .preview-hero-copy h4 {
+          color: var(--color-white);
+          font-size: clamp(28px, 4vw, 56px);
+          line-height: 1.08;
           margin: 0;
+          letter-spacing: 0;
         }
 
         .preview-copy p,
-        .preview-copy small {
-          color: var(--color-gray-dark);
-          line-height: 1.55;
+        .preview-copy small,
+        .preview-hero-copy p,
+        .preview-hero-copy small {
+          color: rgba(255, 255, 255, 0.78);
+          line-height: 1.6;
+          font-weight: 700;
+        }
+
+        .preview-hero-copy p {
+          font-size: 18px;
+          margin: 0;
+        }
+
+        .preview-hero-copy small {
+          font-size: 14px;
         }
 
         .preview-cta {
           width: fit-content;
           margin-top: 4px;
-          color: var(--color-emerald-deep);
-          font-size: 13px;
+          color: var(--color-white);
+          font-size: 15px;
           font-weight: 900;
-          border-bottom: 1px solid var(--color-emerald-deep);
+          border-bottom: 2px solid var(--color-orange-accent);
+          padding-bottom: 4px;
         }
 
         @media (max-width: 1024px) {
@@ -2618,8 +2740,15 @@ export default function AdminPage() {
             border-bottom: 1px solid var(--color-gray-light);
           }
           .content-manager-grid,
-          .editor-form-grid {
+          .editor-form-grid,
+          .visual-edit-shell,
+          .form-row-pair,
+          .image-edit-grid {
             grid-template-columns: 1fr;
+          }
+          .section-index-panel,
+          .visual-edit-preview {
+            position: static;
           }
           .content-toolbar {
             flex-direction: column;
