@@ -238,13 +238,13 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
         @media (min-width: 769px) {
           .menu-overlay {
             height: auto;
-            min-height: 104px;
+            min-height: 136px;
             overflow: visible;
           }
 
           .menu-inner {
             max-width: var(--max-width-content);
-            padding: 22px 20px;
+            padding: 36px 20px;
           }
 
           .scroll-wrapper {
@@ -266,16 +266,16 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
 
           .sub-menu-links {
             padding: 0;
-            gap: 0;
+            gap: 20px;
           }
 
           .auth-links,
           .association-links {
-            gap: 0;
+            gap: 18px;
           }
 
           .auth-links {
-            padding-right: 24px;
+            padding-right: 16px;
           }
 
           .association-links {
@@ -291,8 +291,8 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           }
 
           .menu-sub-item {
-            min-height: 40px;
-            padding: 0 24px;
+            min-height: 48px;
+            padding: 0 34px;
             display: inline-flex;
             align-items: center;
             color: var(--color-white);
