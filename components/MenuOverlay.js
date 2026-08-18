@@ -49,13 +49,31 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
   };
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
+    if (!isOpen) {
       document.body.style.overflow = '';
+      return undefined;
     }
+
+    const mobileQuery = window.matchMedia('(max-width: 768px)');
+    const syncBodyScroll = () => {
+      document.body.style.overflow = mobileQuery.matches ? 'hidden' : '';
+    };
+
+    syncBodyScroll();
+
+    if (mobileQuery.addEventListener) {
+      mobileQuery.addEventListener('change', syncBodyScroll);
+    } else {
+      mobileQuery.addListener(syncBodyScroll);
+    }
+
     return () => {
       document.body.style.overflow = '';
+      if (mobileQuery.removeEventListener) {
+        mobileQuery.removeEventListener('change', syncBodyScroll);
+      } else {
+        mobileQuery.removeListener(syncBodyScroll);
+      }
     };
   }, [isOpen]);
 
@@ -237,14 +255,23 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
 
         @media (min-width: 769px) {
           .menu-overlay {
-            height: auto;
-            min-height: 136px;
-            overflow: visible;
+            top: var(--header-height);
+            height: 152px;
+            min-height: 0;
+            max-height: 152px;
+            overflow: hidden;
+            align-items: center;
+            background: #141414;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+            box-shadow: 0 18px 34px rgba(0, 0, 0, 0.22);
           }
 
           .menu-inner {
             max-width: var(--max-width-content);
-            padding: 36px 20px;
+            height: 100%;
+            justify-content: center;
+            padding: 32px 20px;
           }
 
           .scroll-wrapper {
