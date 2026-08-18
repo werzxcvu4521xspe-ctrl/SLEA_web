@@ -58,12 +58,12 @@ const paletteOverride = `
   .nav-links a.active,
   .tab-btn.active,
   .tab-btn:hover {
-    color: #6cbfab !important;
+    color: #ff5a2a !important;
   }
 
   .nav-links a::after,
   .tab-btn.active {
-    border-bottom-color: #6cbfab !important;
+    border-bottom-color: #ff5a2a !important;
   }
 
   .nav-links a::after {
