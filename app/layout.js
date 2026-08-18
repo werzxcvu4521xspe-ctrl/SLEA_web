@@ -31,19 +31,19 @@ const paletteOverride = `
 
   .gnb-bar,
   .header-container.scrolled .gnb-bar {
-    background: #ffffff !important;
-    border-bottom: 1px solid #e0e0e0 !important;
+    background: #111111 !important;
+    border-bottom: 1px solid #111111 !important;
     box-shadow: none !important;
   }
 
   .logo-text,
   .icon-btn,
   .mega-trigger-btn {
-    color: #121413 !important;
+    color: #ffffff !important;
   }
 
   .nav-links a {
-    color: #525252 !important;
+    color: #ffffff !important;
   }
 
   .page-hero-banner {
@@ -71,7 +71,7 @@ const paletteOverride = `
   }
 
   .menu-btn .bar {
-    background-color: #121413 !important;
+    background-color: #ffffff !important;
   }
 
   @media (min-width: 1024px) {
