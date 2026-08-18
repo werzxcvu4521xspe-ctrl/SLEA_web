@@ -145,15 +145,6 @@ export default function SeroServicePage({ slug }) {
               <h2>{category.topics.join(' · ')}</h2>
               <p>이 카테고리에서 바로 필요한 업무를 시작할 수 있도록 신청, 작성, 저장, 추천 기능을 함께 구성했습니다.</p>
             </div>
-
-            <div className="feature-grid">
-              {category.features.map((feature) => (
-                <div key={feature} className="feature-card">
-                  <span>✓</span>
-                  <strong>{feature}</strong>
-                </div>
-              ))}
-            </div>
           </section>
         )}
 
@@ -402,44 +393,17 @@ export default function SeroServicePage({ slug }) {
           color: var(--color-gray-dark);
         }
 
-        .feature-grid,
         .action-grid {
           display: grid;
           grid-template-columns: 1fr;
           gap: 16px;
         }
 
-        .feature-card,
         .service-panel {
           background: var(--color-white);
           border: 1px solid var(--color-gray-light);
           border-radius: var(--border-radius-md);
           box-shadow: var(--shadow-subtle);
-        }
-
-        .feature-card {
-          min-height: 72px;
-          padding: 18px;
-          display: flex;
-          align-items: center;
-          gap: 12px;
-        }
-
-        .feature-card span {
-          width: 24px;
-          height: 24px;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          background: var(--brand-soft);
-          color: var(--color-emerald-deep);
-          border-radius: 50%;
-          font-weight: 900;
-        }
-
-        .feature-card strong {
-          font-size: 14px;
-          line-height: 1.45;
         }
 
         .service-panel {
@@ -725,12 +689,8 @@ export default function SeroServicePage({ slug }) {
 
         @media (min-width: 768px) {
           .service-overview {
-            grid-template-columns: minmax(0, 1fr) 420px;
+            grid-template-columns: minmax(0, 1fr);
             align-items: start;
-          }
-
-          .feature-grid {
-            grid-template-columns: repeat(2, 1fr);
           }
 
           .action-grid {
