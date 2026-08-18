@@ -95,7 +95,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
                   <Link href="/login" className="menu-sub-item" onClick={onClose}>
                     로그인
                   </Link>
-                  <Link href="/signup" className="menu-sub-item" onClick={onClose}>
+                  <Link href="/signup" className="menu-sub-item signup-link" onClick={onClose}>
                     회원가입
                   </Link>
                 </>
@@ -236,18 +236,85 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
         }
 
         @media (min-width: 769px) {
+          .menu-overlay {
+            height: auto;
+            min-height: 104px;
+            overflow: visible;
+          }
+
           .menu-inner {
             max-width: var(--max-width-content);
-            padding: 72px 20px 56px;
+            padding: 22px 20px;
+          }
+
+          .scroll-wrapper {
+            max-height: none;
+            overflow: visible;
+            padding-right: 0;
           }
 
           .mobile-category-menu {
-            gap: 14px;
+            display: none !important;
           }
 
-          .mobile-category-link {
-            font-size: clamp(36px, 4vw, 58px);
-            line-height: 1.08;
+          .sub-menu-links,
+          .auth-links,
+          .association-links {
+            flex-direction: row;
+            align-items: center;
+          }
+
+          .sub-menu-links {
+            padding: 0;
+            gap: 0;
+          }
+
+          .auth-links,
+          .association-links {
+            gap: 0;
+          }
+
+          .auth-links {
+            padding-right: 24px;
+          }
+
+          .association-links {
+            flex: 1;
+            min-width: 0;
+            flex-wrap: wrap;
+          }
+
+          .signup-link,
+          .user-email,
+          .logout-btn {
+            display: none;
+          }
+
+          .menu-sub-item {
+            min-height: 40px;
+            padding: 0 24px;
+            display: inline-flex;
+            align-items: center;
+            color: var(--color-white);
+            border-left: 1px solid rgba(255, 255, 255, 0.28);
+            font-family: var(--font-family-condensed);
+            font-size: clamp(17px, 1.2vw, 22px);
+            font-weight: 900;
+            white-space: nowrap;
+          }
+
+          .auth-links .menu-sub-item:first-child {
+            border-left: 0;
+            padding-left: 0;
+          }
+
+          .menu-sub-item:hover,
+          .menu-sub-item:focus-visible {
+            color: var(--color-orange-accent);
+          }
+
+          .icon-link {
+            gap: 0;
           }
         }
       `}</style>
