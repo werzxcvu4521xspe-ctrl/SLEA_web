@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 import MenuOverlay from './MenuOverlay';
 import SearchOverlay from './SearchOverlay';
 
@@ -87,6 +88,13 @@ export default function Navigation() {
 
             {/* Desktop Navigation Links */}
             <ul className="nav-links pc-only">
+              {SERVICE_CATEGORIES.map((category) => (
+                <li key={category.slug}>
+                  <Link href={category.href} className={pathname === category.href ? 'active' : ''}>
+                    {category.title}
+                  </Link>
+                </li>
+              ))}
               {showAdminMenu && (
                 <li>
                   <Link href="/admin" className={pathname.startsWith('/admin') ? 'active' : ''} style={{ color: 'var(--color-orange-accent)' }}>
