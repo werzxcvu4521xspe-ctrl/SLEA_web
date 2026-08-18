@@ -26,17 +26,14 @@ const paletteOverride = `
     --brand-solid: #111111 !important;
     --brand-soft: #effaf7 !important;
     --brand-solid-hover: #111111 !important;
-  }
-
-  .top-banner {
-    background: var(--brand-solid) !important;
+    --banner-height: 0px !important;
   }
 
   .gnb-bar,
   .header-container.scrolled .gnb-bar {
-    background: rgba(255, 255, 255, 0.96) !important;
+    background: #ffffff !important;
     border-bottom: 1px solid #e0e0e0 !important;
-    box-shadow: 0 8px 24px rgba(22, 22, 22, 0.05) !important;
+    box-shadow: none !important;
   }
 
   .logo-text,
@@ -75,6 +72,31 @@ const paletteOverride = `
 
   .menu-btn .bar {
     background-color: #121413 !important;
+  }
+
+  @media (min-width: 1024px) {
+    .gnb-bar,
+    .header-container.scrolled .gnb-bar {
+      background: #111111 !important;
+      border-bottom-color: #111111 !important;
+      box-shadow: none !important;
+    }
+
+    .logo-text,
+    .icon-btn,
+    .mega-trigger-btn,
+    .nav-links a {
+      color: #ffffff !important;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #ff5a2a !important;
+    }
+
+    .menu-btn .bar {
+      background-color: #ffffff !important;
+    }
   }
 
   .map-display,

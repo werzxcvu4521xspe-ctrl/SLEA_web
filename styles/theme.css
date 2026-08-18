@@ -37,7 +37,7 @@
   /* Layout and Spacing */
   --max-width-content: 1180px;
   --header-height: 80px;
-  --banner-height: 40px;
+  --banner-height: 0px;
 
   /* Shadows and Borders */
   --shadow-subtle: 0 8px 24px rgba(22, 22, 22, 0.05);

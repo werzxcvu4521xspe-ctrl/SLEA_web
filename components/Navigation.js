@@ -9,24 +9,10 @@ import MenuOverlay from './MenuOverlay';
 import SearchOverlay from './SearchOverlay';
 
 export default function Navigation() {
-  const [isBannerVisible, setIsBannerVisible] = useState(true);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [userRole, setUserRole] = useState(null);
   const pathname = usePathname();
-
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 300) {
-        setIsBannerVisible(false);
-      } else {
-        setIsBannerVisible(true);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
 
   useEffect(() => {
     const checkRole = () => {
@@ -68,17 +54,7 @@ export default function Navigation() {
 
   return (
     <>
-      <header className={`header-container ${!isBannerVisible ? 'scrolled' : ''}`}>
-        {/* Top Announcement Banner */}
-        <div className={`top-banner ${!isBannerVisible ? 'hidden' : ''}`}>
-          <div className="banner-content">
-            <span>세종시 로컬 창업가 정회원 가입 및 브랜드 아카이빙 신청 접수 중</span>
-            <Link href="/signup" className="banner-link">
-              가입하기 <span className="arrow">→</span>
-            </Link>
-          </div>
-        </div>
-
+      <header className="header-container">
         {/* Main GNB */}
         <nav className="gnb-bar glass-panel">
           <div className="gnb-inner">
@@ -132,7 +108,7 @@ export default function Navigation() {
       {/* Overlays */}
       <MenuOverlay
         isOpen={isMenuOpen}
-        isBannerVisible={isBannerVisible}
+        isBannerVisible={false}
         onClose={() => setIsMenuOpen(false)}
       />
       <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} />
