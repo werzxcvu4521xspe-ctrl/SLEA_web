@@ -15,9 +15,32 @@ const scheduleItems = [
 ];
 
 const products = [
-  { id: 'rice-bread', name: '세종 쌀식빵 세트', brand: '밀마루 베이커리', price: 24000, category: 'F&B' },
-  { id: 'ceramic-cup', name: '로컬 흙 머그컵', brand: '공방 세종', price: 32000, category: 'Craft' },
-  { id: 'peach-jam', name: '조치원 복숭아잼 2종', brand: '디저트 카페 도원', price: 18000, category: 'F&B' }
+  {
+    id: 'rice-bread',
+    name: '[무료배송] 세종 쌀식빵 선물 세트',
+    brand: '밀마루 베이커리',
+    price: 24000,
+    category: 'F&B',
+    imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200&auto=format&fit=crop'
+  },
+  {
+    id: 'ceramic-cup',
+    name: '로컬 흙 머그컵 2P 세트',
+    brand: '공방 세종',
+    price: 32000,
+    category: 'Craft',
+    imageUrl: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=1200&auto=format&fit=crop'
+  },
+  {
+    id: 'peach-jam',
+    name: '[한정특가] 조치원 복숭아잼 2종 세트',
+    brand: '디저트 카페 도원',
+    price: 18000,
+    originalPrice: 24000,
+    discount: 25,
+    category: 'F&B',
+    imageUrl: 'https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?q=80&w=1200&auto=format&fit=crop'
+  }
 ];
 
 const initialTalkPosts = [
@@ -281,18 +304,36 @@ export default function SeroServicePage({ slug }) {
         )}
 
         {slug === 'sero-shop' && (
-          <section className="action-grid wide-left">
-            <div className="service-panel">
+          <section className="action-grid wide-left shop-commerce-grid">
+            <div className="service-panel shop-product-panel">
               <h3>회원사 상품</h3>
               <div className="product-grid">
                 {products.map((product) => (
-                  <article key={product.id}>
-                    <span>{product.category}</span>
+                  <article
+                    key={product.id}
+                    className="shop-product-card"
+                    role="button"
+                    tabIndex={0}
+                    aria-label={`${product.name} 장바구니 담기`}
+                    onClick={() => setCart([...cart, product])}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        setCart([...cart, product]);
+                      }
+                    }}
+                  >
+                    <div className="shop-product-image">
+                      <img src={product.imageUrl} alt={`${product.name} 상품 이미지`} />
+                    </div>
                     <strong>{product.name}</strong>
-                    <p>{product.brand}</p>
-                    <button type="button" onClick={() => setCart([...cart, product])}>
-                      {product.price.toLocaleString()}원 담기
-                    </button>
+                    <div className="shop-price-stack">
+                      {product.originalPrice && (
+                        <span className="shop-original-price">{product.originalPrice.toLocaleString()}원</span>
+                      )}
+                      <span className="shop-current-price">{product.price.toLocaleString()}원</span>
+                      {product.discount && <span className="shop-discount">{product.discount}%</span>}
+                    </div>
                   </article>
                 ))}
               </div>
@@ -425,8 +466,7 @@ export default function SeroServicePage({ slug }) {
         }
 
         .service-action-btn,
-        .service-form button,
-        .product-grid button {
+        .service-form button {
           min-height: 44px;
           padding: 0 18px;
           display: inline-flex;
@@ -484,16 +524,14 @@ export default function SeroServicePage({ slug }) {
         }
 
         .mini-list article,
-        .content-card-list article,
-        .product-grid article {
+        .content-card-list article {
           padding: 18px;
           background: var(--color-sand-light);
           border: 1px solid var(--color-gray-light);
         }
 
         .mini-list strong,
-        .content-card-list strong,
-        .product-grid strong {
+        .content-card-list strong {
           display: block;
           font-size: 15px;
           font-weight: 900;
@@ -502,8 +540,7 @@ export default function SeroServicePage({ slug }) {
         }
 
         .mini-list span,
-        .content-card-list span,
-        .product-grid span {
+        .content-card-list span {
           display: block;
           font-size: 12px;
           font-weight: 900;
@@ -536,7 +573,86 @@ export default function SeroServicePage({ slug }) {
         .product-grid {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 12px;
+          gap: 42px 28px;
+        }
+
+        .shop-product-panel {
+          padding: 0;
+          background: transparent;
+          border: 0;
+          box-shadow: none;
+        }
+
+        .shop-product-panel h3 {
+          margin-bottom: 24px;
+        }
+
+        .shop-product-card {
+          min-width: 0;
+          cursor: pointer;
+          outline: none;
+        }
+
+        .shop-product-card:focus-visible .shop-product-image,
+        .shop-product-card:hover .shop-product-image {
+          border-color: var(--color-orange-accent);
+        }
+
+        .shop-product-card:focus-visible img,
+        .shop-product-card:hover img {
+          transform: scale(1.025);
+        }
+
+        .shop-product-image {
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          overflow: hidden;
+          background: var(--color-sand-light);
+          border: 1px solid transparent;
+          transition: border-color 0.2s ease;
+        }
+
+        .shop-product-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.35s ease;
+        }
+
+        .shop-product-card strong {
+          display: block;
+          margin-top: 18px;
+          color: var(--color-charcoal-deep);
+          font-size: clamp(20px, 2vw, 28px);
+          font-weight: 900;
+          line-height: 1.35;
+          word-break: keep-all;
+        }
+
+        .shop-price-stack {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 7px;
+          margin-top: 20px;
+          color: var(--color-charcoal-deep);
+          font-weight: 900;
+        }
+
+        .shop-original-price {
+          color: #9a9a9a;
+          font-size: 18px;
+          text-decoration: line-through;
+        }
+
+        .shop-current-price {
+          color: var(--color-charcoal-deep);
+          font-size: 22px;
+        }
+
+        .shop-discount {
+          color: #8a735f;
+          font-size: 18px;
         }
 
         .member-editorial {
@@ -699,6 +815,10 @@ export default function SeroServicePage({ slug }) {
 
           .action-grid.wide-left {
             grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.65fr);
+          }
+
+          .action-grid.wide-left.shop-commerce-grid {
+            grid-template-columns: minmax(0, 1fr);
           }
 
           .product-grid {
