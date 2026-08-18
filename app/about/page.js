@@ -1,223 +1,288 @@
-const leaders = [
+import Link from 'next/link';
+
+const actionCards = [
   {
-    name: '김태균',
-    role: '공동리더 / 회장',
-    company: '조치원 브루어리 대표',
-    desc: '세종시 로컬 양조장 재생 프로젝트 기획 및 지역 맥주 브랜드 개척자.',
-    img: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?q=80&w=300&auto=format&fit=crop'
+    label: 'NOTICE',
+    title: '공지사항',
+    desc: '협회 공지, 활동 소식, 행사 모집과 지원사업 안내를 확인합니다.',
+    action: '확인하기',
+    href: '/notice'
   },
   {
-    name: '이지영',
-    role: '공동리더 / 부회장',
-    company: '디저트 카페 도원 대표',
-    desc: '로컬 F&B 창업 컨설팅 및 농가 상생 브랜딩 전문가.',
-    img: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300&auto=format&fit=crop'
+    label: 'JOIN',
+    title: '정회원 가입',
+    desc: 'SELO 회원으로 등록하고 네트워킹, 멘토링, 콘텐츠 지원을 시작합니다.',
+    action: '가입하기',
+    href: '/signup'
+  },
+  {
+    label: 'TALK',
+    title: '세로 토크',
+    desc: '자유 게시판, MOU 제안, 콜라보 프로젝트를 한곳에서 연결합니다.',
+    action: '이동하기',
+    href: '/sero-talk'
   }
 ];
 
-const executives = [
-  { name: '박민수', role: '사무국장', company: '로컬허브 나성 대표', desc: '협회 행정 총괄 및 네트워킹 행사 기획.' },
-  { name: '최소연', role: '재무이사', company: '공방 세종 대표', desc: '회비 관리 및 투명한 협회 재정 운영.' },
-  { name: '정우진', role: '대외협력이사', company: '단차 한옥찻집 대표', desc: 'MOU 체결 및 공공기관 파트너십 구축.' }
+const infoCards = [
+  {
+    label: 'AD & BUSINESS',
+    title: '협업 및 광고 문의',
+    desc: '로컬 창업가와 브랜드를 연결하는 캠페인, 공동 프로젝트, 제휴 제안을 환영합니다.',
+    action: '문의하기',
+    href: '/proposal'
+  },
+  {
+    label: 'NOW',
+    title: '콘텐츠 제보',
+    desc: '인터뷰, 팝업, 전시, 신제품, 지역 협업 소식을 SELO 채널에 제보해 주세요.',
+    action: '제보하기',
+    href: '/sero-talk'
+  },
+  {
+    label: 'PLACE',
+    title: '로컬 창업 정보 등록 신청',
+    desc: 'SELO에 소개하고 싶은 회원사, 상품, 공간, 프로젝트 정보를 등록합니다.',
+    action: '신청하기',
+    href: '/mypage'
+  }
 ];
 
-const advisors = [
-  { name: '이성호 교수', role: '학술 자문', company: '고려대학교 세종캠퍼스', desc: '도시재생 및 지역창업 비즈니스 모델 연구 자문.' },
-  { name: '한아름 디렉터', role: '브랜딩 자문', company: '스튜디오 세종', desc: '로컬 기업 브랜드 아이덴티티 및 디자인 디렉팅.' }
-];
-
-const mous = [
-  { name: '세종특별자치시청', type: '공공기관', relation: '로컬 크리에이터 창업 지원 사업 파트너' },
-  { name: '고려대학교 세종창업지원단', type: '대학', relation: '대학생 청년 창업가 멘토링 및 실습 협력' },
-  { name: '세종창조경제혁신센터', type: '공공기관', relation: '스타트업 보육 및 판로 지원 협력' },
-  { name: '홍익대학교 세종캠퍼스 산학협력단', type: '대학', relation: '디자인 및 로컬 콘텐츠 공동 개발' },
-  { name: '세종도시재생지원센터', type: '공공기관', relation: '원도심 활성화 및 청년 창업 공간 연계' },
-  { name: '충청 로컬 얼라이언스', type: '민간기업', relation: '충청권 로컬 창업 생태계 네트워크 공유' }
-];
-
-const history = [
-  { year: '2026', title: '통합 플랫폼 오픈 및 회원 150개사 돌파', desc: '정회원 100개사, 파트너 50개사 연계 로컬 쇼핑몰 및 구인구직 자유게시판 통합.' },
-  { year: '2025', title: '지자체 협력 로컬 크리에이터 활성화 지원사업 수주', desc: '세종시 로컬 멘토링 데이 연 12회 개최 및 팝업그로잉마켓 정기 운영.' },
-  { year: '2024', title: '세종로컬창업가협회 정식 사단법인 인가', desc: 'MOU 대학(고려대, 홍익대) 연계 및 초대 임원진 및 공동리더 선출.' },
-  { year: '2023', title: '협회 발족 및 첫 세로데이 개최', desc: '조치원 브루어리에서 세종시 로컬 창업가 30인이 모여 소통과 협력의 장을 마련.' }
-];
-
-function SectionHeader({ label, title, desc }) {
-  return (
-    <div style={{ marginBottom: '28px' }}>
-      <span className="section-label en-title">{label}</span>
-      <h2 style={{ fontSize: '28px', fontWeight: '900', color: 'var(--color-charcoal-deep)', marginBottom: '10px' }}>
-        {title}
-      </h2>
-      {desc && (
-        <p style={{ maxWidth: '760px', fontSize: '15.5px', lineHeight: '1.75', color: 'var(--color-gray-dark)' }}>
-          {desc}
-        </p>
-      )}
-    </div>
-  );
-}
+export const metadata = {
+  title: 'About SELO | 세종로컬창업가협회',
+  description: '세종 로컬 창업가 네트워크 SELO의 소개와 주요 연결 채널을 안내합니다.'
+};
 
 export default function AboutPage() {
   return (
-    <div className="about-page-wrapper">
-      <section className="page-hero-banner">
-        <div className="container">
-          <span className="section-label en-title" style={{ color: 'var(--color-orange-accent)' }}>
-            Association Introduction
-          </span>
-          <h1 className="page-hero-title">협회소개</h1>
-          <p className="page-hero-desc">
-            당신이 중심이 되는 로컬, 세계를 움직이는 세종의 엔진. <br />
-            세종로컬창업가협회는 지역 창업가들의 성장과 협력을 도모합니다.
+    <main className="about-page">
+      <section className="about-hero">
+        <div className="about-container">
+          <p className="eyebrow">ABOUT SELO</p>
+          <h1>
+            세종의 로컬 창업가가
+            <br />
+            서로를 찾고, 협업하고,
+            <br />
+            더 멀리 알려지는 플랫폼
+          </h1>
+          <p className="hero-copy">
+            SELO는 세종의 창업가, 소상공인, 크리에이터, 기관 파트너가 서로의 소식과 자원을
+            연결하는 로컬 비즈니스 네트워크입니다.
           </p>
         </div>
       </section>
 
-      <div className="container" style={{ padding: '56px 20px 96px' }}>
-        <section id="intro" style={{ scrollMarginTop: '140px', marginBottom: '88px' }}>
-          <SectionHeader
-            label="About & Purpose"
-            title="소개&설립 목적"
-            desc="세종특별자치시를 기반으로 활동하는 로컬 크리에이터, 청년 창업가, 소상공인이 함께 성장하기 위해 만든 민간 자율 협회입니다."
-          />
+      <section className="about-actions">
+        <div className="about-container action-grid">
+          {actionCards.map((card) => (
+            <Link key={card.label} href={card.href} className="action-card">
+              <span>{card.label}</span>
+              <strong>{card.title}</strong>
+              <p>{card.desc}</p>
+              <em>{card.action} →</em>
+            </Link>
+          ))}
+        </div>
+      </section>
 
-          <div className="glass-panel" style={{ padding: '40px', backgroundColor: 'var(--color-white)', marginBottom: '28px' }}>
-            <h3 style={{ fontSize: '22px', marginBottom: '16px', color: 'var(--color-emerald-deep)' }}>협회 설립 목적</h3>
-            <p style={{ fontSize: '16px', lineHeight: '1.8', color: 'var(--color-gray-dark)', marginBottom: '24px' }}>
-              세종로컬창업가협회는 세종시만의 독창적인 자원과 역사적 가치를 재발견하여 새로운 브랜드와 비즈니스를 창출하고,
-              지속 가능한 지역 경제 활성화에 기여함을 목적으로 합니다.
+      <section className="about-story">
+        <div className="about-container story-grid">
+          <div>
+            <p className="eyebrow">WHAT WE DO</p>
+            <h2>지역 안에서 시작한 브랜드가 시장과 연결되는 과정을 돕습니다.</h2>
+          </div>
+          <div className="story-copy">
+            <p>
+              공지, 네트워킹 데이, 회원사 콘텐츠, AI 창업 지원, 멘토링, 쇼핑, 토크 채널을
+              하나의 흐름으로 묶어 창업가가 필요한 정보를 더 빨리 찾도록 설계했습니다.
             </p>
-            <div className="grid-3">
-              {[
-                ['네트워크 공유', '창업가 간 정보 교류, 협업 상품 개발, 공동 마케팅 추진을 위한 플랫폼을 마련합니다.'],
-                ['역량 강화', '전문가 멘토링, 브랜딩 및 AI 기술 교육을 통해 로컬 브랜드의 경쟁력을 높입니다.'],
-                ['정책 제안', '행정 및 공공기관과 협력하고 현장의 목소리를 반영한 창업 지원 정책을 건의합니다.']
-              ].map(([title, desc]) => (
-                <div key={title} style={{ padding: '22px', background: 'var(--brand-soft)', borderRadius: 'var(--border-radius-md)' }}>
-                  <h4 style={{ color: 'var(--color-emerald-deep)', marginBottom: '8px' }}>{title}</h4>
-                  <p style={{ fontSize: '14px', color: 'var(--color-gray-dark)', lineHeight: '1.65' }}>{desc}</p>
-                </div>
-              ))}
-            </div>
+            <p>
+              SELO는 단순한 소개 페이지가 아니라, 회원사가 자신의 이야기와 상품을 올리고
+              협업 제안을 받을 수 있는 운영형 플랫폼을 지향합니다.
+            </p>
           </div>
+        </div>
+      </section>
 
-          <div className="grid-2">
-            <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
-              <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '12px' }}>협회 미션 (Mission)</h3>
-              <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--color-gray-dark)' }}>
-                &quot;세종 로컬 창업가의 목소리를 대변하고, 상생 발전하는 자생적 생태계를 완성하여 로컬을 넘어 세계적인 브랜드로 성장할 수 있는 디딤돌이 된다.&quot;
-              </p>
-            </div>
-            <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
-              <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '12px' }}>협회 비전 (Vision)</h3>
-              <p style={{ fontSize: '15px', lineHeight: '1.7', color: 'var(--color-gray-dark)' }}>
-                &quot;대한민국 행정의 중심 세종을 넘어, 로컬 크리에이티브의 허브이자 세계 속의 매력적인 로컬 창업 강소 도시로 도약한다.&quot;
-              </p>
-            </div>
-          </div>
-        </section>
+      <section className="about-info">
+        <div className="about-container info-grid">
+          {infoCards.map((card) => (
+            <Link key={card.label} href={card.href} className="info-card">
+              <span>{card.label}</span>
+              <strong>{card.title}</strong>
+              <p>{card.desc}</p>
+              <em>{card.action}</em>
+            </Link>
+          ))}
+        </div>
+      </section>
 
-        <section id="leaders" style={{ scrollMarginTop: '140px', marginBottom: '88px' }}>
-          <SectionHeader
-            label="Leadership & Advisors"
-            title="임원 및 자문 위원"
-            desc="협회 운영과 대외 협력, 브랜드 자문을 함께 이끌어가는 공동리더, 임원진, 자문위원을 소개합니다."
-          />
+      <style jsx>{`
+        .about-page {
+          background: #111111;
+          color: #ffffff;
+        }
 
-          <div style={{ marginBottom: '40px' }}>
-            <h3 style={{ fontSize: '20px', borderBottom: '2px solid var(--color-emerald-deep)', paddingBottom: '8px', marginBottom: '24px' }}>
-              공동 리더
-            </h3>
-            <div className="grid-2">
-              {leaders.map((leader) => (
-                <div key={leader.name} className="glass-panel" style={{ display: 'flex', gap: '20px', padding: '24px', backgroundColor: 'var(--color-white)' }}>
-                  <img src={leader.img} alt={leader.name} style={{ width: '100px', height: '100px', borderRadius: '50%', objectFit: 'cover', flexShrink: 0 }} />
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-                    <span style={{ fontSize: '12px', fontWeight: '700', color: 'var(--color-orange-accent)' }}>{leader.role}</span>
-                    <h4 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)' }}>{leader.name}</h4>
-                    <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--color-gray-dark)' }}>{leader.company}</span>
-                    <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', marginTop: '8px', lineHeight: '1.5' }}>{leader.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        .about-container {
+          width: min(100%, 1440px);
+          margin: 0 auto;
+          padding: 0 clamp(24px, 5vw, 72px);
+        }
 
-          <div className="grid-2">
-            <div>
-              <h3 style={{ fontSize: '20px', borderBottom: '2px solid var(--color-emerald-deep)', paddingBottom: '8px', marginBottom: '20px' }}>
-                임원진
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {executives.map((exec) => (
-                  <div key={exec.name} className="glass-panel" style={{ padding: '20px', backgroundColor: 'var(--color-white)' }}>
-                    <h4 style={{ fontSize: '16px', marginBottom: '6px' }}>
-                      {exec.name} <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--color-gray-dark)' }}>{exec.role}</span>
-                    </h4>
-                    <span style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: 'var(--color-emerald-medium)', marginBottom: '8px' }}>{exec.company}</span>
-                    <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.6' }}>{exec.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
+        .about-hero {
+          padding: clamp(96px, 14vw, 188px) 0 clamp(72px, 10vw, 132px);
+        }
 
-            <div>
-              <h3 style={{ fontSize: '20px', borderBottom: '2px solid var(--color-emerald-deep)', paddingBottom: '8px', marginBottom: '20px' }}>
-                자문 위원
-              </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                {advisors.map((adv) => (
-                  <div key={adv.name} className="glass-panel" style={{ padding: '20px', backgroundColor: 'var(--color-white)' }}>
-                    <h4 style={{ fontSize: '16px', marginBottom: '6px' }}>
-                      {adv.name} <span style={{ fontSize: '13px', fontWeight: '500', color: 'var(--color-gray-dark)' }}>{adv.role}</span>
-                    </h4>
-                    <span style={{ display: 'block', fontSize: '13px', fontWeight: '700', color: 'var(--color-orange-accent)', marginBottom: '8px' }}>{adv.company}</span>
-                    <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.6' }}>{adv.desc}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        .eyebrow {
+          margin-bottom: 24px;
+          color: var(--color-orange-accent);
+          font-family: var(--font-family-condensed);
+          font-size: clamp(16px, 1.4vw, 24px);
+          font-weight: 900;
+          letter-spacing: 0.08em;
+          text-transform: uppercase;
+        }
 
-        <section id="mou" style={{ scrollMarginTop: '140px', marginBottom: '88px' }}>
-          <SectionHeader
-            label="MOU Partners"
-            title="MOU기관 현황"
-            desc="세종로컬창업가협회는 다각적인 협동 파트너십 구축을 통해 지속 가능한 로컬 비즈니스 기반을 견고히 다지고 있습니다."
-          />
-          <div className="grid-3">
-            {mous.map((mou) => (
-              <div key={mou.name} className="glass-panel" style={{ padding: '24px', backgroundColor: 'var(--color-white)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <span className="badge badge-emerald" style={{ width: 'fit-content' }}>{mou.type}</span>
-                <h4 style={{ fontSize: '17px', color: 'var(--color-charcoal-deep)' }}>{mou.name}</h4>
-                <p style={{ fontSize: '13px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>{mou.relation}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        h1,
+        h2,
+        strong {
+          font-family: var(--font-family-condensed);
+          letter-spacing: 0;
+        }
 
-        <section id="history" style={{ scrollMarginTop: '140px' }}>
-          <SectionHeader
-            label="History"
-            title="협회 연혁"
-            desc="세종 로컬 창업가 네트워크가 협회와 통합 플랫폼으로 성장해 온 주요 흐름입니다."
-          />
-          <div className="timeline-container" style={{ margin: '24px 0 0' }}>
-            {history.map((item) => (
-              <div key={item.year} className="timeline-item">
-                <div className="timeline-dot"></div>
-                <div className="timeline-year">{item.year}</div>
-                <div className="timeline-content-card">
-                  <h4 style={{ fontSize: '16px', color: 'var(--color-charcoal-deep)', marginBottom: '8px' }}>{item.title}</h4>
-                  <p style={{ fontSize: '14px', color: 'var(--color-gray-dark)', lineHeight: '1.6' }}>{item.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-    </div>
+        h1 {
+          max-width: 1120px;
+          font-size: clamp(48px, 7vw, 112px);
+          font-weight: 900;
+          line-height: 1.04;
+        }
+
+        .hero-copy {
+          max-width: 820px;
+          margin-top: 36px;
+          color: rgba(255, 255, 255, 0.78);
+          font-size: clamp(18px, 1.6vw, 28px);
+          font-weight: 600;
+          line-height: 1.62;
+          word-break: keep-all;
+        }
+
+        .about-actions,
+        .about-story,
+        .about-info {
+          border-top: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .action-grid,
+        .info-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .action-card,
+        .info-card {
+          min-height: 300px;
+          padding: clamp(32px, 4vw, 58px);
+          color: #ffffff;
+          border-left: 1px solid rgba(255, 255, 255, 0.14);
+          transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .action-card:last-child,
+        .info-card:last-child {
+          border-right: 1px solid rgba(255, 255, 255, 0.14);
+        }
+
+        .action-card:hover,
+        .info-card:hover {
+          background: #1d1d1d;
+        }
+
+        .action-card span,
+        .info-card span {
+          display: block;
+          margin-bottom: 34px;
+          color: var(--color-orange-accent);
+          font-family: var(--font-family-condensed);
+          font-size: 18px;
+          font-weight: 900;
+          letter-spacing: 0.06em;
+        }
+
+        .action-card strong,
+        .info-card strong {
+          display: block;
+          margin-bottom: 18px;
+          font-size: clamp(26px, 2.5vw, 42px);
+          font-weight: 900;
+          line-height: 1.18;
+        }
+
+        .action-card p,
+        .info-card p,
+        .story-copy p {
+          color: rgba(255, 255, 255, 0.78);
+          font-size: clamp(16px, 1.25vw, 22px);
+          font-weight: 600;
+          line-height: 1.7;
+          word-break: keep-all;
+        }
+
+        .action-card em,
+        .info-card em {
+          display: inline-flex;
+          margin-top: 42px;
+          padding: 15px 24px;
+          background: #242424;
+          color: #ffffff;
+          font-style: normal;
+          font-size: 17px;
+          font-weight: 900;
+        }
+
+        .story-grid {
+          display: grid;
+          grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+          gap: clamp(40px, 8vw, 120px);
+          padding-top: clamp(72px, 9vw, 128px);
+          padding-bottom: clamp(72px, 9vw, 128px);
+        }
+
+        h2 {
+          max-width: 780px;
+          font-size: clamp(36px, 4.8vw, 76px);
+          font-weight: 900;
+          line-height: 1.1;
+        }
+
+        .story-copy {
+          display: flex;
+          flex-direction: column;
+          gap: 28px;
+          padding-top: 12px;
+        }
+
+        .info-card {
+          min-height: 340px;
+        }
+
+        @media (max-width: 900px) {
+          .action-grid,
+          .info-grid,
+          .story-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .action-card,
+          .info-card {
+            min-height: auto;
+            border-left: 0;
+            border-right: 0 !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+          }
+        }
+      `}</style>
+    </main>
   );
 }

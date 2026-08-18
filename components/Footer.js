@@ -47,6 +47,9 @@ export default function Footer() {
           <div className="info-left">
             <ul className="meta-links">
               <li>
+                <Link href="/about">About</Link>
+              </li>
+              <li>
                 <Link href="/notice">공지사항</Link>
               </li>
               <li>
