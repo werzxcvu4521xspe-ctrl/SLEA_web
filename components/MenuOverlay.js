@@ -256,9 +256,9 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
         @media (min-width: 769px) {
           .menu-overlay {
             top: var(--header-height);
-            height: 152px;
+            height: 96px;
             min-height: 0;
-            max-height: 152px;
+            max-height: 96px;
             overflow: hidden;
             align-items: center;
             background: #141414;
@@ -271,7 +271,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
             max-width: var(--max-width-content);
             height: 100%;
             justify-content: center;
-            padding: 32px 20px;
+            padding: 16px 20px;
           }
 
           .scroll-wrapper {
@@ -318,8 +318,8 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           }
 
           .menu-sub-item {
-            min-height: 48px;
-            padding: 0 34px;
+            min-height: 36px;
+            padding: 0 28px;
             display: inline-flex;
             align-items: center;
             color: var(--color-white);
