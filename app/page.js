@@ -330,6 +330,7 @@ export default function HomePage() {
           border-radius: 20px;
           background-color: rgba(0, 0, 0, 0.03);
           transition: all var(--transition-smooth);
+          white-space: nowrap;
         }
 
         .more-link:hover {
@@ -580,6 +581,7 @@ export default function HomePage() {
           line-height: 1.25;
           margin: 0 0 20px 0;
           letter-spacing: -0.02em;
+          word-break: keep-all;
         }
 
         .gradient-dark .cta-title {
@@ -740,6 +742,63 @@ export default function HomePage() {
           -webkit-box-orient: vertical;
           overflow: hidden;
           text-overflow: ellipsis;
+        }
+
+        /* Mobile Responsive Patches */
+        @media (max-width: 768px) {
+          .home-section {
+            padding: 48px 0;
+          }
+
+          .section-header {
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            gap: 12px;
+          }
+
+          .section-title {
+            font-size: 24px;
+            margin-bottom: 6px;
+          }
+
+          .section-desc {
+            font-size: 13px;
+            line-height: 1.45;
+          }
+
+          .more-link {
+            font-size: 12px;
+            padding: 6px 12px;
+          }
+
+          .cta-banner {
+            padding: 36px 20px;
+            gap: 28px;
+          }
+
+          .cta-title {
+            font-size: 22px;
+            line-height: 1.35;
+          }
+
+          .cta-desc {
+            font-size: 13.5px;
+            margin-bottom: 22px;
+            line-height: 1.5;
+          }
+
+          .cta-button {
+            padding: 12px 24px;
+            font-size: 13.5px;
+            width: 100%;
+            text-align: center;
+          }
+
+          .visual-card {
+            padding: 20px;
+            max-width: 100%;
+          }
         }
       ` }} />
     </div>
