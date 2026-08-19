@@ -147,6 +147,8 @@ export default function SeroServicePage({ slug }) {
   const [cart, setCart] = useState([]);
   const [talkPosts, setTalkPosts] = useState(initialTalkPosts);
   const [talkType, setTalkType] = useState('자유 게시판');
+  const [selectedPost, setSelectedPost] = useState(null);
+  const [commentInput, setCommentInput] = useState('');
   const [memberFilter, setMemberFilter] = useState('전체');
   const [memberSort, setMemberSort] = useState('latest');
   const [seroDayFilter, setSeroDayFilter] = useState('전체');
@@ -332,6 +334,33 @@ export default function SeroServicePage({ slug }) {
     saveItem('sero-talk', post);
     setSubmitted('세로 토크 글이 등록되었습니다.');
     setFormState({});
+  };
+
+  const handleCreateComment = (e) => {
+    e.preventDefault();
+    if (!user) return;
+    if (!commentInput.trim()) return;
+
+    const newComment = {
+      id: Date.now(),
+      author: user.user_metadata?.name || user.email?.split('@')[0] || '회원',
+      body: commentInput.trim(),
+      createdAt: new Date().toISOString()
+    };
+
+    const updatedPosts = talkPosts.map((post) => {
+      if (post.id === selectedPost.id) {
+        const comments = post.comments ? [...post.comments, newComment] : [newComment];
+        const nextPost = { ...post, comments };
+        setSelectedPost(nextPost);
+        return nextPost;
+      }
+      return post;
+    });
+
+    setTalkPosts(updatedPosts);
+    localStorage.setItem('sejong_sero_service_sero-talk', JSON.stringify(updatedPosts));
+    setCommentInput('');
   };
 
   const submitSeroDayApplication = (event) => {
@@ -754,7 +783,12 @@ export default function SeroServicePage({ slug }) {
               </div>
               <div className="mini-list">
                 {talkPosts.filter((post) => post.type === talkType).map((post) => (
-                  <article key={post.id}>
+                  <article 
+                    key={post.id} 
+                    onClick={() => setSelectedPost(post)} 
+                    style={{ cursor: 'pointer' }}
+                    className="talk-article-card"
+                  >
                     <strong>{post.title}</strong>
                     <span>{post.type} · {post.author}</span>
                   </article>
@@ -783,9 +817,279 @@ export default function SeroServicePage({ slug }) {
             )}
           </section>
         )}
+
+        {selectedPost && (
+          <div className="talk-detail-overlay" onClick={() => setSelectedPost(null)}>
+            <div className="talk-detail-modal glass-panel" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <span className="talk-type-badge">{selectedPost.type}</span>
+                <button className="close-btn" onClick={() => setSelectedPost(null)}>×</button>
+              </div>
+              
+              <h2 className="modal-title">{selectedPost.title}</h2>
+              <div className="modal-meta">
+                <span>작성자: {selectedPost.author}</span>
+                {selectedPost.createdAt && (
+                  <span>작성일: {new Date(selectedPost.createdAt).toLocaleDateString()}</span>
+                )}
+              </div>
+
+              <div className="modal-content-body">
+                <p>{selectedPost.content || '등록된 내용이 없습니다.'}</p>
+              </div>
+
+              {/* 댓글 섹션 */}
+              <div className="modal-comments-section">
+                <h3>댓글 ({selectedPost.comments ? selectedPost.comments.length : 0})</h3>
+                
+                <div className="comments-list">
+                  {(selectedPost.comments || []).map((comm) => (
+                    <div key={comm.id} className="comment-item">
+                      <div className="comment-meta">
+                        <strong>{comm.author}</strong>
+                        <span>{new Date(comm.createdAt).toLocaleString()}</span>
+                      </div>
+                      <p className="comment-body">{comm.body}</p>
+                    </div>
+                  ))}
+                  {(!selectedPost.comments || selectedPost.comments.length === 0) && (
+                    <div className="empty-comments">가장 먼저 댓글을 남겨보세요!</div>
+                  )}
+                </div>
+
+                {user ? (
+                  <form className="comment-form" onSubmit={handleCreateComment}>
+                    <input 
+                      required 
+                      value={commentInput} 
+                      onChange={(e) => setCommentInput(e.target.value)} 
+                      placeholder="따뜻한 댓글을 남겨주세요." 
+                    />
+                    <button type="submit">등록</button>
+                  </form>
+                ) : (
+                  <div className="comment-login-helper">
+                    <span>로그인한 회원만 댓글을 작성할 수 있습니다.</span>
+                    <Link href="/login" className="login-btn">로그인 하러가기</Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       <style jsx>{`
+        /* Talk Detail Modal CSS */
+        .talk-article-card {
+          cursor: pointer;
+          transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .talk-article-card:hover {
+          transform: translateY(-2px);
+          border-color: var(--color-orange-accent) !important;
+        }
+
+        .talk-detail-overlay {
+          position: fixed;
+          inset: 0;
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
+          padding: 20px;
+        }
+
+        .talk-detail-modal {
+          width: min(640px, 100%);
+          max-height: 85vh;
+          background: #ffffff;
+          border-radius: var(--border-radius-lg);
+          padding: 30px;
+          display: flex;
+          flex-direction: column;
+          gap: 20px;
+          overflow-y: auto;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .talk-type-badge {
+          display: inline-block;
+          font-size: 11px;
+          font-weight: 800;
+          background: var(--color-orange-accent);
+          color: #ffffff;
+          padding: 4px 10px;
+          border-radius: 4px;
+          text-transform: uppercase;
+        }
+
+        .close-btn {
+          background: none;
+          border: none;
+          font-size: 28px;
+          font-weight: 300;
+          cursor: pointer;
+          color: var(--color-gray-dark);
+          line-height: 1;
+          padding: 0;
+        }
+
+        .close-btn:hover {
+          color: var(--color-charcoal-deep);
+        }
+
+        .modal-title {
+          font-size: clamp(20px, 2.5vw, 28px);
+          font-weight: 900;
+          color: var(--color-charcoal-deep);
+          margin: 0;
+          line-height: 1.3;
+        }
+
+        .modal-meta {
+          display: flex;
+          gap: 16px;
+          font-size: 12.5px;
+          color: var(--color-gray-dark);
+          border-bottom: 1px solid var(--color-gray-light);
+          padding-bottom: 14px;
+        }
+
+        .modal-content-body {
+          font-size: 15px;
+          line-height: 1.7;
+          color: var(--color-charcoal-deep);
+          word-break: break-all;
+          white-space: pre-wrap;
+          min-height: 120px;
+        }
+
+        .modal-comments-section {
+          border-top: 1px solid var(--color-gray-light);
+          padding-top: 20px;
+          display: flex;
+          flex-direction: column;
+          gap: 16px;
+        }
+
+        .modal-comments-section h3 {
+          font-size: 16px;
+          font-weight: 900;
+          color: var(--color-charcoal-deep);
+          margin: 0;
+        }
+
+        .comments-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          max-height: 250px;
+          overflow-y: auto;
+          padding-right: 4px;
+        }
+
+        .comment-item {
+          background: var(--color-sand-light);
+          padding: 12px 16px;
+          border-radius: 4px;
+          border: 1px solid var(--color-gray-light);
+        }
+
+        .comment-meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 6px;
+        }
+
+        .comment-meta strong {
+          font-size: 13px;
+          color: var(--color-charcoal-deep);
+          font-weight: 900;
+        }
+
+        .comment-meta span {
+          font-size: 11px;
+          color: #999;
+        }
+
+        .comment-body {
+          font-size: 13.5px;
+          line-height: 1.5;
+          color: #444;
+          margin: 0;
+        }
+
+        .empty-comments {
+          font-size: 13px;
+          color: var(--color-gray-dark);
+          text-align: center;
+          padding: 20px 0;
+          border: 1px dashed #ddd;
+          border-radius: 4px;
+        }
+
+        .comment-form {
+          display: flex;
+          gap: 8px;
+          margin-top: 8px;
+        }
+
+        .comment-form input {
+          flex: 1;
+          min-height: 40px;
+          padding: 8px 12px;
+          font-size: 13.5px;
+          border: 1px solid var(--color-gray-light);
+          border-radius: 4px;
+          background: var(--color-sand-light);
+        }
+
+        .comment-form button {
+          min-height: 40px;
+          padding: 0 16px;
+          background: var(--color-orange-accent);
+          color: #ffffff;
+          font-size: 13.5px;
+          font-weight: bold;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background 0.2s;
+        }
+
+        .comment-form button:hover {
+          background: var(--color-charcoal-deep);
+        }
+
+        .comment-login-helper {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 16px;
+          background: var(--color-sand-light);
+          border: 1px solid var(--color-gray-light);
+          border-radius: 4px;
+          font-size: 13px;
+          color: var(--color-gray-dark);
+        }
+
+        .comment-login-helper .login-btn {
+          color: var(--color-orange-accent);
+          font-weight: bold;
+          text-decoration: underline;
+        }
+
         .service-hero-inner {
           display: flex;
           flex-direction: column;
