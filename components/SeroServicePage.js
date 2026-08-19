@@ -196,6 +196,10 @@ export default function SeroServicePage({ slug }) {
 
   const submitLocalForm = (event, key, message) => {
     event.preventDefault();
+    if (!user) {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
     const item = {
       id: `${key}-${Date.now()}`,
       ...formState,
@@ -535,20 +539,32 @@ export default function SeroServicePage({ slug }) {
                 </div>
                 <p>신청 내용은 담당자가 확인 후 멘토와 일정을 매칭합니다.</p>
               </div>
-              <form className="service-panel service-form" onSubmit={(event) => submitLocalForm(event, 'mentoring-day', '1:1 멘토링 신청이 저장되었습니다.')}>
-                <h3>1:1 멘토링 신청</h3>
-                <input required value={formState.brand || ''} onChange={(e) => updateField('brand', e.target.value)} placeholder="브랜드/기업명" />
-                <select value={formState.field || '브랜딩'} onChange={(e) => updateField('field', e.target.value)}>
-                  <option>브랜딩</option>
-                  <option>마케팅/SNS</option>
-                  <option>세무/회계</option>
-                  <option>온라인 판로</option>
-                  <option>정부지원사업</option>
-                </select>
-                <textarea required value={formState.request || ''} onChange={(e) => updateField('request', e.target.value)} placeholder="상담받고 싶은 내용을 적어주세요." />
-                <button type="submit">멘토링 신청 저장</button>
-                {submitted && <span className="form-result">{submitted}</span>}
-              </form>
+              {user ? (
+                <form className="service-panel service-form" onSubmit={(event) => submitLocalForm(event, 'mentoring-day', '1:1 멘토링 신청이 저장되었습니다.')}>
+                  <h3>1:1 멘토링 신청</h3>
+                  <input required value={formState.brand || ''} onChange={(e) => updateField('brand', e.target.value)} placeholder="브랜드/기업명" />
+                  <select value={formState.field || '브랜딩'} onChange={(e) => updateField('field', e.target.value)}>
+                    <option>브랜딩</option>
+                    <option>마케팅/SNS</option>
+                    <option>세무/회계</option>
+                    <option>온라인 판로</option>
+                    <option>정부지원사업</option>
+                  </select>
+                  <textarea required value={formState.request || ''} onChange={(e) => updateField('request', e.target.value)} placeholder="상담받고 싶은 내용을 적어주세요." />
+                  <button type="submit">멘토링 신청 저장</button>
+                  {submitted && <span className="form-result">{submitted}</span>}
+                </form>
+              ) : (
+                <div className="service-panel service-form" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '300px', textAlign: 'center' }}>
+                  <h3>1:1 멘토링 신청</h3>
+                  <p style={{ margin: '30px 0', color: 'var(--color-gray-dark)', fontSize: '14px', fontWeight: '700' }}>
+                    로그인한 회원만 멘토링을 신청할 수 있습니다.
+                  </p>
+                  <Link href="/login" className="auth-submit-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', width: '100%', maxWidth: '200px', height: '44px', borderRadius: '4px', background: 'var(--color-orange-accent)', color: '#fff', fontWeight: 'bold' }}>
+                    로그인 하러가기
+                  </Link>
+                </div>
+              )}
             </section>
 
             <section className="mentoring-review-teaser">
