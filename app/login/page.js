@@ -140,43 +140,10 @@ export default function LoginPage() {
           <button type="submit" disabled={loading} className="auth-submit-btn">
             {loading ? '로그인 중...' : '로그인 완료'}
           </button>
-
-          <button 
-            type="button" 
-            onClick={handleQuickAdminLogin} 
-            className="auth-quick-admin-btn"
-            style={{
-              height: '46px',
-              backgroundColor: '#fff5f2',
-              color: '#f2542d',
-              fontSize: '13.5px',
-              fontWeight: '700',
-              borderRadius: 'var(--border-radius-sm)',
-              border: '1px solid #f2542d',
-              textAlign: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              marginTop: '4px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '6px'
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = '#f2542d';
-              e.currentTarget.style.color = '#fff';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = '#fff5f2';
-              e.currentTarget.style.color = '#f2542d';
-            }}
-          >
-            🛡️ 관리자 계정으로 신속 로그인
-          </button>
         </form>
 
         <div className="auth-footer-links" style={{ flexDirection: 'column', alignItems: 'center', gap: '12px' }}>
-          <div style={{ display: 'flex', gap: '12px' }}>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
             <Link href="/find-auth?tab=id" className="auth-redirect-link" style={{ fontSize: '12px', color: 'var(--color-gray-dark)', textDecoration: 'none' }}>
               아이디 찾기
             </Link>
@@ -184,6 +151,25 @@ export default function LoginPage() {
             <Link href="/find-auth?tab=password" className="auth-redirect-link" style={{ fontSize: '12px', color: 'var(--color-gray-dark)', textDecoration: 'none' }}>
               비밀번호 재설정
             </Link>
+            <span style={{ color: '#ccc', fontSize: '12px' }}>|</span>
+            <button 
+              type="button" 
+              onClick={handleQuickAdminLogin} 
+              className="auth-redirect-link" 
+              style={{ 
+                background: 'none', 
+                border: 'none', 
+                padding: 0, 
+                fontSize: '12px', 
+                color: 'var(--color-gray-dark)', 
+                textDecoration: 'none', 
+                cursor: 'pointer',
+                fontFamily: 'inherit',
+                fontWeight: 'inherit'
+              }}
+            >
+              관리자 로그인
+            </button>
           </div>
           <div style={{ marginTop: '4px' }}>
             <span>아직 계정이 없으신가요? </span>
