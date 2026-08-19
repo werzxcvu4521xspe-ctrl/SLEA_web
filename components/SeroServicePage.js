@@ -43,9 +43,51 @@ const products = [
 ];
 
 const initialTalkPosts = [
-  { id: 1, type: '자유 게시판', title: '8월 팝업 행사 같이 나갈 F&B 브랜드를 찾습니다.', author: '도원' },
-  { id: 2, type: 'MOU 제안', title: '대학 창업동아리와 회원사 현장실습 연계를 제안합니다.', author: '운영팀' },
-  { id: 3, type: '콜라보 프로젝트', title: '세종 복숭아 시즌 공동 패키지 프로젝트 모집', author: '브루어리' }
+  { 
+    id: 1, 
+    type: '자유 게시판', 
+    title: '세종 조치원 복숭아 캐릭터를 활용한 굿즈 패키지 피드백 부탁드립니다!', 
+    author: '조치원크리에이터', 
+    content: '올해 복숭아 축제에 맞춰 조치원 복숭아 캐릭터 굿즈 3종(키링, 그립톡, 에코백) 시안을 제작해 보았습니다. 로컬 브랜드로서 세종 시민분들께 친근하게 다가갈 수 있을지, 보완할 점이 있다면 자유롭게 의견 부탁드립니다!',
+    userEmail: 'creator@sejong.com',
+    createdAt: new Date(Date.now() - 3600000 * 2).toISOString()
+  },
+  { 
+    id: 2, 
+    type: 'MOU 제안', 
+    title: '로컬 F&B 회원사 공동 원두 소싱 및 물류 공동망 구축 제안', 
+    author: '커피랩세종', 
+    content: '현재 세종시 내 개인 로컬 카페들이 원두 생두를 각자 소싱하다 보니 단가 경쟁력이 낮습니다. 뜻이 맞는 5개 이상의 F&B 회원사분들과 함께 생두 공동 구매 및 로컬 통합 물류 보관소를 셰어링하여 비용을 절감하는 MOU 체결을 제안합니다.',
+    userEmail: 'coffeelab@sejong.com',
+    createdAt: new Date(Date.now() - 3600000 * 5).toISOString()
+  },
+  { 
+    id: 3, 
+    type: '콜라보 프로젝트', 
+    title: '[팀원 모집] 로컬 한옥 게스트하우스 주말 팝업 스토어 콜라보 브랜드 모집', 
+    author: '한옥스테이세종', 
+    content: '고운동 한옥마을 스테이 마당에서 매주 토요일 오후에 소규모 야외 마켓 팝업을 열 계획입니다. 디저트, 플라워, 핸드메이드 소품 브랜드를 운영하시는 회원사분들 중 공간을 셰어하여 함께 시너지를 낼 파트너를 모십니다.',
+    userEmail: 'stay@sejong.com',
+    createdAt: new Date(Date.now() - 3600000 * 12).toISOString()
+  },
+  { 
+    id: 4, 
+    type: '자유 게시판', 
+    title: '신작 로컬 전통주 시음회에 협회 회원사 분들을 초대합니다 🍶', 
+    author: '세종양조장', 
+    content: '세종 쌀을 100% 사용하여 빚은 신제품 약주 출시를 앞두고 최종 피드백을 받고자 합니다. 이번 주 금요일 저녁 7시, 양조장 시음실에서 회원사분들을 모시고 편안하게 의견을 나누는 자리를 마련했으니 편하게 참석해 주세요!',
+    userEmail: 'brewery@sejong.com',
+    createdAt: new Date(Date.now() - 3600000 * 24).toISOString()
+  },
+  { 
+    id: 5, 
+    type: 'MOU 제안', 
+    title: '세종 청년 예술가 네트워크와 협회 공간 제휴 제안', 
+    author: '아트세종', 
+    content: '공실이나 유휴 벽면 공간을 보유하고 계신 회원사 매장(카페, 서점, 공유오피스 등)에 저희 청년 작가들의 작품을 무상으로 전시해 드리고, 판매 시 수익을 배분하는 문화공간 상생 MOU를 제안하고 싶습니다. 관심 있으신 대표님 연락 주세요!',
+    userEmail: 'art@sejong.com',
+    createdAt: new Date(Date.now() - 3600000 * 36).toISOString()
+  }
 ];
 
 function saveItem(key, item) {
@@ -146,6 +188,38 @@ export default function SeroServicePage({ slug }) {
     });
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('sejong_sero_service_sero-talk');
+    let list = [];
+    let needsReset = false;
+    
+    if (stored) {
+      try {
+        list = JSON.parse(stored);
+        // If there's any test post containing "ㅈㄷㄹ" or simple mock list from previous version, force a reset
+        const containsJdr = list.some(post => 
+          (post.title && post.title.includes('ㅈㄷㄹ')) || 
+          (post.author && post.author.includes('ㅈㄷㄹ')) ||
+          (post.content && post.content.includes('ㅈㄷㄹ')) ||
+          (post.title && post.title.includes('8월 팝업 행사 같이 나갈'))
+        );
+        if (containsJdr || list.length <= 1) {
+          needsReset = true;
+        }
+      } catch {
+        needsReset = true;
+      }
+    } else {
+      needsReset = true;
+    }
+
+    if (needsReset) {
+      localStorage.setItem('sejong_sero_service_sero-talk', JSON.stringify(initialTalkPosts));
+      list = initialTalkPosts;
+    }
+    setTalkPosts(list);
   }, []);
 
   useEffect(() => {
