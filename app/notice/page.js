@@ -175,59 +175,85 @@ export default function NoticePage() {
         </div>
 
         <section className="notice-grid-container">
-          <div className="notice-magazine-grid">
-            {featuredSlides.length > 0 && (
-              <article
-                className="notice-card featured-card slider-card"
-                onMouseEnter={() => setIsSliderPaused(true)}
-                onMouseLeave={() => setIsSliderPaused(false)}
-              >
-                <div className="slider-wrapper">
-                  {featuredSlides.map((notice, idx) => (
-                    <Link
-                      key={notice.id}
-                      href={`/notice/${notice.id}`}
-                      className={`slide-item ${idx === activeSlideIndex ? 'active' : ''}`}
-                      aria-label={`${notice.title} 상세 보기`}
-                    >
-                      <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
-                      <div className="featured-overlay">
-                        <div className="featured-meta">
-                          <span>{notice.category}</span>
-                          <span>{notice.date}</span>
+          {/* Desktop/Tablet View (Show slider + remaining notices in grid) */}
+          <div className="notice-desktop-view">
+            <div className="notice-magazine-grid">
+              {featuredSlides.length > 0 && (
+                <article
+                  className="notice-card featured-card slider-card"
+                  onMouseEnter={() => setIsSliderPaused(true)}
+                  onMouseLeave={() => setIsSliderPaused(false)}
+                >
+                  <div className="slider-wrapper">
+                    {featuredSlides.map((notice, idx) => (
+                      <Link
+                        key={notice.id}
+                        href={`/notice/${notice.id}`}
+                        className={`slide-item ${idx === activeSlideIndex ? 'active' : ''}`}
+                        aria-label={`${notice.title} 상세 보기`}
+                      >
+                        <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
+                        <div className="featured-overlay">
+                          <div className="featured-meta">
+                            <span>{notice.category}</span>
+                            <span>{notice.date}</span>
+                          </div>
+                          <h3>{notice.title}</h3>
                         </div>
-                        <h3>{notice.title}</h3>
+                      </Link>
+                    ))}
+                    {featuredSlides.length > 1 && (
+                      <div className="slider-indicator">
+                        <span>{activeSlideIndex + 1}</span>
+                        <span className="divider">/</span>
+                        <span>{featuredSlides.length}</span>
                       </div>
-                    </Link>
-                  ))}
-                  {featuredSlides.length > 1 && (
-                    <div className="slider-indicator">
-                      <span>{activeSlideIndex + 1}</span>
-                      <span className="divider">/</span>
-                      <span>{featuredSlides.length}</span>
-                    </div>
-                  )}
-                </div>
-              </article>
-            )}
-
-            {gridNotices.map((notice) => (
-              <article key={notice.id} className="notice-card standard-card">
-                <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
-                  <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
-                </Link>
-                <div className="notice-card-copy">
-                  <div className="notice-meta">
-                    <span>{notice.category}</span>
-                    <span>{notice.date}</span>
+                    )}
                   </div>
-                  <Link href={`/notice/${notice.id}`} className="notice-title-link">
-                    <h3>{notice.title}</h3>
+                </article>
+              )}
+
+              {gridNotices.map((notice) => (
+                <article key={notice.id} className="notice-card standard-card">
+                  <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
+                    <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
                   </Link>
-                  <p>{notice.excerpt}</p>
-                </div>
-              </article>
-            ))}
+                  <div className="notice-card-copy">
+                    <div className="notice-meta">
+                      <span>{notice.category}</span>
+                      <span>{notice.date}</span>
+                    </div>
+                    <Link href={`/notice/${notice.id}`} className="notice-title-link">
+                      <h3>{notice.title}</h3>
+                    </Link>
+                    <p>{notice.excerpt}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          {/* Mobile View (No slider, all notices displayed in a 2-column grid) */}
+          <div className="notice-mobile-view">
+            <div className="notice-mobile-grid">
+              {filteredNotices.map((notice) => (
+                <article key={notice.id} className="notice-card standard-card">
+                  <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
+                    <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
+                  </Link>
+                  <div className="notice-card-copy">
+                    <div className="notice-meta">
+                      <span>{notice.category}</span>
+                      <span>{notice.date}</span>
+                    </div>
+                    <Link href={`/notice/${notice.id}`} className="notice-title-link">
+                      <h3>{notice.title}</h3>
+                    </Link>
+                    <p>{notice.excerpt}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
           </div>
 
           {filteredNotices.length === 0 && (
@@ -540,6 +566,30 @@ export default function NoticePage() {
         .notice-grid-container {
           width: 100%;
           margin-bottom: 56px;
+        }
+
+        .notice-desktop-view {
+          display: none;
+        }
+
+        .notice-mobile-view {
+          display: block;
+        }
+
+        .notice-mobile-grid {
+          display: grid;
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 24px 16px;
+        }
+
+        @media (min-width: 640px) {
+          .notice-desktop-view {
+            display: block;
+          }
+
+          .notice-mobile-view {
+            display: none;
+          }
         }
 
         .notice-magazine-grid {
@@ -1024,6 +1074,20 @@ export default function NoticePage() {
 
           .notice-write-modal {
             padding: 20px;
+          }
+
+          .notice-card-copy h3 {
+            font-size: 14px;
+            line-height: 1.35;
+          }
+
+          .notice-card-copy p {
+            font-size: 11px;
+            line-height: 1.5;
+          }
+
+          .notice-card-copy {
+            padding-top: 10px;
           }
         }
       `}</style>
