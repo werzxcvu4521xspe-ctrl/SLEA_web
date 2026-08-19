@@ -224,10 +224,11 @@ export default function NoticeDetailPage() {
           max-width: 980px;
           color: #ffffff;
           font-family: var(--font-family-condensed);
-          font-size: clamp(42px, 7vw, 92px);
+          font-size: clamp(28px, 4.5vw, 56px);
           font-weight: 900;
-          line-height: 1.05;
-          letter-spacing: 0;
+          line-height: 1.2;
+          letter-spacing: -0.01em;
+          word-break: keep-all;
         }
 
         .notice-detail-hero p {
