@@ -146,7 +146,7 @@ export default function SignupPage() {
 
           {/* Role Selection */}
           <div className="input-group">
-            <label>회원 등급 선택</label>
+            <label>회원 유형 선택</label>
             <div className="role-selector">
               <button
                 type="button"
