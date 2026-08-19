@@ -1,5 +1,3 @@
-'use client';
-
 import Link from 'next/link';
 
 const actionCards = [
@@ -120,7 +118,7 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <style jsx>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .about-page {
           background: #111111;
           color: #ffffff;
@@ -284,7 +282,7 @@ export default function AboutPage() {
             border-bottom: 1px solid rgba(255, 255, 255, 0.14);
           }
         }
-      `}</style>
+      ` }} />
     </main>
   );
 }
