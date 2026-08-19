@@ -475,14 +475,13 @@ export default function NoticePage() {
         .notice-category-strip {
           display: flex;
           flex-wrap: wrap;
-          gap: 8px;
+          gap: 28px;
         }
 
         .notice-chip {
           position: relative;
           flex: 0 0 auto;
-          padding: 15px 4px 14px;
-          margin-right: 28px;
+          padding: 15px 0 14px;
           color: #6f6f6f;
           font-size: 16px;
           font-weight: 800;
@@ -913,8 +912,11 @@ export default function NoticePage() {
             justify-content: center;
           }
 
+          .notice-category-strip {
+            gap: 18px;
+          }
+
           .notice-chip {
-            margin-right: 18px;
             font-size: 14px;
           }
 

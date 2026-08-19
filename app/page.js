@@ -36,7 +36,19 @@ export default function HomePage() {
     const storedPrograms = localStorage.getItem('sejong_sero_programs');
     if (storedPrograms) {
       try {
-        setPrograms(JSON.parse(storedPrograms));
+        let list = JSON.parse(storedPrograms);
+        let updated = false;
+        list = list.map((prog) => {
+          if (prog.id === 'sero-day-network-18' && prog.imageUrl.includes('unsplash.com')) {
+            updated = true;
+            return { ...prog, imageUrl: '/images/networking.jpg' };
+          }
+          return prog;
+        });
+        if (updated) {
+          localStorage.setItem('sejong_sero_programs', JSON.stringify(list));
+        }
+        setPrograms(list);
       } catch {
         setPrograms(DEFAULT_SERO_DAY_PROGRAMS);
       }
