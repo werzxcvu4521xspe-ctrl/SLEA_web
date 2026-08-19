@@ -248,7 +248,11 @@ export default function SeroServicePage({ slug }) {
       id: Date.now(),
       type: talkType,
       title: formState.title || '새로운 세로 토크 글',
-      author: formState.author || '회원사'
+      author: formState.author || '회원사',
+      content: formState.content || '',
+      userEmail: user.email,
+      userId: user.id,
+      createdAt: new Date().toISOString()
     };
     setTalkPosts([post, ...talkPosts]);
     saveItem('sero-talk', post);
