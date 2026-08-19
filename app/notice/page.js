@@ -474,9 +474,8 @@ export default function NoticePage() {
 
         .notice-category-strip {
           display: flex;
+          flex-wrap: wrap;
           gap: 8px;
-          overflow-x: auto;
-          min-width: 0;
         }
 
         .notice-chip {
