@@ -235,9 +235,7 @@ export default function HomePage() {
                 멘토링 데이 바로가기 <span className="arrow">→</span>
               </Link>
             </div>
-            <div className="cta-visual-simple">
-              <span className="highlight-tag">Free Consulting</span>
-            </div>
+
           </div>
         </div>
       </section>
