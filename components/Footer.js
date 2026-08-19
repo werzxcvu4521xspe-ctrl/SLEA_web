@@ -3,42 +3,82 @@
 import Link from 'next/link';
 
 export default function Footer() {
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    const email = prompt('SELO 뉴스레터를 구독할 이메일 주소를 입력해 주세요:');
+    if (email === null) return; // cancel
+    if (!email.trim() || !email.includes('@')) {
+      alert('올바른 이메일 주소를 입력해 주세요.');
+      return;
+    }
+    
+    // Simulating newsletter storage
+    try {
+      const stored = JSON.parse(localStorage.getItem('sejong_newsletter_emails') || '[]');
+      const targetEmail = email.trim().toLowerCase();
+      if (stored.includes(targetEmail)) {
+        alert('이미 구독되어 있는 이메일 주소입니다.');
+        return;
+      }
+      stored.push(targetEmail);
+      localStorage.setItem('sejong_newsletter_emails', JSON.stringify(stored));
+      alert('구독해 주셔서 감사합니다! 매월 엄선된 세종 로컬 소식을 전해 드릴게요.');
+    } catch {
+      alert('구독 처리 도중 오류가 발생했습니다.');
+    }
+  };
+
   return (
     <footer className="footer">
       <div className="container">
-        {/* Top Link Cards */}
-        <div className="footer-links-grid">
+        {/* Row 1: 3 Link Cards (AD/Business, Join, Talk) */}
+        <div className="footer-row-one">
           <div className="link-card">
-            <h4 className="en-title">NOTICE</h4>
-            <div className="card-desc">
-              <span className="bold-label">공지사항</span>
-              협회 공지, 활동 소식, 행사 모집과 지원사업 안내를 확인합니다.
-            </div>
-            <Link href="/notice" className="card-action-btn">
-              확인하기 →
+            <h4 className="en-title uppercase-orange">AD & BUSINESS</h4>
+            <h3 className="card-title">광고 · 협업 문의</h3>
+            <p className="card-desc">크리에이터와 브랜드의 다양한 제안을 환영합니다.</p>
+            <Link href="/partnership" className="footer-action-btn">
+              문의하기
             </Link>
           </div>
 
           <div className="link-card">
-            <h4 className="en-title">JOIN</h4>
-            <div className="card-desc">
-              <span className="bold-label">정회원 가입</span>
-              SELO 회원으로 등록하고 네트워킹, 멘토링, 콘텐츠 지원을 시작합니다.
-            </div>
-            <Link href="/signup" className="card-action-btn">
-              가입하기 →
+            <h4 className="en-title uppercase-orange">JOIN</h4>
+            <h3 className="card-title">정회원 가입</h3>
+            <p className="card-desc">SELO 회원으로 등록하고 네트워킹, 멘토링, 콘텐츠 혜택을 누려보세요.</p>
+            <Link href="/signup" className="footer-action-btn">
+              가입하기
             </Link>
           </div>
 
           <div className="link-card">
-            <h4 className="en-title">TALK</h4>
-            <div className="card-desc">
-              <span className="bold-label">세로 토크</span>
-              자유 게시판, MOU 제안, 콜라보 프로젝트를 한곳에서 연결합니다.
-            </div>
-            <Link href="/sero-talk" className="card-action-btn">
-              이동하기 →
+            <h4 className="en-title uppercase-orange">TALK</h4>
+            <h3 className="card-title">세로 토크</h3>
+            <p className="card-desc">자유 게시판, MOU 제안, 콜라보 프로젝트를 한곳에서 확인해 보세요.</p>
+            <Link href="/sero-talk" className="footer-action-btn">
+              이동하기
             </Link>
+          </div>
+        </div>
+
+        {/* Row 2: 2 Link Cards (About, Newsletter) */}
+        <div className="footer-row-two">
+          <div className="link-card">
+            <h4 className="en-title uppercase-orange">About</h4>
+            <h3 className="card-title">협회 소개</h3>
+            <p className="card-desc">세종 로컬 창업 생태계의 다양한 트렌드와 공동 비즈니스, 브랜드 이슈를 SELO에서 만나보세요.</p>
+            <Link href="/about" className="footer-action-btn">
+              더보기
+            </Link>
+          </div>
+
+          <div className="link-card">
+            <h4 className="en-title uppercase-orange">Newsletter</h4>
+            <h3 className="card-title">뉴스레터 구독</h3>
+            <p className="card-desc">로컬 비즈니스 트렌드 소식부터 회원사 혜택, 행사 소식까지 엄선해 전해 드립니다.</p>
+            <button onClick={handleSubscribe} className="footer-action-btn text-button">
+              구독하기
+            </button>
           </div>
         </div>
 
@@ -87,24 +127,38 @@ export default function Footer() {
 
       <style jsx>{`
         .footer {
-          background-color: var(--color-charcoal-medium);
+          background-color: #111115;
           color: var(--color-white);
           padding: 80px 0 40px 0;
           margin-top: auto;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .footer-links-grid {
+        .footer-row-one {
           display: grid;
           grid-template-columns: 1fr;
-          gap: 30px;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          gap: 40px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+          padding-bottom: 50px;
+          margin-bottom: 50px;
+        }
+
+        .footer-row-two {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 40px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
           padding-bottom: 50px;
           margin-bottom: 40px;
         }
 
         @media (min-width: 768px) {
-          .footer-links-grid {
+          .footer-row-one {
             grid-template-columns: repeat(3, 1fr);
+          }
+          .footer-row-two {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 60px;
           }
         }
 
@@ -112,42 +166,55 @@ export default function Footer() {
           display: flex;
           flex-direction: column;
           align-items: flex-start;
-          gap: 16px;
+          gap: 12px;
         }
 
-        .link-card h4 {
-          font-size: 13px;
-          color: var(--color-emerald-light);
-          letter-spacing: 1px;
+        .uppercase-orange {
+          font-size: 11px;
+          font-weight: 800;
+          color: #f2542d;
+          letter-spacing: 0.15em;
+          text-transform: uppercase;
+          margin: 0;
+        }
+
+        .card-title {
+          font-size: 20px;
+          font-weight: 800;
+          color: #ffffff;
+          margin: 0;
+          letter-spacing: -0.02em;
         }
 
         .card-desc {
-          font-size: 14px;
+          font-size: 13.5px;
           line-height: 1.6;
-          color: var(--color-gray-light);
+          color: #a1a1aa;
+          margin: 0 0 10px 0;
         }
 
-        .bold-label {
-          display: block;
-          font-size: 16px;
+        .footer-action-btn {
+          display: inline-block;
+          font-size: 13px;
           font-weight: 700;
-          color: var(--color-white);
-          margin-bottom: 6px;
+          color: #ffffff;
+          background-color: #27272a;
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          padding: 10px 24px;
+          border-radius: 4px;
+          text-decoration: none;
+          cursor: pointer;
+          transition: background-color 0.2s ease, border-color 0.2s ease;
         }
 
-        .card-action-btn {
-          font-size: 14px;
-          font-weight: 700;
-          color: var(--color-white);
-          border-bottom: 1px solid var(--color-white);
-          padding-bottom: 2px;
-          margin-top: auto;
-          transition: border-color 0.2s ease, color 0.2s ease;
+        .footer-action-btn:hover {
+          background-color: #3f3f46;
+          border-color: rgba(255, 255, 255, 0.15);
         }
 
-        .card-action-btn:hover {
-          color: var(--color-emerald-light);
-          border-color: var(--color-emerald-light);
+        .text-button {
+          font-family: inherit;
+          text-align: left;
         }
 
         .footer-info-row {
