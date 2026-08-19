@@ -12,6 +12,28 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const handleQuickAdminLogin = (e) => {
+    e.preventDefault();
+    setEmail('admin@sejong.com');
+    setPassword('adminpassword');
+    
+    const defaultAdminUser = {
+      id: 'admin-1',
+      email: 'admin@sejong.com',
+      password: 'adminpassword',
+      role: 'super_admin',
+      status: 'active',
+      name: '최고관리자',
+      brand: '협회 사무국'
+    };
+    localStorage.setItem('sejong_session_user', JSON.stringify(defaultAdminUser));
+    window.dispatchEvent(new Event('storage'));
+    window.dispatchEvent(new Event('sejong_role_update'));
+    alert('최고관리자 계정으로 신속 로그인 완료되었습니다.');
+    router.push('/mypage');
+    router.refresh();
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -117,6 +139,39 @@ export default function LoginPage() {
 
           <button type="submit" disabled={loading} className="auth-submit-btn">
             {loading ? '로그인 중...' : '로그인 완료'}
+          </button>
+
+          <button 
+            type="button" 
+            onClick={handleQuickAdminLogin} 
+            className="auth-quick-admin-btn"
+            style={{
+              height: '46px',
+              backgroundColor: '#fff5f2',
+              color: '#f2542d',
+              fontSize: '13.5px',
+              fontWeight: '700',
+              borderRadius: 'var(--border-radius-sm)',
+              border: '1px solid #f2542d',
+              textAlign: 'center',
+              cursor: 'pointer',
+              transition: 'all 0.2s ease',
+              marginTop: '4px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px'
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#f2542d';
+              e.currentTarget.style.color = '#fff';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = '#fff5f2';
+              e.currentTarget.style.color = '#f2542d';
+            }}
+          >
+            🛡️ 관리자 계정으로 신속 로그인
           </button>
         </form>
 
