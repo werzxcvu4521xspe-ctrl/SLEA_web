@@ -12,6 +12,7 @@ export default function SignupPage() {
   const [companyName, setCompanyName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [role, setRole] = useState('entrepreneur'); // Default to entrepreneur
   
   const [errorMsg, setErrorMsg] = useState('');
@@ -22,6 +23,12 @@ export default function SignupPage() {
     e.preventDefault();
     setErrorMsg('');
     setSuccessMsg('');
+
+    if (password !== confirmPassword) {
+      setErrorMsg('비밀번호가 일치하지 않습니다. 다시 확인해 주세요.');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -118,6 +125,20 @@ export default function SignupPage() {
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="auth-input"
+              minLength={6}
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="confirmPassword">비밀번호 확인</label>
+            <input
+              id="confirmPassword"
+              type="password"
+              required
+              placeholder="••••••••"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="auth-input"
               minLength={6}
             />
