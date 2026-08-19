@@ -1,8 +1,9 @@
 'use client';
 
 /* eslint-disable @next/next/no-img-element */
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/lib/supabaseClient';
 import { MEMBER_CONTENT_FILTERS, MEMBER_CONTENTS } from '@/lib/memberContents';
 import { SERVICE_CATEGORIES, getServiceCategory } from '@/lib/serviceCategories';
 
@@ -125,6 +126,19 @@ export default function SeroServicePage({ slug }) {
   const [seroDayFilter, setSeroDayFilter] = useState('전체');
   const [selectedSeroProgramId, setSelectedSeroProgramId] = useState(seroDayPrograms[0].id);
   const [activeSeroProgram, setActiveSeroProgram] = useState(null);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const cartTotal = useMemo(() => (
     cart.reduce((sum, item) => sum + item.price, 0)
@@ -195,6 +209,10 @@ export default function SeroServicePage({ slug }) {
 
   const createTalkPost = (event) => {
     event.preventDefault();
+    if (!user) {
+      alert('로그인이 필요한 서비스입니다.');
+      return;
+    }
     const post = {
       id: Date.now(),
       type: talkType,
@@ -613,14 +631,26 @@ export default function SeroServicePage({ slug }) {
                 ))}
               </div>
             </div>
-            <form className="service-panel service-form" onSubmit={createTalkPost}>
-              <h3>{talkType} 글쓰기</h3>
-              <input required value={formState.title || ''} onChange={(e) => updateField('title', e.target.value)} placeholder="제목" />
-              <input value={formState.author || ''} onChange={(e) => updateField('author', e.target.value)} placeholder="작성자/브랜드명" />
-              <textarea value={formState.content || ''} onChange={(e) => updateField('content', e.target.value)} placeholder="내용" />
-              <button type="submit">글 등록하기</button>
-              {submitted && <span className="form-result">{submitted}</span>}
-            </form>
+            {user ? (
+              <form className="service-panel service-form" onSubmit={createTalkPost}>
+                <h3>{talkType} 글쓰기</h3>
+                <input required value={formState.title || ''} onChange={(e) => updateField('title', e.target.value)} placeholder="제목" />
+                <input value={formState.author || ''} onChange={(e) => updateField('author', e.target.value)} placeholder="작성자/브랜드명" />
+                <textarea value={formState.content || ''} onChange={(e) => updateField('content', e.target.value)} placeholder="내용" />
+                <button type="submit">글 등록하기</button>
+                {submitted && <span className="form-result">{submitted}</span>}
+              </form>
+            ) : (
+              <div className="service-panel service-form" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '300px', textAlign: 'center' }}>
+                <h3>{talkType} 글쓰기</h3>
+                <p style={{ margin: '30px 0', color: 'var(--color-gray-dark)', fontSize: '14px', fontWeight: '700' }}>
+                  로그인한 회원만 글을 작성할 수 있습니다.
+                </p>
+                <Link href="/login" className="auth-submit-btn" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', textDecoration: 'none', width: '100%', maxWidth: '200px', height: '44px', borderRadius: '4px', background: 'var(--color-orange-accent)', color: '#fff', fontWeight: 'bold' }}>
+                  로그인 하러가기
+                </Link>
+              </div>
+            )}
           </section>
         )}
       </main>
