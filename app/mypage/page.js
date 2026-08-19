@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BOOKMARK_STORAGE_KEY } from '@/components/BookmarkButton';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 
 const SHOP_STORAGE_KEY = 'sejong_sero_service_sero-shop';
 const MENTORING_STORAGE_KEY = 'sejong_sero_service_mentoring-day';
@@ -94,6 +94,32 @@ export default function MyPage() {
         return;
       }
 
+      if (!isSupabaseConfigured) {
+        const localUserStr = localStorage.getItem('sejong_session_user');
+        if (localUserStr) {
+          try {
+            const localUser = JSON.parse(localUserStr);
+            // Translate structure so layout looks same
+            setUser({
+              ...localUser,
+              user_metadata: {
+                name: localUser.name || '테스트 회원',
+                brand: localUser.brand || '로컬 브랜드',
+                company_name: localUser.brand || '로컬 브랜드',
+                role: localUser.role
+              }
+            });
+            refreshDashboard();
+            setLoading(false);
+          } catch {
+            router.replace('/login');
+          }
+        } else {
+          router.replace('/login');
+        }
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.user) {
@@ -108,24 +134,28 @@ export default function MyPage() {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (localStorage.getItem(ROLE_OVERRIDE_KEY) === 'user') {
-        useDemoMember();
-        return;
-      }
+    let subscription = null;
+    if (isSupabaseConfigured) {
+      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+        if (localStorage.getItem(ROLE_OVERRIDE_KEY) === 'user') {
+          useDemoMember();
+          return;
+        }
 
-      if (!session?.user) {
-        router.replace('/login');
-        return;
-      }
-      setUser(session.user);
-      refreshDashboard();
-      setLoading(false);
-    });
+        if (!session?.user) {
+          router.replace('/login');
+          return;
+        }
+        setUser(session.user);
+        refreshDashboard();
+        setLoading(false);
+      });
+      subscription = data.subscription;
+    }
 
     window.addEventListener('selo_bookmark_update', refreshDashboard);
     return () => {
-      subscription.unsubscribe();
+      if (subscription) subscription.unsubscribe();
       window.removeEventListener('selo_bookmark_update', refreshDashboard);
     };
   }, [router]);
@@ -155,6 +185,8 @@ export default function MyPage() {
 
   const handleLogout = async () => {
     localStorage.removeItem(ROLE_OVERRIDE_KEY);
+    localStorage.removeItem('sejong_session_user');
+    window.dispatchEvent(new Event('storage'));
     window.dispatchEvent(new Event('sejong_role_update'));
     await supabase.auth.signOut();
     router.push('/login');

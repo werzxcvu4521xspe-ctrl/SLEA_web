@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 import MenuOverlay from './MenuOverlay';
 import SearchOverlay from './SearchOverlay';
@@ -23,6 +23,21 @@ export default function Navigation() {
         return;
       }
       
+      if (!isSupabaseConfigured) {
+        const localUserStr = localStorage.getItem('sejong_session_user');
+        if (localUserStr) {
+          try {
+            const localUser = JSON.parse(localUserStr);
+            setUserRole(localUser.role || 'visitor');
+          } catch {
+            setUserRole(null);
+          }
+        } else {
+          setUserRole(null);
+        }
+        return;
+      }
+
       // Priority 2: Supabase session
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session?.user) {
@@ -36,15 +51,19 @@ export default function Navigation() {
 
     checkRole();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(() => {
-      checkRole();
-    });
+    let subscription = null;
+    if (isSupabaseConfigured) {
+      const { data } = supabase.auth.onAuthStateChange(() => {
+        checkRole();
+      });
+      subscription = data.subscription;
+    }
 
     window.addEventListener('storage', checkRole);
     window.addEventListener('sejong_role_update', checkRole);
 
     return () => {
-      subscription.unsubscribe();
+      if (subscription) subscription.unsubscribe();
       window.removeEventListener('storage', checkRole);
       window.removeEventListener('sejong_role_update', checkRole);
     };

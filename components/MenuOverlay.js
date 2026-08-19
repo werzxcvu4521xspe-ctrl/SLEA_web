@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 
 const ROLE_OVERRIDE_KEY = 'sejong_role_override';
@@ -28,6 +28,40 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
       }
     };
 
+    if (!isSupabaseConfigured) {
+      const checkLocalSession = () => {
+        const localUserStr = localStorage.getItem('sejong_session_user');
+        if (localUserStr) {
+          try {
+            const localUser = JSON.parse(localUserStr);
+            setUser(localUser);
+            // Check override first
+            const override = localStorage.getItem(ROLE_OVERRIDE_KEY);
+            if (override) {
+              setUserRole(override === 'none' ? null : override);
+            } else {
+              setUserRole(localUser.role || 'visitor');
+            }
+          } catch {
+            setUser(null);
+            setUserRole(null);
+          }
+        } else {
+          setUser(null);
+          const override = localStorage.getItem(ROLE_OVERRIDE_KEY);
+          setUserRole(override === 'none' ? null : override);
+        }
+      };
+
+      checkLocalSession();
+      window.addEventListener('storage', checkLocalSession);
+      window.addEventListener('sejong_role_update', checkLocalSession);
+      return () => {
+        window.removeEventListener('storage', checkLocalSession);
+        window.removeEventListener('sejong_role_update', checkLocalSession);
+      };
+    }
+
     // Check initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
@@ -46,12 +80,14 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
   const showAdminMenu = userRole === 'super_admin' || userRole === 'staff_admin';
   const isDemoLogin = userRole === 'user' || showAdminMenu;
   const isLoggedIn = Boolean(user) || isDemoLogin;
-  const displayName = user?.email || (showAdminMenu ? '테스트 관리자' : '일반 회원');
+  const displayName = user?.name || user?.email || (showAdminMenu ? '테스트 관리자' : '일반 회원');
 
   const handleLogout = async () => {
     localStorage.removeItem(ROLE_OVERRIDE_KEY);
+    localStorage.removeItem('sejong_session_user');
     setUserRole(null);
     setUser(null);
+    window.dispatchEvent(new Event('storage'));
     window.dispatchEvent(new Event('sejong_role_update'));
     await supabase.auth.signOut();
     onClose();
