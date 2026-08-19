@@ -1,29 +1,5 @@
 import Link from 'next/link';
 
-const actionCards = [
-  {
-    label: 'NOTICE',
-    title: '공지사항',
-    desc: '협회 공지, 활동 소식, 행사 모집과 지원사업 안내를 확인합니다.',
-    action: '확인하기',
-    href: '/notice'
-  },
-  {
-    label: 'JOIN',
-    title: '정회원 가입',
-    desc: 'SELO 회원으로 등록하고 네트워킹, 멘토링, 콘텐츠 지원을 시작합니다.',
-    action: '가입하기',
-    href: '/signup'
-  },
-  {
-    label: 'TALK',
-    title: '세로 토크',
-    desc: '자유 게시판, MOU 제안, 콜라보 프로젝트를 한곳에서 연결합니다.',
-    action: '이동하기',
-    href: '/sero-talk'
-  }
-];
-
 const infoCards = [
   {
     label: 'AD & BUSINESS',
@@ -73,24 +49,11 @@ export default function AboutPage() {
         </div>
       </section>
 
-      <section className="about-actions">
-        <div className="about-container action-grid">
-          {actionCards.map((card) => (
-            <Link key={card.label} href={card.href} className="action-card">
-              <span>{card.label}</span>
-              <strong>{card.title}</strong>
-              <p>{card.desc}</p>
-              <em>{card.action} →</em>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       <section className="about-story">
         <div className="about-container story-grid">
           <div>
             <p className="eyebrow">WHAT WE DO</p>
-            <h2>지역 안에서 시작한 브랜드가 시장과 연결되는 과정을 돕습니다.</h2>
+            <h2 className="story-title">지역 안에서 시작한 브랜드가 시장과 연결되는 과정을 돕습니다.</h2>
           </div>
           <div className="story-copy">
             <p>
@@ -145,7 +108,7 @@ export default function AboutPage() {
         }
 
         h1,
-        h2,
+        .story-title,
         strong {
           font-family: var(--font-family-condensed);
           letter-spacing: 0;
@@ -168,19 +131,17 @@ export default function AboutPage() {
           word-break: keep-all;
         }
 
-        .about-actions,
         .about-story,
         .about-info {
           border-top: 1px solid rgba(255, 255, 255, 0.14);
         }
 
-        .action-grid,
         .info-grid {
           display: grid;
           grid-template-columns: repeat(3, minmax(0, 1fr));
+          border-right: 1px solid rgba(255, 255, 255, 0.14);
         }
 
-        .action-card,
         .info-card {
           min-height: 300px;
           padding: clamp(32px, 4vw, 58px);
@@ -189,17 +150,10 @@ export default function AboutPage() {
           transition: background 0.2s ease, color 0.2s ease;
         }
 
-        .action-card:last-child,
-        .info-card:last-child {
-          border-right: 1px solid rgba(255, 255, 255, 0.14);
-        }
-
-        .action-card:hover,
         .info-card:hover {
           background: #1d1d1d;
         }
 
-        .action-card span,
         .info-card span {
           display: block;
           margin-bottom: 34px;
@@ -210,7 +164,6 @@ export default function AboutPage() {
           letter-spacing: 0.06em;
         }
 
-        .action-card strong,
         .info-card strong {
           display: block;
           margin-bottom: 18px;
@@ -219,7 +172,6 @@ export default function AboutPage() {
           line-height: 1.18;
         }
 
-        .action-card p,
         .info-card p,
         .story-copy p {
           color: rgba(255, 255, 255, 0.78);
@@ -229,7 +181,6 @@ export default function AboutPage() {
           word-break: keep-all;
         }
 
-        .action-card em,
         .info-card em {
           display: inline-flex;
           margin-top: 42px;
@@ -249,11 +200,12 @@ export default function AboutPage() {
           padding-bottom: clamp(72px, 9vw, 128px);
         }
 
-        h2 {
-          max-width: 780px;
-          font-size: clamp(36px, 4.8vw, 76px);
+        .story-title {
+          max-width: 580px;
+          font-size: clamp(32px, 3.2vw, 56px);
           font-weight: 900;
-          line-height: 1.1;
+          line-height: 1.18;
+          word-break: keep-all;
         }
 
         .story-copy {
