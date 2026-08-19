@@ -6,6 +6,8 @@ import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 
+const ROLE_OVERRIDE_KEY = 'sejong_role_override';
+
 export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose }) {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
@@ -13,7 +15,7 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
 
   useEffect(() => {
     const checkRole = (session) => {
-      const override = localStorage.getItem('sejong_role_override');
+      const override = localStorage.getItem(ROLE_OVERRIDE_KEY);
       if (override) {
         setUserRole(override === 'none' ? null : override);
         return;
@@ -42,8 +44,15 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
   }, []);
 
   const showAdminMenu = userRole === 'super_admin' || userRole === 'staff_admin';
+  const isDemoLogin = userRole === 'user' || showAdminMenu;
+  const isLoggedIn = Boolean(user) || isDemoLogin;
+  const displayName = user?.email || (showAdminMenu ? '테스트 관리자' : '일반 회원');
 
   const handleLogout = async () => {
+    localStorage.removeItem(ROLE_OVERRIDE_KEY);
+    setUserRole(null);
+    setUser(null);
+    window.dispatchEvent(new Event('sejong_role_update'));
     await supabase.auth.signOut();
     onClose();
   };
@@ -98,9 +107,9 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
 
           <div className="sub-menu-links">
             <div className="auth-links">
-              {user ? (
+              {isLoggedIn ? (
                 <>
-                  <span className="user-email">{user.email}님</span>
+                  <span className="user-email">{displayName}님</span>
                   <Link href="/mypage" className="menu-sub-item" onClick={onClose}>
                     마이페이지
                   </Link>
@@ -124,11 +133,6 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
               {showAdminMenu && (
                 <Link href="/admin" className="menu-sub-item icon-link logout-btn" onClick={onClose}>
                   관리자 대시보드
-                </Link>
-              )}
-              {!user && (
-                <Link href="/mypage" className="menu-sub-item icon-link" onClick={onClose}>
-                  마이페이지
                 </Link>
               )}
               <Link href="/proposal" className="menu-sub-item icon-link" onClick={onClose}>

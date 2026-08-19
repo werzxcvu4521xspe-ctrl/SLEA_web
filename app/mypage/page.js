@@ -9,6 +9,15 @@ import { supabase } from '@/lib/supabaseClient';
 const SHOP_STORAGE_KEY = 'sejong_sero_service_sero-shop';
 const MENTORING_STORAGE_KEY = 'sejong_sero_service_mentoring-day';
 const TALK_STORAGE_KEY = 'sejong_sero_service_sero-talk';
+const ROLE_OVERRIDE_KEY = 'sejong_role_override';
+const DEMO_MEMBER = {
+  id: 'demo-member',
+  email: 'member@selo.local',
+  user_metadata: {
+    name: '일반 회원',
+    role: 'user'
+  }
+};
 
 const readStoredList = (key) => {
   if (typeof window === 'undefined') return [];
@@ -63,7 +72,18 @@ export default function MyPage() {
   };
 
   useEffect(() => {
+    const useDemoMember = () => {
+      setUser(DEMO_MEMBER);
+      refreshDashboard();
+      setLoading(false);
+    };
+
     const checkSession = async () => {
+      if (localStorage.getItem(ROLE_OVERRIDE_KEY) === 'user') {
+        useDemoMember();
+        return;
+      }
+
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.user) {
@@ -79,6 +99,11 @@ export default function MyPage() {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (localStorage.getItem(ROLE_OVERRIDE_KEY) === 'user') {
+        useDemoMember();
+        return;
+      }
+
       if (!session?.user) {
         router.replace('/login');
         return;
@@ -111,6 +136,8 @@ export default function MyPage() {
   ), [talkPosts]);
 
   const handleLogout = async () => {
+    localStorage.removeItem(ROLE_OVERRIDE_KEY);
+    window.dispatchEvent(new Event('sejong_role_update'));
     await supabase.auth.signOut();
     router.push('/login');
   };
