@@ -178,7 +178,7 @@ export default function SeroServicePage({ slug }) {
       'sero-day': seroDayPrograms.length,
       'sero-members': MEMBER_CONTENTS.length,
       'sero-ai-start': 0,
-      'mentoring-day': 6,
+      'mentoring-day': 0,
       'sero-shop': products.length,
       'sero-talk': talkPosts.length
     };
@@ -250,7 +250,7 @@ export default function SeroServicePage({ slug }) {
             <span className="section-label en-title" style={{ color: 'var(--color-orange-accent)' }}>
               {category.eyebrow}
             </span>
-            <span className="service-post-count">{servicePostCount} posts</span>
+            {servicePostCount > 0 && <span className="service-post-count">{servicePostCount} posts</span>}
           </div>
           <h1 className="page-hero-title">{category.title}</h1>
           <p className="page-hero-desc">{category.description}</p>
