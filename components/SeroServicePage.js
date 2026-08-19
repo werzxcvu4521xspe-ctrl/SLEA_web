@@ -66,9 +66,40 @@ function readItems(key) {
   }
 }
 
+const defaultReviews = [
+  {
+    id: 'review-branding',
+    field: '브랜딩',
+    brand: '디저트 카페 도원',
+    author: '이 대표',
+    title: '계절 메뉴를 브랜드 스토리로 정리할 수 있었어요.',
+    body: '복숭아 시즌 메뉴를 단순 상품이 아니라 지역성과 연결된 브랜드 콘텐츠로 설명하는 방법을 배웠습니다.',
+    date: '2026-08-08'
+  },
+  {
+    id: 'review-market',
+    field: '온라인 판로',
+    brand: '밀마루 베이커리',
+    author: '황 대표',
+    title: '상품 상세페이지 구조가 훨씬 명확해졌습니다.',
+    body: '쌀빵의 장점을 어떤 순서로 설명해야 구매자가 이해하는지 피드백을 받았고 바로 수정할 수 있었습니다.',
+    date: '2026-08-02'
+  },
+  {
+    id: 'review-funding',
+    field: '정부지원사업',
+    brand: '공방 세종',
+    author: '박 대표',
+    title: '지원사업 신청 전에 부족한 자료를 알게 됐어요.',
+    body: '사업계획서에 필요한 매출 근거, 고객 정의, 실행 일정표를 구체적으로 점검받았습니다.',
+    date: '2026-07-26'
+  }
+];
+
 export default function SeroServicePage({ slug }) {
   const category = getServiceCategory(slug);
   const [formState, setFormState] = useState({});
+  const [currentReviewIdx, setCurrentReviewIdx] = useState(0);
   const [submitted, setSubmitted] = useState('');
   const [cart, setCart] = useState([]);
   const [talkPosts, setTalkPosts] = useState(initialTalkPosts);
@@ -459,14 +490,57 @@ export default function SeroServicePage({ slug }) {
             </section>
 
             <section className="mentoring-review-teaser">
-              <div>
+              <div className="review-teaser-header">
                 <span className="section-label en-title">Mentoring Reviews</span>
                 <h3>멘토링 후기</h3>
                 <p>브랜딩, 판로, 지원사업 상담을 받은 회원사들의 실제 후기를 확인합니다.</p>
               </div>
-              <Link href="/mentoring-day/reviews" className="service-action-btn">
-                후기 페이지 보기
-              </Link>
+
+              {/* Slider Container */}
+              <div className="review-slider">
+                <button 
+                  type="button" 
+                  className="slider-nav-btn prev"
+                  onClick={() => setCurrentReviewIdx((prev) => (prev === 0 ? defaultReviews.length - 1 : prev - 1))}
+                  aria-label="이전 후기"
+                >
+                  ◀
+                </button>
+
+                <div className="slider-track">
+                  <article className="review-slide-card" key={defaultReviews[currentReviewIdx].id}>
+                    <div className="slide-meta">
+                      <span className="slide-tag">{defaultReviews[currentReviewIdx].field}</span>
+                      <time className="slide-date" dateTime={defaultReviews[currentReviewIdx].date}>{defaultReviews[currentReviewIdx].date}</time>
+                    </div>
+                    <h4 className="slide-title">"{defaultReviews[currentReviewIdx].title}"</h4>
+                    <p className="slide-body">{defaultReviews[currentReviewIdx].body}</p>
+                    <strong className="slide-author">{defaultReviews[currentReviewIdx].brand} · {defaultReviews[currentReviewIdx].author}</strong>
+                  </article>
+                </div>
+
+                <button 
+                  type="button" 
+                  className="slider-nav-btn next"
+                  onClick={() => setCurrentReviewIdx((prev) => (prev === defaultReviews.length - 1 ? 0 : prev + 1))}
+                  aria-label="다음 후기"
+                >
+                  ▶
+                </button>
+              </div>
+
+              {/* Slider Dots */}
+              <div className="slider-dots">
+                {defaultReviews.map((_, idx) => (
+                  <button
+                    key={idx}
+                    type="button"
+                    className={`slider-dot ${currentReviewIdx === idx ? 'active' : ''}`}
+                    onClick={() => setCurrentReviewIdx(idx)}
+                    aria-label={`${idx + 1}번째 후기 보기`}
+                  />
+                ))}
+              </div>
             </section>
           </>
         )}
@@ -752,29 +826,151 @@ export default function SeroServicePage({ slug }) {
 
         .mentoring-review-teaser {
           margin-top: 18px;
-          padding: 30px;
+          padding: 40px 30px;
           display: flex;
-          align-items: flex-end;
-          justify-content: space-between;
-          gap: 22px;
+          flex-direction: column;
+          align-items: center;
+          gap: 30px;
           background: #111111;
           color: var(--color-white);
+          border-radius: 8px;
+          text-align: center;
+        }
+
+        .review-teaser-header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
         }
 
         .mentoring-review-teaser h3 {
           color: var(--color-white);
           font-family: var(--font-family-condensed);
-          font-size: clamp(30px, 4vw, 52px);
+          font-size: clamp(20px, 3vw, 28px);
           font-weight: 900;
-          line-height: 1.05;
-          margin-bottom: 12px;
+          line-height: 1.1;
+          margin: 6px 0;
         }
 
         .mentoring-review-teaser p {
           max-width: 620px;
-          color: #d7d7d7;
-          font-size: 15px;
-          line-height: 1.7;
+          color: #b7b7b7;
+          font-size: 13.5px;
+          line-height: 1.6;
+        }
+
+        /* Review Slider CSS */
+        .review-slider {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 20px;
+          width: 100%;
+          max-width: 800px;
+        }
+
+        .slider-nav-btn {
+          background: rgba(255, 255, 255, 0.1);
+          color: var(--color-white);
+          border: none;
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          cursor: pointer;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          transition: all 0.2s ease;
+        }
+
+        .slider-nav-btn:hover {
+          background: var(--color-orange-accent);
+          color: #fff;
+        }
+
+        .slider-track {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .review-slide-card {
+          background: rgba(255, 255, 255, 0.04);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 24px 30px;
+          border-radius: 6px;
+          text-align: left;
+          animation: fadeIn 0.4s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-meta {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 14px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+          padding-bottom: 8px;
+        }
+
+        .slide-tag {
+          font-size: 12px;
+          font-weight: 800;
+          color: var(--color-orange-accent);
+        }
+
+        .slide-date {
+          font-size: 11px;
+          color: #888;
+        }
+
+        .slide-title {
+          font-size: 16px;
+          font-weight: 800;
+          color: #fff;
+          margin: 0 0 10px 0;
+          line-height: 1.4;
+        }
+
+        .slide-body {
+          font-size: 13.5px;
+          color: #cccccc;
+          line-height: 1.6;
+          margin: 0 0 16px 0;
+        }
+
+        .slide-author {
+          display: block;
+          font-size: 12.5px;
+          color: #999;
+          font-weight: 700;
+        }
+
+        .slider-dots {
+          display: flex;
+          gap: 8px;
+          justify-content: center;
+        }
+
+        .slider-dot {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .slider-dot.active {
+          background: var(--color-orange-accent);
+          transform: scale(1.2);
         }
 
         .sero-program-section {
