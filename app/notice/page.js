@@ -238,11 +238,6 @@ export default function NoticePage() {
               )}
             </div>
 
-            <div className="notice-upload-note">
-              <span className="side-eyebrow">Upload Ready</span>
-              <strong>이미지 공지 등록 가능</strong>
-              <p>운영자는 공지 작성 시 대표 이미지를 선택해 카드 피드와 상세 보기 모두에 함께 노출할 수 있습니다.</p>
-            </div>
           </aside>
         </section>
       </main>
