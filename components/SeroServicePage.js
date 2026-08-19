@@ -683,13 +683,60 @@ export default function SeroServicePage({ slug }) {
               </div>
             </div>
             <div className="service-panel">
-              <h3>간이 장바구니</h3>
-              <p>{cart.length}개 상품 · 합계 {cartTotal.toLocaleString()}원</p>
-              <form className="service-form compact" onSubmit={(event) => submitLocalForm(event, 'sero-shop', '판매 상품 등록 신청이 저장되었습니다.')}>
-                <input value={formState.product || ''} onChange={(e) => updateField('product', e.target.value)} placeholder="판매 등록할 상품명" />
-                <button type="submit">상품 등록 신청</button>
-              </form>
-              {submitted && <span className="form-result">{submitted}</span>}
+              <h3>상품 등록 신청</h3>
+              {user ? (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <p style={{ fontSize: '13.5px', lineHeight: '1.6', color: 'var(--color-gray-dark)', margin: '0' }}>
+                    SELO 회원사 전용 상품 등록 서비스입니다.<br />
+                    마이페이지 대시보드에서 판매하고자 하는 상품을 등록하고 관리할 수 있습니다.
+                  </p>
+                  <Link 
+                    href="/mypage" 
+                    className="auth-submit-btn" 
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      textDecoration: 'none', 
+                      width: '100%', 
+                      height: '44px', 
+                      borderRadius: '4px', 
+                      background: 'var(--color-orange-accent)', 
+                      color: '#fff', 
+                      fontWeight: 'bold',
+                      fontSize: '13.5px'
+                    }}
+                  >
+                    상품 등록 신청하러 가기 →
+                  </Link>
+                </div>
+              ) : (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <p style={{ fontSize: '13.5px', lineHeight: '1.6', color: 'var(--color-gray-dark)', margin: '0' }}>
+                    SELO 회원사 전용 상품 등록 서비스입니다.<br />
+                    상품 입점 및 등록 신청을 진행하시려면 로그인이 필요합니다.
+                  </p>
+                  <Link 
+                    href="/login" 
+                    className="auth-submit-btn" 
+                    style={{ 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      textDecoration: 'none', 
+                      width: '100%', 
+                      height: '44px', 
+                      borderRadius: '4px', 
+                      background: 'var(--color-orange-accent)', 
+                      color: '#fff', 
+                      fontWeight: 'bold',
+                      fontSize: '13.5px'
+                    }}
+                  >
+                    상품 등록 신청 (로그인 필요)
+                  </Link>
+                </div>
+              )}
             </div>
           </section>
         )}
