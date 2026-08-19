@@ -155,90 +155,83 @@ export default function NoticePage() {
           </button>
         </div>
 
-        {featuredNotice && (
-          <section className="notice-featured">
-            <Link href={`/notice/${featuredNotice.id}`} className="featured-image" aria-label={`${featuredNotice.title} 상세 보기`}>
-              <img src={featuredNotice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={`${featuredNotice.title} 대표 이미지`} />
-              {featuredNotice.pinned && <span className="pin-label">Pinned</span>}
-            </Link>
-            <div className="featured-copy">
-              <div className="notice-meta">
-                <span>{featuredNotice.category}</span>
-                <span>{featuredNotice.date}</span>
-              </div>
-              <Link href={`/notice/${featuredNotice.id}`} className="notice-title-link">
-                <h2>{featuredNotice.title}</h2>
-              </Link>
-              <p>{featuredNotice.excerpt}</p>
-              <div className="notice-author-row">
-                <span>by {featuredNotice.author}</span>
-                <Link href={`/notice/${featuredNotice.id}`} className="text-arrow-btn">
-                  자세히 보기
-                </Link>
-              </div>
-            </div>
-          </section>
-        )}
+        <section className="notice-grid-container">
+          <div className="notice-magazine-grid">
+            {filteredNotices.map((notice, index) => {
+              const isFirst = index === 0;
+              if (isFirst) {
+                return (
+                  <article key={notice.id} className="notice-card featured-card">
+                    <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
+                      <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
+                      <div className="featured-overlay">
+                        <div className="featured-meta">
+                          <span>{notice.category}</span>
+                          <span>{notice.date}</span>
+                        </div>
+                        <h3>{notice.title}</h3>
+                      </div>
+                    </Link>
+                  </article>
+                );
+              }
 
-        <section className="notice-content-grid">
-          <div className="notice-card-grid">
-            {gridNotices.map(notice => (
-              <article key={notice.id} className="notice-card">
-                <Link href={`/notice/${notice.id}`} className="notice-card-image" aria-label={`${notice.title} 상세 보기`}>
-                  <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={`${notice.title} 썸네일`} />
-                </Link>
-                <div className="notice-card-copy">
-                  <div className="notice-meta">
-                    <span>{notice.category}</span>
-                    <span>{notice.date}</span>
-                  </div>
-                  <Link href={`/notice/${notice.id}`} className="notice-title-link">
-                    <h3>{notice.title}</h3>
+              return (
+                <article key={notice.id} className="notice-card standard-card">
+                  <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
+                    <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
                   </Link>
-                  <p>{notice.excerpt}</p>
-                </div>
-              </article>
-            ))}
-
-            {gridNotices.length === 0 && (
-              <div className="notice-empty">
-                선택한 카테고리에 표시할 추가 공지가 없습니다.
-              </div>
-            )}
+                  <div className="notice-card-copy">
+                    <div className="notice-meta">
+                      <span>{notice.category}</span>
+                      <span>{notice.date}</span>
+                    </div>
+                    <Link href={`/notice/${notice.id}`} className="notice-title-link">
+                      <h3>{notice.title}</h3>
+                    </Link>
+                    <p>{notice.excerpt}</p>
+                  </div>
+                </article>
+              );
+            })}
           </div>
 
-          <aside className="notice-side-panel">
-            <div className="newsletter-box">
-              <span className="side-eyebrow">Weekly Letter</span>
-              <h3>세종 로컬 소식을 메일로 받기</h3>
-              {subbed ? (
-                <p className="subscribe-success">{name}님, 구독 신청이 완료되었습니다.</p>
-              ) : (
-                <form className="notice-subscribe-form" onSubmit={handleSubscribe}>
-                  <label htmlFor="news-name">이름</label>
-                  <input
-                    id="news-name"
-                    type="text"
-                    required
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    placeholder="이름"
-                  />
-                  <label htmlFor="news-email">이메일</label>
-                  <input
-                    id="news-email"
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(event) => setEmail(event.target.value)}
-                    placeholder="example@sejonglocal.kr"
-                  />
-                  <button type="submit" className="pop-primary-btn stretch">구독하기</button>
-                </form>
-              )}
+          {filteredNotices.length === 0 && (
+            <div className="notice-empty">
+              선택한 카테고리에 표시할 공지사항이 없습니다.
             </div>
+          )}
+        </section>
 
-          </aside>
+        {/* Newsletter Section */}
+        <section className="notice-newsletter-banner">
+          <div className="newsletter-banner-content">
+            <span className="side-eyebrow">Weekly Letter</span>
+            <h3>세종 로컬의 생생한 소식을 메일로 받아보세요</h3>
+            {subbed ? (
+              <p className="subscribe-success">{name}님, 구독 신청이 완료되었습니다.</p>
+            ) : (
+              <form className="notice-subscribe-inline-form" onSubmit={handleSubscribe}>
+                <input
+                  id="news-name"
+                  type="text"
+                  required
+                  value={name}
+                  onChange={(event) => setName(event.target.value)}
+                  placeholder="이름"
+                />
+                <input
+                  id="news-email"
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(event) => setEmail(event.target.value)}
+                  placeholder="이메일 주소 (example@sejonglocal.kr)"
+                />
+                <button type="submit" className="pop-primary-btn">구독하기</button>
+              </form>
+            )}
+          </div>
         </section>
       </main>
 
@@ -510,72 +503,102 @@ export default function NoticePage() {
           opacity: 1;
         }
 
-        .notice-featured {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 22px;
-          padding-bottom: 42px;
-          border-bottom: 8px solid #f6f6f6;
-          margin-bottom: 40px;
+        .notice-grid-container {
+          width: 100%;
+          margin-bottom: 56px;
         }
 
-        .featured-image,
-        .notice-card-image {
+        .notice-magazine-grid {
+          display: grid;
+          grid-template-columns: repeat(1, minmax(0, 1fr));
+          gap: 40px 24px;
+        }
+
+        /* Standard card styles */
+        .notice-card {
+          display: flex;
+          flex-direction: column;
+          min-width: 0;
+          height: 100%;
+        }
+
+        .notice-card-image-wrapper {
           position: relative;
           width: 100%;
           overflow: hidden;
           background: #f6f6f6;
+          display: block;
         }
 
-        .featured-image {
-          aspect-ratio: 16 / 9;
-        }
-
-        .notice-card-image {
+        .standard-card .notice-card-image-wrapper {
           aspect-ratio: 1 / 1;
         }
 
-        .featured-image img,
-        .notice-card-image img,
-        .upload-preview img {
+        .notice-card-image-wrapper img {
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.35s ease;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .featured-image:hover img,
-        .notice-card:hover .notice-card-image img {
-          transform: scale(1.035);
+        .notice-card:hover .notice-card-image-wrapper img {
+          transform: scale(1.04);
         }
 
-        .pin-label {
+        /* Featured card styles (overlay title) */
+        .featured-card {
+          grid-column: span 1;
+          position: relative;
+        }
+
+        .featured-card .notice-card-image-wrapper {
+          aspect-ratio: 16 / 10;
+          height: 100%;
+        }
+
+        .featured-overlay {
           position: absolute;
-          left: 14px;
-          top: 14px;
-          background: #ff5a2a;
+          inset: 0;
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 55%, rgba(0, 0, 0, 0.1) 100%);
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          padding: 30px;
           color: #ffffff;
-          font-size: 12px;
-          font-weight: 900;
-          padding: 5px 9px;
         }
 
-        .featured-copy,
+        .featured-meta {
+          display: flex;
+          gap: 12px;
+          color: rgba(255, 255, 255, 0.82);
+          font-size: 13px;
+          font-weight: 700;
+          margin-bottom: 12px;
+        }
+
+        .featured-meta span:first-child {
+          color: var(--color-orange-accent);
+        }
+
+        .featured-card h3 {
+          font-size: clamp(20px, 2.5vw, 32px);
+          font-weight: 900;
+          line-height: 1.25;
+          color: #ffffff;
+          word-break: keep-all;
+        }
+
+        /* Copy styles for standard card */
         .notice-card-copy {
           display: flex;
           flex-direction: column;
-          align-items: flex-start;
-        }
-
-        .featured-copy {
-          justify-content: center;
-          gap: 16px;
+          gap: 8px;
+          padding-top: 16px;
         }
 
         .notice-meta {
-          width: 100%;
+          display: flex;
           justify-content: space-between;
-          gap: 12px;
           color: #6f6f6f;
           font-size: 13px;
           font-weight: 800;
@@ -585,74 +608,16 @@ export default function NoticePage() {
           color: #ff5a2a;
         }
 
-        .featured-copy h2 {
-          font-size: clamp(30px, 4vw, 54px);
+        .notice-card-copy h3 {
+          color: #161616;
+          font-size: 18px;
           font-weight: 900;
-          line-height: 1.18;
-          color: #161616;
+          line-height: 1.4;
           text-align: left;
+          word-break: keep-all;
         }
 
-        .featured-copy p {
-          color: #525252;
-          font-size: 16px;
-          line-height: 1.75;
-        }
-
-        .notice-author-row {
-          width: 100%;
-          justify-content: space-between;
-          gap: 16px;
-          color: #8d8d8d;
-          font-size: 13px;
-          font-weight: 800;
-        }
-
-        .text-arrow-btn {
-          display: inline-flex;
-          align-items: center;
-          min-height: auto;
-          padding: 0 0 3px;
-          color: #161616;
-          border-bottom: 1px solid #161616;
-        }
-
-        .notice-title-link {
-          display: block;
-          width: fit-content;
-        }
-
-        .notice-content-grid {
-          display: grid;
-          grid-template-columns: 1fr;
-          gap: 44px;
-          align-items: start;
-        }
-
-        .notice-card-grid {
-          display: grid;
-          grid-template-columns: repeat(1, minmax(0, 1fr));
-          gap: 34px 24px;
-        }
-
-        .notice-card {
-          min-width: 0;
-        }
-
-        .notice-card-copy {
-          gap: 8px;
-          padding-top: 10px;
-        }
-
-        .notice-card h3 {
-          color: #161616;
-          font-size: 20px;
-          font-weight: 900;
-          line-height: 1.38;
-          text-align: left;
-        }
-
-        .notice-card p {
+        .notice-card-copy p {
           color: #525252;
           font-size: 14px;
           line-height: 1.65;
@@ -662,17 +627,66 @@ export default function NoticePage() {
           overflow: hidden;
         }
 
-        .notice-side-panel {
+        /* Newsletter Banner styling */
+        .notice-newsletter-banner {
+          background: #f6f6f6;
+          border: 1px solid #e0e0e0;
+          padding: 48px 30px;
+          margin-bottom: 72px;
           display: flex;
-          flex-direction: column;
-          gap: 18px;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          width: 100%;
         }
 
-        .newsletter-box,
-        .notice-upload-note {
+        .newsletter-banner-content {
+          max-width: 680px;
+          width: 100%;
+        }
+
+        .newsletter-banner-content h3 {
+          font-size: clamp(20px, 3vw, 28px);
+          font-weight: 900;
+          color: #161616;
+          margin-bottom: 24px;
+        }
+
+        .notice-subscribe-inline-form {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          width: 100%;
+        }
+
+        .notice-subscribe-inline-form input {
           border: 1px solid #e0e0e0;
           background: #ffffff;
-          padding: 24px;
+          color: #161616;
+          min-height: 48px;
+          padding: 12px 18px;
+          font-size: 14px;
+          font-weight: 700;
+        }
+
+        .notice-subscribe-inline-form input:focus {
+          border-color: #161616;
+          outline: none;
+        }
+
+        .notice-subscribe-inline-form button {
+          min-height: 48px;
+          background: #ff5a2a;
+          color: #ffffff;
+          font-weight: 900;
+          font-size: 15px;
+          border: none;
+          cursor: pointer;
+          transition: background 0.2s ease;
+        }
+
+        .notice-subscribe-inline-form button:hover {
+          background: #e0481d;
         }
 
         .side-eyebrow {
@@ -682,35 +696,24 @@ export default function NoticePage() {
           margin-bottom: 10px;
         }
 
-        .newsletter-box h3,
-        .notice-upload-note strong {
-          display: block;
-          color: #161616;
-          font-size: 22px;
-          font-weight: 900;
-          line-height: 1.35;
-          margin-bottom: 16px;
-        }
-
-        .notice-upload-note p,
         .subscribe-success {
           color: #525252;
           font-size: 14px;
           line-height: 1.7;
         }
 
-        .notice-subscribe-form,
+        .notice-write-note {
+          border: 1px solid #e0e0e0;
+          background: #ffffff;
+          padding: 24px;
+        }
+
         .notice-write-form,
         .notice-field {
           display: flex;
           flex-direction: column;
         }
 
-        .notice-subscribe-form {
-          gap: 10px;
-        }
-
-        .notice-subscribe-form label,
         .notice-field label,
         .upload-controls label {
           color: #161616;
@@ -718,7 +721,6 @@ export default function NoticePage() {
           font-weight: 900;
         }
 
-        .notice-subscribe-form input,
         .notice-field input,
         .notice-field select,
         .notice-field textarea {
@@ -737,7 +739,6 @@ export default function NoticePage() {
           line-height: 1.7;
         }
 
-        .notice-subscribe-form input:focus,
         .notice-field input:focus,
         .notice-field select:focus,
         .notice-field textarea:focus {
@@ -870,13 +871,23 @@ export default function NoticePage() {
           accent-color: #ff5a2a;
         }
 
-        @media (min-width: 768px) {
-          .notice-featured {
-            grid-template-columns: minmax(0, 1.25fr) minmax(340px, 0.75fr);
+        @media (min-width: 640px) {
+          .notice-magazine-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
           }
 
-          .notice-card-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
+          .featured-card {
+            grid-column: span 2;
+          }
+        }
+
+        @media (min-width: 768px) {
+          .notice-magazine-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+          }
+
+          .featured-card {
+            grid-column: span 2;
           }
 
           .form-two-col,
@@ -885,14 +896,13 @@ export default function NoticePage() {
           }
         }
 
-        @media (min-width: 1100px) {
-          .notice-content-grid {
-            grid-template-columns: minmax(0, 1fr) 320px;
+        @media (min-width: 1024px) {
+          .notice-magazine-grid {
+            grid-template-columns: repeat(5, minmax(0, 1fr));
           }
 
-          .notice-side-panel {
-            position: sticky;
-            top: 122px;
+          .featured-card {
+            grid-column: span 3;
           }
         }
 
