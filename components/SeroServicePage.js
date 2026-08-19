@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import { DEFAULT_SERO_DAY_PROGRAMS } from '@/lib/seroDayPrograms';
+import { isSupabaseConfigured } from '@/lib/supabaseClient';
 import { MEMBER_CONTENT_FILTERS, MEMBER_CONTENTS } from '@/lib/memberContents';
 import { SERVICE_CATEGORIES, getServiceCategory } from '@/lib/serviceCategories';
 
@@ -113,6 +114,29 @@ export default function SeroServicePage({ slug }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    if (!isSupabaseConfigured) {
+      const checkLocalSession = () => {
+        const localUserStr = localStorage.getItem('sejong_session_user');
+        if (localUserStr) {
+          try {
+            setUser(JSON.parse(localUserStr));
+          } catch {
+            setUser(null);
+          }
+        } else {
+          setUser(null);
+        }
+      };
+
+      checkLocalSession();
+      window.addEventListener('storage', checkLocalSession);
+      window.addEventListener('sejong_role_update', checkLocalSession);
+      return () => {
+        window.removeEventListener('storage', checkLocalSession);
+        window.removeEventListener('sejong_role_update', checkLocalSession);
+      };
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });

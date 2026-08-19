@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import Link from 'next/link';
 
 export default function SignupPage() {
@@ -30,6 +30,54 @@ export default function SignupPage() {
     }
 
     setLoading(true);
+
+    if (!isSupabaseConfigured) {
+      setTimeout(() => {
+        try {
+          const storedMembersStr = localStorage.getItem('sejong_admin_members');
+          let currentMembers = [];
+          if (storedMembersStr) {
+            currentMembers = JSON.parse(storedMembersStr);
+          }
+
+          const emailExists = currentMembers.some((m) => m.email.toLowerCase() === email.trim().toLowerCase());
+          if (emailExists) {
+            setErrorMsg('이미 가입된 이메일 주소입니다.');
+            setLoading(false);
+            return;
+          }
+
+          const newMember = {
+            id: `usr-${Date.now()}`,
+            name: name.trim(),
+            brand: companyName.trim(),
+            email: email.trim(),
+            password: password,
+            role: role,
+            status: 'active',
+            feePaid: true,
+            date: new Date().toISOString().slice(0, 10)
+          };
+
+          currentMembers.push(newMember);
+          localStorage.setItem('sejong_admin_members', JSON.stringify(currentMembers));
+
+          // Trigger update so local session is set or admin UI refreshes
+          localStorage.setItem('sejong_session_user', JSON.stringify(newMember));
+          window.dispatchEvent(new Event('storage'));
+          
+          setSuccessMsg('회원가입이 정상 완료되었습니다! 로그인 창으로 이동합니다.');
+          setTimeout(() => {
+            router.push('/login');
+          }, 2000);
+        } catch (err) {
+          setErrorMsg('회원가입 처리 중 오류가 발생했습니다.');
+        } finally {
+          setLoading(false);
+        }
+      }, 800);
+      return;
+    }
 
     try {
       const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '';

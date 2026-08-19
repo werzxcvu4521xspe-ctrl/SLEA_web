@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import Link from 'next/link';
 
 export default function LoginPage() {
@@ -16,6 +16,50 @@ export default function LoginPage() {
     e.preventDefault();
     setErrorMsg('');
     setLoading(true);
+
+    if (!isSupabaseConfigured) {
+      setTimeout(() => {
+        try {
+          const storedMembersStr = localStorage.getItem('sejong_admin_members');
+          let currentMembers = [];
+          if (storedMembersStr) {
+            currentMembers = JSON.parse(storedMembersStr);
+          }
+
+          // Also check default members if not inside localStorage
+          const defaultAdminUser = {
+            id: 'admin-1',
+            email: 'admin@sejong.com',
+            password: 'adminpassword',
+            role: 'super_admin',
+            status: 'active',
+            name: '최고관리자',
+            brand: '협회 사무국'
+          };
+          
+          const allMembers = [defaultAdminUser, ...currentMembers];
+
+          const matchedUser = allMembers.find(
+            (m) => m.email.toLowerCase() === email.trim().toLowerCase() && m.password === password
+          );
+
+          if (matchedUser) {
+            localStorage.setItem('sejong_session_user', JSON.stringify(matchedUser));
+            window.dispatchEvent(new Event('storage'));
+            window.dispatchEvent(new Event('sejong_role_update'));
+            router.push('/mypage');
+            router.refresh();
+          } else {
+            setErrorMsg('이메일 또는 비밀번호가 올바르지 않습니다.');
+          }
+        } catch (err) {
+          setErrorMsg('로그인 과정에 오류가 발생했습니다.');
+        } finally {
+          setLoading(false);
+        }
+      }, 500);
+      return;
+    }
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
