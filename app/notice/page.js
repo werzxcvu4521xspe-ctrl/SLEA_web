@@ -65,8 +65,27 @@ export default function NoticePage() {
     });
   }, [notices, selectedCategory]);
 
-  const featuredNotice = filteredNotices[0] || notices[0];
-  const gridNotices = filteredNotices.filter(notice => notice.id !== featuredNotice?.id);
+  const [activeSlideIndex, setActiveSlideIndex] = useState(0);
+  const [isSliderPaused, setIsSliderPaused] = useState(false);
+
+  const featuredSlides = useMemo(() => filteredNotices.slice(0, 4), [filteredNotices]);
+  const gridNotices = useMemo(() => filteredNotices.slice(featuredSlides.length), [filteredNotices, featuredSlides.length]);
+
+  // Reset slide index when category changes
+  useEffect(() => {
+    setActiveSlideIndex(0);
+  }, [selectedCategory]);
+
+  // Auto slide interval
+  useEffect(() => {
+    if (featuredSlides.length <= 1 || isSliderPaused) return;
+
+    const interval = setInterval(() => {
+      setActiveSlideIndex((prev) => (prev + 1) % featuredSlides.length);
+    }, 4000); // 4 seconds
+
+    return () => clearInterval(interval);
+  }, [featuredSlides.length, isSliderPaused]);
 
   const updateForm = (field, value) => {
     setForm(prev => ({ ...prev, [field]: value }));
@@ -157,12 +176,20 @@ export default function NoticePage() {
 
         <section className="notice-grid-container">
           <div className="notice-magazine-grid">
-            {filteredNotices.map((notice, index) => {
-              const isFirst = index === 0;
-              if (isFirst) {
-                return (
-                  <article key={notice.id} className="notice-card featured-card">
-                    <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
+            {featuredSlides.length > 0 && (
+              <article
+                className="notice-card featured-card slider-card"
+                onMouseEnter={() => setIsSliderPaused(true)}
+                onMouseLeave={() => setIsSliderPaused(false)}
+              >
+                <div className="slider-wrapper">
+                  {featuredSlides.map((notice, idx) => (
+                    <Link
+                      key={notice.id}
+                      href={`/notice/${notice.id}`}
+                      className={`slide-item ${idx === activeSlideIndex ? 'active' : ''}`}
+                      aria-label={`${notice.title} 상세 보기`}
+                    >
                       <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
                       <div className="featured-overlay">
                         <div className="featured-meta">
@@ -172,28 +199,35 @@ export default function NoticePage() {
                         <h3>{notice.title}</h3>
                       </div>
                     </Link>
-                  </article>
-                );
-              }
-
-              return (
-                <article key={notice.id} className="notice-card standard-card">
-                  <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
-                    <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
-                  </Link>
-                  <div className="notice-card-copy">
-                    <div className="notice-meta">
-                      <span>{notice.category}</span>
-                      <span>{notice.date}</span>
+                  ))}
+                  {featuredSlides.length > 1 && (
+                    <div className="slider-indicator">
+                      <span>{activeSlideIndex + 1}</span>
+                      <span className="divider">/</span>
+                      <span>{featuredSlides.length}</span>
                     </div>
-                    <Link href={`/notice/${notice.id}`} className="notice-title-link">
-                      <h3>{notice.title}</h3>
-                    </Link>
-                    <p>{notice.excerpt}</p>
+                  )}
+                </div>
+              </article>
+            )}
+
+            {gridNotices.map((notice) => (
+              <article key={notice.id} className="notice-card standard-card">
+                <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
+                  <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
+                </Link>
+                <div className="notice-card-copy">
+                  <div className="notice-meta">
+                    <span>{notice.category}</span>
+                    <span>{notice.date}</span>
                   </div>
-                </article>
-              );
-            })}
+                  <Link href={`/notice/${notice.id}`} className="notice-title-link">
+                    <h3>{notice.title}</h3>
+                  </Link>
+                  <p>{notice.excerpt}</p>
+                </div>
+              </article>
+            ))}
           </div>
 
           {filteredNotices.length === 0 && (
@@ -545,15 +579,49 @@ export default function NoticePage() {
           transform: scale(1.04);
         }
 
-        /* Featured card styles (overlay title) */
+        /* Featured card styles (slider overlay) */
         .featured-card {
           grid-column: span 1;
           position: relative;
+          height: 100%;
         }
 
-        .featured-card .notice-card-image-wrapper {
-          aspect-ratio: 16 / 10;
+        .slider-wrapper {
+          position: relative;
+          width: 100%;
           height: 100%;
+          overflow: hidden;
+          background: #f6f6f6;
+          aspect-ratio: 16 / 10;
+        }
+
+        .slide-item {
+          position: absolute;
+          inset: 0;
+          opacity: 0;
+          visibility: hidden;
+          transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+          transform: scale(1.02);
+          z-index: 1;
+          display: block;
+        }
+
+        .slide-item.active {
+          opacity: 1;
+          visibility: visible;
+          transform: scale(1);
+          z-index: 2;
+        }
+
+        .slide-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .slide-item:hover img {
+          transform: scale(1.04);
         }
 
         .featured-overlay {
@@ -580,12 +648,36 @@ export default function NoticePage() {
           color: var(--color-orange-accent);
         }
 
-        .featured-card h3 {
+        .slide-item h3 {
           font-size: clamp(20px, 2.5vw, 32px);
           font-weight: 900;
           line-height: 1.25;
           color: #ffffff;
           word-break: keep-all;
+        }
+
+        .slider-indicator {
+          position: absolute;
+          right: 20px;
+          bottom: 20px;
+          background: rgba(0, 0, 0, 0.5);
+          color: #ffffff;
+          padding: 6px 12px;
+          font-family: var(--font-family-mono, monospace);
+          font-size: 13px;
+          font-weight: 700;
+          display: flex;
+          align-items: center;
+          gap: 4px;
+          z-index: 10;
+          border-radius: 2px;
+          backdrop-filter: blur(4px);
+          letter-spacing: 0.05em;
+        }
+
+        .slider-indicator .divider {
+          opacity: 0.6;
+          font-weight: 300;
         }
 
         /* Copy styles for standard card */
