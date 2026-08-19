@@ -4,61 +4,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
+import { DEFAULT_SERO_DAY_PROGRAMS } from '@/lib/seroDayPrograms';
 import { MEMBER_CONTENT_FILTERS, MEMBER_CONTENTS } from '@/lib/memberContents';
 import { SERVICE_CATEGORIES, getServiceCategory } from '@/lib/serviceCategories';
 
 const STORAGE_PREFIX = 'sejong_sero_service_';
 
-const seroDayPrograms = [
-  {
-    id: 'sero-day-network-18',
-    title: '제18회 세로 데이: 로컬 브랜드 네트워킹',
-    type: '네트워킹',
-    status: '접수중',
-    date: '2026.08.28 금요일 19:00',
-    place: '나성동 로컬허브',
-    capacity: '30명',
-    imageUrl: 'https://images.unsplash.com/photo-1515169067865-5387ec356754?q=80&w=1200&auto=format&fit=crop',
-    summary: '회원사 3분 브랜드 소개와 업종별 라운드테이블로 서로의 고객, 채널, 자원을 연결합니다.',
-    description: '세종 로컬 창업가들이 한자리에 모여 브랜드를 소개하고 협업 가능성을 찾는 정기 네트워킹 프로그램입니다. 참여자는 짧은 브랜드 소개, 그룹별 대화, 협업 제안 시간을 통해 바로 실행 가능한 연결 지점을 정리합니다.'
-  },
-  {
-    id: 'sero-day-market-tour',
-    title: '원도심 상권 협업 투어',
-    type: '현장 투어',
-    status: '접수중',
-    date: '2026.09.12 토요일 14:00',
-    place: '조치원 청년창업거리',
-    capacity: '20명',
-    imageUrl: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?q=80&w=1200&auto=format&fit=crop',
-    summary: '원도심 공간과 브랜드를 함께 둘러보고 팝업, 공동 프로모션, 콘텐츠 협업 아이디어를 찾습니다.',
-    description: '조치원 원도심의 창업 공간과 로컬 브랜드를 직접 방문하며 현장에서 협업 가능성을 발굴합니다. 상권 운영자, 공간 운영자, 회원 브랜드가 함께 참여해 팝업 운영과 지역 캠페인 아이디어를 구체화합니다.'
-  },
-  {
-    id: 'sero-day-pop-up',
-    title: '가을 팝업마켓 참여 브랜드 모집',
-    type: '팝업마켓',
-    status: '접수중',
-    date: '2026.09.25 금요일 17:00',
-    place: '세종 중앙공원',
-    capacity: '12팀',
-    imageUrl: 'https://images.unsplash.com/photo-1528698827591-e19ccd7bc23d?q=80&w=1200&auto=format&fit=crop',
-    summary: '회원사 상품을 시민에게 소개하는 팝업마켓 운영 설명회와 참가 브랜드 매칭을 진행합니다.',
-    description: '가을 시즌 공동 팝업마켓을 준비하는 회원사를 위한 사전 설명 프로그램입니다. 부스 구성, 판매 운영, 공동 홍보 방식, 결제/정산 안내를 공유하고 참가 브랜드 간 교차 판매 아이디어를 정리합니다.'
-  },
-  {
-    id: 'sero-day-pitching',
-    title: '지원사업 피칭 리허설 데이',
-    type: '피칭',
-    status: '접수 예정',
-    date: '2026.10.30 금요일 18:30',
-    place: '세종창조경제혁신센터',
-    capacity: '15팀',
-    imageUrl: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1200&auto=format&fit=crop',
-    summary: '정부지원사업 발표를 앞둔 회원사를 위해 사업계획서 핵심 메시지와 발표 흐름을 점검합니다.',
-    description: '지원사업 발표와 투자 미팅을 준비하는 회원사를 위한 피칭 리허설 프로그램입니다. 사업 소개, 시장 문제, 수익 모델, 실행 계획을 짧은 발표로 정리하고 운영진과 동료 창업가의 피드백을 받습니다.'
-  }
-];
+
 
 const products = [
   {
@@ -124,7 +76,8 @@ export default function SeroServicePage({ slug }) {
   const [memberFilter, setMemberFilter] = useState('전체');
   const [memberSort, setMemberSort] = useState('latest');
   const [seroDayFilter, setSeroDayFilter] = useState('전체');
-  const [selectedSeroProgramId, setSelectedSeroProgramId] = useState(seroDayPrograms[0].id);
+  const [seroPrograms, setSeroPrograms] = useState([]);
+  const [selectedSeroProgramId, setSelectedSeroProgramId] = useState('');
   const [activeSeroProgram, setActiveSeroProgram] = useState(null);
   const [user, setUser] = useState(null);
 
@@ -138,6 +91,25 @@ export default function SeroServicePage({ slug }) {
     });
 
     return () => subscription.unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    let programsList = [];
+    const stored = localStorage.getItem('sejong_sero_programs');
+    if (stored) {
+      try {
+        programsList = JSON.parse(stored);
+      } catch {
+        programsList = DEFAULT_SERO_DAY_PROGRAMS;
+      }
+    } else {
+      localStorage.setItem('sejong_sero_programs', JSON.stringify(DEFAULT_SERO_DAY_PROGRAMS));
+      programsList = DEFAULT_SERO_DAY_PROGRAMS;
+    }
+    setSeroPrograms(programsList);
+    if (programsList.length > 0) {
+      setSelectedSeroProgramId(programsList[0].id);
+    }
   }, []);
 
   const cartTotal = useMemo(() => (
@@ -159,23 +131,23 @@ export default function SeroServicePage({ slug }) {
   }, [memberFilter, memberSort]);
 
   const seroDayFilters = useMemo(() => (
-    ['전체', ...Array.from(new Set(seroDayPrograms.map((program) => program.type)))]
-  ), []);
+    ['전체', ...Array.from(new Set(seroPrograms.map((program) => program.type)))]
+  ), [seroPrograms]);
 
   const filteredSeroDayPrograms = useMemo(() => (
     seroDayFilter === '전체'
-      ? seroDayPrograms
-      : seroDayPrograms.filter((program) => program.type === seroDayFilter)
-  ), [seroDayFilter]);
+      ? seroPrograms
+      : seroPrograms.filter((program) => program.type === seroDayFilter)
+  ), [seroPrograms, seroDayFilter]);
 
   const selectedSeroProgram = useMemo(() => (
-    seroDayPrograms.find((program) => program.id === selectedSeroProgramId) || seroDayPrograms[0]
-  ), [selectedSeroProgramId]);
+    seroPrograms.find((program) => program.id === selectedSeroProgramId) || seroPrograms[0] || {}
+  ), [seroPrograms, selectedSeroProgramId]);
 
   const servicePostCount = useMemo(() => {
     const counts = {
       notice: 2,
-      'sero-day': seroDayPrograms.length,
+      'sero-day': seroPrograms.length,
       'sero-members': MEMBER_CONTENTS.length,
       'sero-ai-start': 0,
       'mentoring-day': 0,
@@ -184,7 +156,7 @@ export default function SeroServicePage({ slug }) {
     };
 
     return counts[slug] || 0;
-  }, [slug, talkPosts.length]);
+  }, [slug, seroPrograms.length, talkPosts.length]);
 
   if (!category) {
     return null;
@@ -319,13 +291,11 @@ export default function SeroServicePage({ slug }) {
                   {filteredSeroDayPrograms.map((program) => (
                     <article key={program.id} className="sero-program-card">
                       <button type="button" className="sero-program-image" onClick={() => setActiveSeroProgram(program)}>
-                        <img src={program.imageUrl} alt={program.title} loading="lazy" />
+                        <img src={program.imageUrl} alt={program.title} />
                         <span>{program.type}</span>
                       </button>
                       <div className="sero-program-copy">
-                        <button type="button" onClick={() => setActiveSeroProgram(program)}>
-                          {program.title}
-                        </button>
+                        <h3>{program.title}</h3>
                         <p>{program.summary}</p>
                         <div className="sero-program-meta">
                           <span>{program.date}</span>
@@ -335,12 +305,9 @@ export default function SeroServicePage({ slug }) {
                         <div className="sero-program-actions">
                           <button
                             type="button"
-                            onClick={() => {
-                              setSelectedSeroProgramId(program.id);
-                              setFormState((prev) => ({ ...prev, programId: program.id }));
-                            }}
+                            onClick={() => setActiveSeroProgram(program)}
                           >
-                            신청 선택하기 →
+                            자세히 보기 →
                           </button>
                           <span className={program.status === '접수중' ? 'open' : 'upcoming'}>
                             {program.status}
@@ -352,74 +319,7 @@ export default function SeroServicePage({ slug }) {
                 </div>
               </div>
 
-              <form className="sero-application-panel service-form" onSubmit={submitSeroDayApplication}>
-                <div className="application-heading">
-                  <span>Program Application</span>
-                  <h3>프로그램 신청</h3>
-                </div>
 
-                <label>
-                  <span>신청 프로그램 *</span>
-                  <select
-                    required
-                    value={selectedSeroProgramId}
-                    onChange={(e) => setSelectedSeroProgramId(e.target.value)}
-                  >
-                    {seroDayPrograms.map((program) => (
-                      <option key={program.id} value={program.id}>
-                        [{program.type}] {program.title}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-
-                <div className="selected-program-summary">
-                  <strong>{selectedSeroProgram.title}</strong>
-                  <span>{selectedSeroProgram.date}</span>
-                  <p>{selectedSeroProgram.place} · 정원 {selectedSeroProgram.capacity}</p>
-                </div>
-
-                <div className="form-two-col">
-                  <label>
-                    <span>신청자명 *</span>
-                    <input required value={formState.name || ''} onChange={(e) => updateField('name', e.target.value)} placeholder="예: 홍길동" />
-                  </label>
-                  <label>
-                    <span>연락처 *</span>
-                    <input required type="tel" value={formState.phone || ''} onChange={(e) => updateField('phone', e.target.value)} placeholder="010-0000-0000" />
-                  </label>
-                </div>
-
-                <label>
-                  <span>브랜드/기업명 *</span>
-                  <input required value={formState.brand || ''} onChange={(e) => updateField('brand', e.target.value)} placeholder="브랜드 또는 기업명" />
-                </label>
-
-                <label>
-                  <span>참여 인원 *</span>
-                  <input required type="number" min="1" max="10" value={formState.participants || '1'} onChange={(e) => updateField('participants', e.target.value)} />
-                </label>
-
-                <label>
-                  <span>만나고 싶은 분야 / 협업 관심사</span>
-                  <textarea value={formState.interest || ''} onChange={(e) => updateField('interest', e.target.value)} placeholder="예: F&B 브랜드와 공동 팝업을 논의하고 싶어요." />
-                </label>
-
-                <label className="consent-check">
-                  <input
-                    type="checkbox"
-                    required
-                    checked={Boolean(formState.consent)}
-                    onChange={(e) => updateField('consent', e.target.checked)}
-                  />
-                  <span>신청 안내를 위해 이름과 연락처를 수집하는 것에 동의합니다.</span>
-                </label>
-
-                <button type="submit" disabled={selectedSeroProgram.status !== '접수중'}>
-                  {selectedSeroProgram.status === '접수중' ? '프로그램 신청 저장' : '접수 예정입니다'}
-                </button>
-                {submitted && <span className="form-result">{submitted}</span>}
-              </form>
             </div>
 
             {activeSeroProgram && (
@@ -447,15 +347,6 @@ export default function SeroServicePage({ slug }) {
                       </div>
                     </dl>
                     <p>{activeSeroProgram.description}</p>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedSeroProgramId(activeSeroProgram.id);
-                        setActiveSeroProgram(null);
-                      }}
-                    >
-                      이 프로그램 신청하기 →
-                    </button>
                   </div>
                 </div>
               </div>
@@ -1494,7 +1385,7 @@ export default function SeroServicePage({ slug }) {
           }
 
           .sero-program-layout {
-            grid-template-columns: minmax(0, 1fr) minmax(320px, 0.42fr);
+            grid-template-columns: 1fr;
           }
 
           .sero-program-grid {

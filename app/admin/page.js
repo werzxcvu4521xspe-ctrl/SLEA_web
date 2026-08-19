@@ -4,6 +4,7 @@ import { useCallback, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
+import { DEFAULT_SERO_DAY_PROGRAMS } from '@/lib/seroDayPrograms';
 import Link from 'next/link';
 
 const CONTENT_STORAGE_KEY = 'sejong_site_content_sections';
@@ -482,7 +483,7 @@ export default function AdminPage() {
   
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null); // 'super_admin', 'staff_admin', 'user', null
-  const [activeSubTab, setActiveSubTab] = useState('home'); // 'home', 'approval', 'content', 'category', 'system'
+  const [activeSubTab, setActiveSubTab] = useState('home'); // 'home', 'approval', 'inquiries', 'content', 'category', 'system', 'program'
   const [siteSections, setSiteSections] = useState(CURRENT_SITE_SECTIONS);
   const [selectedSectionId, setSelectedSectionId] = useState(CURRENT_SITE_SECTIONS[0].id);
   const [sectionFilter, setSectionFilter] = useState('all');
@@ -490,6 +491,22 @@ export default function AdminPage() {
   const [members, setMembers] = useState(DEFAULT_MEMBERS);
   const [memberQuery, setMemberQuery] = useState('');
   const [memberRoleFilter, setMemberRoleFilter] = useState('all');
+
+  // Programs management state
+  const [seroPrograms, setSeroPrograms] = useState([]);
+  const [isProgModalOpen, setIsProgModalOpen] = useState(false);
+  const [editingProgram, setEditingProgram] = useState(null);
+  const [progForm, setProgForm] = useState({
+    title: '',
+    type: '네트워킹',
+    status: '접수중',
+    date: '',
+    place: '',
+    capacity: '',
+    imageUrl: '',
+    summary: '',
+    description: ''
+  });
   
   // Pending registrations simulation state
   const [pendingRegistrations, setPendingRegistrations] = useState([
@@ -561,6 +578,105 @@ export default function AdminPage() {
       window.removeEventListener('sejong_role_update', checkRole);
     };
   }, [checkRole]);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('sejong_sero_programs');
+    if (stored) {
+      try {
+        setSeroPrograms(JSON.parse(stored));
+      } catch {
+        setSeroPrograms(DEFAULT_SERO_DAY_PROGRAMS);
+      }
+    } else {
+      localStorage.setItem('sejong_sero_programs', JSON.stringify(DEFAULT_SERO_DAY_PROGRAMS));
+      setSeroPrograms(DEFAULT_SERO_DAY_PROGRAMS);
+    }
+  }, []);
+
+  const saveProgramsToStorage = (list) => {
+    localStorage.setItem('sejong_sero_programs', JSON.stringify(list));
+    setSeroPrograms(list);
+  };
+
+  const handleAddOrEditProgram = (e) => {
+    e.preventDefault();
+    if (!progForm.title || !progForm.date || !progForm.place) {
+      setMsg({ type: 'error', text: '필수 항목을 입력해 주세요.' });
+      return;
+    }
+
+    let updatedList = [];
+    if (editingProgram) {
+      updatedList = seroPrograms.map((p) =>
+        p.id === editingProgram.id ? { ...p, ...progForm } : p
+      );
+      setMsg({ type: 'success', text: '프로그램이 성공적으로 수정되었습니다.' });
+    } else {
+      const newProgram = {
+        id: `sero-day-${Date.now()}`,
+        ...progForm
+      };
+      updatedList = [newProgram, ...seroPrograms];
+      setMsg({ type: 'success', text: '새 프로그램이 등록되었습니다.' });
+    }
+
+    saveProgramsToStorage(updatedList);
+    setIsProgModalOpen(false);
+    setEditingProgram(null);
+    setProgForm({
+      title: '',
+      type: '네트워킹',
+      status: '접수중',
+      date: '',
+      place: '',
+      capacity: '',
+      imageUrl: '',
+      summary: '',
+      description: ''
+    });
+    window.setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+  };
+
+  const handleDeleteProgram = (id) => {
+    if (window.confirm('정말 이 프로그램을 삭제하시겠습니까?')) {
+      const updatedList = seroPrograms.filter((p) => p.id !== id);
+      saveProgramsToStorage(updatedList);
+      setMsg({ type: 'success', text: '프로그램이 삭제되었습니다.' });
+      window.setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+    }
+  };
+
+  const openEditProgramModal = (program) => {
+    setEditingProgram(program);
+    setProgForm({
+      title: program.title || '',
+      type: program.type || '네트워킹',
+      status: program.status || '접수중',
+      date: program.date || '',
+      place: program.place || '',
+      capacity: program.capacity || '',
+      imageUrl: program.imageUrl || '',
+      summary: program.summary || '',
+      description: program.description || ''
+    });
+    setIsProgModalOpen(true);
+  };
+
+  const openAddProgramModal = () => {
+    setEditingProgram(null);
+    setProgForm({
+      title: '',
+      type: '네트워킹',
+      status: '접수중',
+      date: '',
+      place: '',
+      capacity: '',
+      imageUrl: '',
+      summary: '',
+      description: ''
+    });
+    setIsProgModalOpen(true);
+  };
 
   useEffect(() => {
     const storageLoadTimer = window.setTimeout(() => {
@@ -919,6 +1035,13 @@ export default function AdminPage() {
           </button>
           <button 
             type="button" 
+            className={`nav-item ${activeSubTab === 'program' ? 'active' : ''}`}
+            onClick={() => { setActiveSubTab('program'); setMsg({type:'',text:''}); }}
+          >
+            📋 프로그램 관리
+          </button>
+          <button 
+            type="button" 
             className={`nav-item ${activeSubTab === 'system' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('system'); setMsg({type:'',text:''}); }}
           >
@@ -974,6 +1097,7 @@ export default function AdminPage() {
               {activeSubTab === 'inquiries' && '멘토링 및 컨설팅 신청 관리'}
               {activeSubTab === 'content' && '섹션별 사이트 콘텐츠 관리'}
               {activeSubTab === 'category' && '쇼핑몰 카테고리 관리'}
+              {activeSubTab === 'program' && '세로데이 프로그램 일정 및 관리'}
               {activeSubTab === 'system' && '시스템 인프라 및 권한 설정'}
             </h1>
           </div>
@@ -1677,6 +1801,195 @@ export default function AdminPage() {
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* Tab 6: Program Settings */}
+        {activeSubTab === 'program' && (
+          <div className="tab-view animate-fade-in">
+            <div className="glass-panel" style={{ padding: '24px', backgroundColor: 'var(--color-white)', border: '1px solid var(--color-gray-light)', borderRadius: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-charcoal-deep)', margin: 0 }}>세로데이 프로그램 목록</h3>
+                  <p style={{ fontSize: '12px', color: 'var(--color-gray-dark)', margin: '4px 0 0' }}>공동대표가 기획하고 주관하는 프로그램들을 직접 등록, 수정, 삭제합니다.</p>
+                </div>
+                <button type="button" className="btn-primary" onClick={openAddProgramModal} style={{ height: '40px', padding: '0 16px', background: 'var(--color-orange-accent)', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}>
+                  ➕ 새 프로그램 등록
+                </button>
+              </div>
+
+              {msg.text && (
+                <div className={`alert ${msg.type === 'success' ? 'success-alert' : 'error-alert'}`} style={{ marginBottom: '16px', padding: '12px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: '700', backgroundColor: msg.type === 'success' ? 'var(--color-emerald-pale)' : 'var(--color-orange-light)', color: msg.type === 'success' ? 'var(--color-emerald-deep)' : 'var(--color-orange-accent)' }}>
+                  {msg.text}
+                </div>
+              )}
+
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-light)', textAlign: 'left', color: 'var(--color-gray-dark)', fontWeight: '700' }}>
+                      <th style={{ padding: '12px 8px' }}>유형</th>
+                      <th style={{ padding: '12px 8px' }}>프로그램 정보</th>
+                      <th style={{ padding: '12px 8px' }}>일시 / 장소</th>
+                      <th style={{ padding: '12px 8px' }}>정원</th>
+                      <th style={{ padding: '12px 8px' }}>상태</th>
+                      <th style={{ padding: '12px 8px', textAlign: 'right' }}>관리</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {seroPrograms.map((program) => (
+                      <tr key={program.id} style={{ borderBottom: '1px solid var(--color-gray-light)' }}>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top' }}>
+                          <span style={{ display: 'inline-block', padding: '4px 8px', fontSize: '12px', fontWeight: '700', borderRadius: '4px', background: 'var(--color-sand-light)', color: 'var(--color-charcoal-deep)' }}>
+                            {program.type}
+                          </span>
+                        </td>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top' }}>
+                          <strong style={{ fontSize: '15px', fontWeight: '800', color: 'var(--color-charcoal-deep)' }}>{program.title}</strong>
+                          <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--color-gray-dark)', lineHeight: '1.4' }}>{program.summary}</p>
+                        </td>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top' }}>
+                          <div style={{ fontWeight: '700' }}>{program.date}</div>
+                          <div style={{ fontSize: '12px', color: 'var(--color-gray-dark)', marginTop: '2px' }}>{program.place}</div>
+                        </td>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top', fontWeight: '700' }}>{program.capacity}</td>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top' }}>
+                          <span style={{
+                            display: 'inline-block',
+                            padding: '4px 8px',
+                            fontSize: '11px',
+                            fontWeight: '800',
+                            borderRadius: '4px',
+                            background: program.status === '접수중' ? 'var(--color-emerald-pale)' : 'var(--color-orange-light)',
+                            color: program.status === '접수중' ? 'var(--color-emerald-deep)' : 'var(--color-orange-accent)'
+                          }}>
+                            {program.status}
+                          </span>
+                        </td>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <button
+                            type="button"
+                            onClick={() => openEditProgramModal(program)}
+                            style={{
+                              marginRight: '8px',
+                              padding: '6px 12px',
+                              fontSize: '12px',
+                              fontWeight: '700',
+                              border: '1px solid var(--color-gray-light)',
+                              background: '#fff',
+                              color: 'var(--color-charcoal-deep)',
+                              cursor: 'pointer',
+                              borderRadius: '4px'
+                            }}
+                          >
+                            수정
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteProgram(program.id)}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '12px',
+                              fontWeight: '700',
+                              border: '1px solid rgba(229,76,28,0.2)',
+                              background: 'var(--color-orange-light)',
+                              color: 'var(--color-orange-accent)',
+                              cursor: 'pointer',
+                              borderRadius: '4px'
+                            }}
+                          >
+                            삭제
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {seroPrograms.length === 0 && (
+                      <tr>
+                        <td colSpan="6" style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-gray-dark)', fontWeight: '600' }}>
+                          등록된 세로 프로그램이 없습니다.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Program Add/Edit Modal */}
+            {isProgModalOpen && (
+              <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+                <div className="modal-content" style={{ background: '#fff', padding: '30px', borderRadius: '8px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-charcoal-deep)', margin: '0 0 20px 0' }}>{editingProgram ? '프로그램 수정' : '새 프로그램 등록'}</h3>
+                  <form onSubmit={handleAddOrEditProgram} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>프로그램 유형 *</label>
+                        <select value={progForm.type} onChange={(e) => setProgForm({ ...progForm, type: e.target.value })} style={{ height: '40px', padding: '0 8px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }}>
+                          <option value="네트워킹">네트워킹</option>
+                          <option value="현장 투어">현장 투어</option>
+                          <option value="팝업마켓">팝업마켓</option>
+                          <option value="피칭">피칭</option>
+                        </select>
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>접수 상태 *</label>
+                        <select value={progForm.status} onChange={(e) => setProgForm({ ...progForm, status: e.target.value })} style={{ height: '40px', padding: '0 8px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }}>
+                          <option value="접수중">접수중</option>
+                          <option value="접수 예정">접수 예정</option>
+                          <option value="마감">마감</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>프로그램 제목 *</label>
+                      <input required value={progForm.title} onChange={(e) => setProgForm({ ...progForm, title: e.target.value })} placeholder="예: 제19회 세로 데이: 가을 네트워킹" style={{ height: '40px', padding: '0 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }} />
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>일시 *</label>
+                        <input required value={progForm.date} onChange={(e) => setProgForm({ ...progForm, date: e.target.value })} placeholder="예: 2026.11.15 금요일 19:00" style={{ height: '40px', padding: '0 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }} />
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>장소 *</label>
+                        <input required value={progForm.place} onChange={(e) => setProgForm({ ...progForm, place: e.target.value })} placeholder="예: 조치원 청년센터" style={{ height: '40px', padding: '0 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }} />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: '16px' }}>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>정원</label>
+                        <input value={progForm.capacity} onChange={(e) => setProgForm({ ...progForm, capacity: e.target.value })} placeholder="예: 30명 또는 12팀" style={{ height: '40px', padding: '0 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }} />
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>대표 이미지 URL</label>
+                        <input value={progForm.imageUrl} onChange={(e) => setProgForm({ ...progForm, imageUrl: e.target.value })} placeholder="https://images.unsplash.com/..." style={{ height: '40px', padding: '0 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }} />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>요약 설명</label>
+                      <input value={progForm.summary} onChange={(e) => setProgForm({ ...progForm, summary: e.target.value })} placeholder="한 줄 요약을 입력하세요." style={{ height: '40px', padding: '0 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }} />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>상세 설명</label>
+                      <textarea value={progForm.description} onChange={(e) => setProgForm({ ...progForm, description: e.target.value })} placeholder="상세 프로그램 소개 문구를 입력하세요." style={{ minHeight: '100px', padding: '8px 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', resize: 'vertical', font: 'inherit', fontSize: '14px', fontWeight: '700' }} />
+                    </div>
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+                      <button type="button" onClick={() => setIsProgModalOpen(false)} style={{ height: '40px', padding: '0 20px', background: '#e0e0e0', color: 'var(--color-charcoal-deep)', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: '700' }}>
+                        취소
+                      </button>
+                      <button type="submit" style={{ height: '40px', padding: '0 20px', background: 'var(--color-orange-accent)', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}>
+                        저장하기
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
