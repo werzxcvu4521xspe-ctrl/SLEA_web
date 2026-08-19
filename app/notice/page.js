@@ -189,7 +189,14 @@ export default function NoticePage() {
                       <Link
                         key={notice.id}
                         href={`/notice/${notice.id}`}
-                        className={`slide-item ${idx === activeSlideIndex ? 'active' : ''}`}
+                        className="slide-item"
+                        style={{
+                          opacity: idx === activeSlideIndex ? 1 : 0,
+                          visibility: idx === activeSlideIndex ? 'visible' : 'hidden',
+                          transform: idx === activeSlideIndex ? 'scale(1)' : 'scale(1.02)',
+                          transition: 'opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1)',
+                          zIndex: idx === activeSlideIndex ? 2 : 1
+                        }}
                         aria-label={`${notice.title} 상세 보기`}
                       >
                         <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
@@ -677,21 +684,23 @@ export default function NoticePage() {
         .featured-overlay {
           position: absolute;
           inset: 0;
-          background: linear-gradient(to top, rgba(0, 0, 0, 0.85) 0%, rgba(0, 0, 0, 0.4) 55%, rgba(0, 0, 0, 0.1) 100%);
+          background: linear-gradient(to top, rgba(0, 0, 0, 0.45) 0%, rgba(0, 0, 0, 0) 35%);
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
           padding: 30px;
           color: #ffffff;
+          z-index: 5;
         }
 
         .featured-meta {
           display: flex;
           gap: 12px;
-          color: rgba(255, 255, 255, 0.82);
+          color: rgba(255, 255, 255, 0.95);
           font-size: 13px;
           font-weight: 700;
           margin-bottom: 12px;
+          text-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
         }
 
         .featured-meta span:first-child {
@@ -704,6 +713,7 @@ export default function NoticePage() {
           line-height: 1.25;
           color: #ffffff;
           word-break: keep-all;
+          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85), 0 1px 3px rgba(0, 0, 0, 0.9);
         }
 
         .slider-indicator {
