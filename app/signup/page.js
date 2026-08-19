@@ -9,6 +9,7 @@ export default function SignupPage() {
   const router = useRouter();
   
   const [name, setName] = useState('');
+  const [companyName, setCompanyName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('entrepreneur'); // Default to entrepreneur
@@ -32,6 +33,8 @@ export default function SignupPage() {
           emailRedirectTo: redirectUrl,
           data: {
             name: name.trim(),
+            brand: companyName.trim(),
+            company_name: companyName.trim(),
             role: role
           }
         }
@@ -76,6 +79,19 @@ export default function SignupPage() {
               placeholder="홍길동"
               value={name}
               onChange={(e) => setName(e.target.value)}
+              className="auth-input"
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="companyName">브랜드 / 회사명</label>
+            <input
+              id="companyName"
+              type="text"
+              required
+              placeholder="예: 밀마루 베이커리"
+              value={companyName}
+              onChange={(e) => setCompanyName(e.target.value)}
               className="auth-input"
             />
           </div>

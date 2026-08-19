@@ -15,6 +15,8 @@ const DEMO_MEMBER = {
   email: 'member@selo.local',
   user_metadata: {
     name: '일반 회원',
+    brand: 'SELO 테스트 브랜드',
+    company_name: 'SELO 테스트 브랜드',
     role: 'user'
   }
 };
@@ -45,6 +47,13 @@ const getReactionStats = (item, index) => {
   };
 };
 
+const getUserBrand = (user) => (
+  user?.user_metadata?.brand
+  || user?.user_metadata?.company_name
+  || user?.user_metadata?.companyName
+  || ''
+).trim();
+
 export default function MyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -63,6 +72,7 @@ export default function MyPage() {
   const [message, setMessage] = useState('');
 
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'SELO 회원';
+  const userBrand = getUserBrand(user);
 
   const refreshDashboard = () => {
     setBookmarks(readStoredList(BOOKMARK_STORAGE_KEY));
@@ -120,6 +130,14 @@ export default function MyPage() {
     };
   }, [router]);
 
+  useEffect(() => {
+    if (!userBrand) return;
+
+    setShopForm((prev) => (
+      prev.brand.trim() ? prev : { ...prev, brand: userBrand }
+    ));
+  }, [userBrand]);
+
   const mentoringBriefs = useMemo(() => (
     mentoringItems.map((item, index) => ({
       ...item,
@@ -159,16 +177,19 @@ export default function MyPage() {
 
   const submitShopItem = (event) => {
     event.preventDefault();
-    if (!shopForm.product.trim() || !shopForm.brand.trim()) return;
+    const sourceBrand = (userBrand || shopForm.brand).trim();
+    if (!shopForm.product.trim() || !sourceBrand) return;
 
     const nextItem = {
       id: `mypage-shop-${Date.now()}`,
       ...shopForm,
       product: shopForm.product.trim(),
-      brand: shopForm.brand.trim(),
+      brand: sourceBrand,
+      source: sourceBrand,
       price: shopForm.price.trim(),
       description: shopForm.description.trim(),
       authorEmail: user.email,
+      authorName: userName,
       status: '검토중',
       createdAt: new Date().toISOString()
     };
@@ -176,7 +197,7 @@ export default function MyPage() {
     const nextItems = [nextItem, ...shopItems];
     writeStoredList(SHOP_STORAGE_KEY, nextItems);
     setShopItems(nextItems);
-    setShopForm({ product: '', brand: '', price: '', imageUrl: '', description: '' });
+    setShopForm({ product: '', brand: userBrand, price: '', imageUrl: '', description: '' });
     setMessage('쇼핑 콘텐츠 등록 신청이 저장되었습니다.');
     window.setTimeout(() => setMessage(''), 2600);
   };
@@ -253,6 +274,7 @@ export default function MyPage() {
           <form className="dashboard-form" onSubmit={submitShopItem}>
             <input required value={shopForm.product} onChange={(event) => updateShopField('product', event.target.value)} placeholder="상품명" />
             <input required value={shopForm.brand} onChange={(event) => updateShopField('brand', event.target.value)} placeholder="브랜드/회원사명" />
+            {userBrand && <small className="source-helper">회원가입 정보의 브랜드/회사명이 출처로 자동 포함됩니다.</small>}
             <input value={shopForm.price} onChange={(event) => updateShopField('price', event.target.value)} placeholder="가격 예: 22,900원" />
             <input type="file" accept="image/*" onChange={handleShopImageUpload} />
             <textarea value={shopForm.description} onChange={(event) => updateShopField('description', event.target.value)} placeholder="상품 소개" />
@@ -497,6 +519,14 @@ export default function MyPage() {
           color: #ff5a2a;
           font-style: normal;
           font-weight: 900;
+        }
+
+        .source-helper {
+          margin-top: -6px;
+          color: #777777;
+          font-size: 12px;
+          font-weight: 800;
+          line-height: 1.5;
         }
 
         .mini-list {
