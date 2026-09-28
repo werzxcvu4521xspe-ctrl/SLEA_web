@@ -14,6 +14,7 @@ const CONTENT_STORAGE_KEY = 'sejong_site_content_sections';
 const MENTORING_STORAGE_KEY = 'sejong_mentoring_requests';
 const MEMBER_STORAGE_KEY = 'sejong_admin_members';
 const PENDING_REGISTRATION_STORAGE_KEY = 'sejong_pending_registrations';
+const ROLE_DECISION_STORAGE_KEY = 'sejong_member_role_decisions';
 const TALK_STORAGE_KEY = 'sejong_sero_service_sero-talk';
 const TALK_TYPE_OPTIONS = ['자유 게시판', 'MOU 제안', '콜라보 프로젝트'];
 const SHOP_STORAGE_KEY = 'sejong_shop_products';
@@ -23,12 +24,13 @@ const ROLE_OPTIONS = [
   { value: 'super_admin', label: '최고 관리자', shortLabel: 'Level 2', description: '전체 운영 권한' },
   { value: 'staff_admin', label: '일반 관리자', shortLabel: 'Level 1', description: '회원·콘텐츠 운영' },
   { value: 'entrepreneur', label: '정회원', shortLabel: 'Member', description: '브랜드 활동 회원' },
+  { value: 'entrepreneur_pending', label: '정회원 승인 대기중', shortLabel: 'Pending', description: '승인 심사 대기 중인 로컬 창업가' },
   { value: 'visitor', label: '일반 회원', shortLabel: 'Visitor', description: '커뮤니티 열람 회원' }
 ];
 
-// 회원 목록에서는 관리자 등급을 부여하지 않고 정회원/일반 회원 구분만 다룬다.
+// 회원 목록에서는 관리자 등급을 부여하지 않고 정회원/승인대기/일반 회원 구분만 다룬다.
 const MEMBER_ROLE_OPTIONS = ROLE_OPTIONS.filter(
-  (role) => role.value === 'entrepreneur' || role.value === 'visitor'
+  (role) => role.value === 'entrepreneur' || role.value === 'entrepreneur_pending' || role.value === 'visitor'
 );
 
 const STATUS_OPTIONS = [
@@ -928,13 +930,68 @@ export default function AdminPage() {
     });
   };
 
+  // 승인/반려 결과를 저장해 해당 회원이 다음 접속 시 등급에 반영되도록 한다.
+  const writeRoleDecision = (registration, nextRole) => {
+    if (!registration?.userId && !registration?.email) return;
+
+    try {
+      const decisions = JSON.parse(localStorage.getItem(ROLE_DECISION_STORAGE_KEY) || '{}');
+      const key = (registration.email || registration.userId).toLowerCase();
+      decisions[key] = {
+        userId: registration.userId || '',
+        email: registration.email || '',
+        role: nextRole,
+        decidedAt: new Date().toISOString()
+      };
+      localStorage.setItem(ROLE_DECISION_STORAGE_KEY, JSON.stringify(decisions));
+    } catch {}
+  };
+
   const handleApprove = (id, name) => {
     if (userRole !== 'super_admin') {
       setMsg({ type: 'error', text: '권한 부족: 회원 승인/반려 작업은 최고 관리자(Level 2)만 실행할 수 있습니다.' });
       return;
     }
+
+    const registration = pendingRegistrations.find(item => item.id === id);
+    if (!registration) return;
+
+    // 승인된 신청자를 정회원 등급으로 기존 회원 목록에 추가
+    const alreadyMember = members.some(member => (
+      registration.email && member.email
+        ? member.email.toLowerCase() === registration.email.toLowerCase()
+        : false
+    ));
+
+    if (!alreadyMember) {
+      const nextMembers = [
+        {
+          id: `mem-${registration.userId || Date.now()}`,
+          userId: registration.userId || '',
+          name: registration.name,
+          brand: registration.brand,
+          email: registration.email || '',
+          phone: registration.phone || '',
+          role: 'entrepreneur',
+          status: 'active',
+          joinedAt: registration.date || new Date().toISOString().slice(0, 10),
+          memo: `${registration.date || ''} 정회원 가입 승인 완료.`.trim()
+        },
+        ...members
+      ];
+      persistMembers(nextMembers);
+    } else {
+      const nextMembers = members.map(member => (
+        registration.email && member.email && member.email.toLowerCase() === registration.email.toLowerCase()
+          ? { ...member, role: 'entrepreneur', status: 'active' }
+          : member
+      ));
+      persistMembers(nextMembers);
+    }
+
+    writeRoleDecision(registration, 'entrepreneur');
     persistPendingRegistrations(prev => prev.filter(item => item.id !== id));
-    setMsg({ type: 'success', text: `성공: [${name}] 대표님의 정회원 가입 신청이 최종 승인 처리되었습니다.` });
+    setMsg({ type: 'success', text: `성공: [${name}] 대표님의 정회원 가입 신청이 최종 승인 처리되었습니다. 회원 등급이 정회원으로 변경됩니다.` });
   };
 
   const handleReject = (id, name) => {
@@ -942,8 +999,14 @@ export default function AdminPage() {
       setMsg({ type: 'error', text: '권한 부족: 회원 승인/반려 작업은 최고 관리자(Level 2)만 실행할 수 있습니다.' });
       return;
     }
+
+    const registration = pendingRegistrations.find(item => item.id === id);
+    if (registration) {
+      writeRoleDecision(registration, 'visitor');
+    }
+
     persistPendingRegistrations(prev => prev.filter(item => item.id !== id));
-    setMsg({ type: 'success', text: `반려: [${name}] 대표님의 정회원 가입 신청서가 반려 처리되었습니다.` });
+    setMsg({ type: 'success', text: `반려: [${name}] 대표님의 정회원 가입 신청서가 반려 처리되었습니다. 해당 계정은 일반 회원으로 전환됩니다.` });
   };
 
   const handleRegistrationFeePaidChange = (id, feePaid) => {
@@ -1065,6 +1128,11 @@ export default function AdminPage() {
       member.id === id ? { ...member, role } : member
     ));
     persistMembers(nextMembers, '회원 권한이 변경되었습니다.');
+
+    // 마이페이지 등급 표시에 즉시 반영되도록 결정 내역을 저장
+    if (target) {
+      writeRoleDecision({ userId: target.userId || '', email: target.email || '' }, role);
+    }
   };
 
   const handleMemberStatusChange = (id, status) => {
@@ -1323,6 +1391,7 @@ export default function AdminPage() {
                     <tr>
                       <th>신청자명</th>
                       <th>브랜드(업체)명</th>
+                      <th>이메일</th>
                       <th>업종 카테고리</th>
                       <th>연락처</th>
                       <th>신청일</th>
@@ -1335,6 +1404,7 @@ export default function AdminPage() {
                       <tr key={reg.id}>
                         <td style={{ fontWeight: '700' }}>{reg.name}</td>
                         <td>{reg.brand}</td>
+                        <td style={{ fontSize: '13px', color: 'var(--color-gray-dark)' }}>{reg.email || '-'}</td>
                         <td><span className="badge badge-emerald" style={{ fontSize: '11px' }}>{reg.category}</span></td>
                         <td>{reg.phone}</td>
                         <td>{reg.date}</td>

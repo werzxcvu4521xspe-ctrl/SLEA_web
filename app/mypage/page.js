@@ -67,11 +67,30 @@ const MEMBER_GRADE_LABELS = {
   super_admin: { label: '최고 관리자', className: 'grade-admin' },
   staff_admin: { label: '운영 관리자', className: 'grade-admin' },
   entrepreneur: { label: '정회원', className: 'grade-full' },
+  entrepreneur_pending: { label: '정회원 승인 대기중', className: 'grade-pending' },
   visitor: { label: '일반회원', className: 'grade-general' }
 };
 
-const getMemberGrade = (user) => {
-  const role = user?.user_metadata?.role;
+const ROLE_DECISION_STORAGE_KEY = 'sejong_member_role_decisions';
+
+// 관리자 페이지의 승인/반려 결정을 읽어 현재 계정의 등급에 반영한다.
+const readRoleDecision = (user) => {
+  if (typeof window === 'undefined' || !user) return null;
+
+  try {
+    const decisions = JSON.parse(localStorage.getItem(ROLE_DECISION_STORAGE_KEY) || '{}');
+    const byEmail = user.email ? decisions[user.email.toLowerCase()] : null;
+    if (byEmail?.role) return byEmail.role;
+
+    const matched = Object.values(decisions).find((entry) => entry?.userId && entry.userId === user.id);
+    return matched?.role || null;
+  } catch {
+    return null;
+  }
+};
+
+const getMemberGrade = (user, decidedRole) => {
+  const role = decidedRole || user?.user_metadata?.role;
   return MEMBER_GRADE_LABELS[role] || MEMBER_GRADE_LABELS.visitor;
 };
 
@@ -79,6 +98,7 @@ export default function MyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [decidedRole, setDecidedRole] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
   const [shopItems, setShopItems] = useState([]);
   const [mentoringItems, setMentoringItems] = useState([]);
@@ -216,7 +236,9 @@ export default function MyPage() {
 
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'SELO 회원';
   const userBrand = getUserBrand(user);
-  const memberGrade = getMemberGrade(user);
+  const effectiveRole = decidedRole || user?.user_metadata?.role;
+  const memberGrade = getMemberGrade(user, decidedRole);
+  const isPendingApproval = effectiveRole === 'entrepreneur_pending';
 
   const refreshDashboard = () => {
     setBookmarks(readStoredList(BOOKMARK_STORAGE_KEY));
@@ -236,6 +258,7 @@ export default function MyPage() {
       }
 
       setUser(session.user);
+      setDecidedRole(readRoleDecision(session.user));
       refreshDashboard();
       setLoading(false);
     };
@@ -248,6 +271,7 @@ export default function MyPage() {
         return;
       }
       setUser(session.user);
+      setDecidedRole(readRoleDecision(session.user));
       refreshDashboard();
       setLoading(false);
     });
@@ -651,6 +675,11 @@ export default function MyPage() {
               <span className={`member-grade-badge ${memberGrade.className}`}>{memberGrade.label}</span>
             </div>
             <p>{userName}님의 저장 콘텐츠, 등록 신청, 멘토링 진행, 세로토크 반응을 확인합니다.</p>
+            {isPendingApproval && (
+              <div className="pending-approval-notice">
+                로컬 창업가 회원으로 가입하셨습니다. 관리자가 신청 내역을 확인한 후 정회원으로 승인되며, 승인 완료 시 등급이 자동으로 정회원으로 변경됩니다.
+              </div>
+            )}
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
             <button type="button" className="profile-toggle-btn" onClick={toggleProfileEdit}>
@@ -1349,6 +1378,26 @@ export default function MyPage() {
         .member-grade-badge.grade-full {
           background: #ff5a2a;
           color: #ffffff;
+        }
+
+        .pending-approval-notice {
+          max-width: 760px;
+          margin-top: 18px;
+          padding: 16px 20px;
+          border: 1px solid #ffd23f;
+          border-left: 4px solid #ffd23f;
+          background: rgba(255, 210, 63, 0.08);
+          color: #ffd23f;
+          font-size: 14px;
+          font-weight: 800;
+          line-height: 1.6;
+          word-break: keep-all;
+        }
+
+        .member-grade-badge.grade-pending {
+          background: transparent;
+          border: 1px solid #ffd23f;
+          color: #ffd23f;
         }
 
         .member-grade-badge.grade-general {

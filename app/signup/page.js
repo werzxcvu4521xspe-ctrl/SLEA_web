@@ -10,6 +10,7 @@ export default function SignupPage() {
   
   const [name, setName] = useState('');
   const [companyName, setCompanyName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -33,6 +34,9 @@ export default function SignupPage() {
 
     try {
       const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '';
+      // 로컬 창업가는 관리자 승인 전까지 'entrepreneur_pending' 역할로 저장
+      const actualRole = role === 'entrepreneur' ? 'entrepreneur_pending' : role;
+
       const { data, error } = await supabase.auth.signUp({
         email: email.trim(),
         password: password,
@@ -42,7 +46,8 @@ export default function SignupPage() {
             name: name.trim(),
             brand: companyName.trim(),
             company_name: companyName.trim(),
-            role: role
+            phone: phone.trim(),
+            role: actualRole
           }
         }
       });
@@ -60,6 +65,27 @@ export default function SignupPage() {
         } else if (data.user && data.session) {
           // Email confirmation is disabled, so signUp already returns an active session —
           // the user is signed in immediately, no confirmation step needed.
+
+          // 로컬 창업가 회원은 관리자 승인 대기 목록에 추가
+          if (role === 'entrepreneur') {
+            try {
+              const PENDING_KEY = 'sejong_pending_registrations';
+              const existing = JSON.parse(localStorage.getItem(PENDING_KEY) || '[]');
+              const newPending = {
+                id: `reg-${data.user.id}`,
+                userId: data.user.id,
+                name: name.trim(),
+                brand: companyName.trim(),
+                email: email.trim(),
+                phone: phone.trim(),
+                category: '미분류',
+                date: new Date().toISOString().slice(0, 10),
+                feePaid: false
+              };
+              localStorage.setItem(PENDING_KEY, JSON.stringify([newPending, ...existing]));
+            } catch {}
+          }
+
           setSuccessMsg('회원가입이 완료되었습니다! 마이페이지로 이동합니다.');
           setTimeout(() => {
             router.push('/mypage');
@@ -112,6 +138,19 @@ export default function SignupPage() {
               placeholder="예: 밀마루 베이커리"
               value={companyName}
               onChange={(e) => setCompanyName(e.target.value)}
+              className="auth-input"
+            />
+          </div>
+
+          <div className="input-group">
+            <label htmlFor="phone">전화번호</label>
+            <input
+              id="phone"
+              type="tel"
+              required
+              placeholder="010-1234-5678"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
               className="auth-input"
             />
           </div>
@@ -176,6 +215,11 @@ export default function SignupPage() {
                 일반 방문자 회원
               </button>
             </div>
+            {role === 'entrepreneur' && (
+              <small className="role-helper">
+                로컬 창업가 회원은 관리자 승인 후 정회원으로 전환됩니다. 승인 전까지는 정회원 승인 대기 상태로 표시됩니다.
+              </small>
+            )}
           </div>
 
           <button type="submit" disabled={loading} className="auth-submit-btn">
@@ -305,6 +349,15 @@ export default function SignupPage() {
           border-color: var(--color-emerald-deep);
           background-color: var(--color-emerald-pale);
           color: var(--color-emerald-deep);
+        }
+
+        .role-helper {
+          margin-top: 8px;
+          font-size: 12px;
+          font-weight: 600;
+          line-height: 1.5;
+          color: var(--color-gray-dark);
+          word-break: keep-all;
         }
 
         .auth-submit-btn {
