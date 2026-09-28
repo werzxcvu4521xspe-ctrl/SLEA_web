@@ -9,6 +9,7 @@ import { DEFAULT_SERO_DAY_PROGRAMS } from '@/lib/seroDayPrograms';
 import { MEMBER_CONTENT_FILTERS, MEMBER_CONTENTS } from '@/lib/memberContents';
 import { SERVICE_CATEGORIES, getServiceCategory } from '@/lib/serviceCategories';
 import { DEFAULT_SERO_TALK_POSTS } from '@/lib/seroTalkPosts';
+import { DEFAULT_SHOP_PRODUCTS } from '@/lib/shopProducts';
 
 const STORAGE_PREFIX = 'sejong_sero_service_';
 
@@ -25,34 +26,14 @@ function getUserBrand(user) {
 
 
 
-const products = [
-  {
-    id: 'rice-bread',
-    name: '[무료배송] 세종 쌀식빵 선물 세트',
-    brand: '밀마루 베이커리',
-    price: 24000,
-    category: 'F&B',
-    imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=1200&auto=format&fit=crop'
-  },
-  {
-    id: 'ceramic-cup',
-    name: '로컬 흙 머그컵 2P 세트',
-    brand: '공방 세종',
-    price: 32000,
-    category: 'Craft',
-    imageUrl: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=1200&auto=format&fit=crop'
-  },
-  {
-    id: 'peach-jam',
-    name: '[한정특가] 조치원 복숭아잼 2종 세트',
-    brand: '디저트 카페 도원',
-    price: 18000,
-    originalPrice: 24000,
-    discount: 25,
-    category: 'F&B',
-    imageUrl: 'https://images.unsplash.com/photo-1608219992759-8d74ed8d76eb?q=80&w=1200&auto=format&fit=crop'
-  }
-];
+const products = DEFAULT_SHOP_PRODUCTS.map((item) => ({
+  id: String(item.id),
+  name: item.name,
+  brand: item.brand,
+  price: Number(String(item.price).replace(/[^0-9]/g, '')) || 0,
+  category: item.category,
+  imageUrl: item.img
+}));
 
 const PRODUCTS_PER_PAGE = 9;
 
