@@ -1985,3 +1985,87 @@ h1, h2, h3, h4, h5, h6 {
     line-height: 1.08 !important;
   }
 }
+
+/*
+ * Global fallback rules for classNames applied directly to next/link's
+ * rendered <a> tag. In this build, styled-jsx's scope class is not
+ * injected onto Link's own element (only onto plain divs/spans inside
+ * it), so component-scoped <style jsx> rules for these classes silently
+ * fail to apply — the anchor falls back to default inline layout and,
+ * for the notice slider, a fill-mode <Image> with no positioned
+ * ancestor expands to fill the whole viewport. Defining them globally
+ * here (unscoped, so no scope-hash match is needed) fixes that without
+ * depending on the Link-scoping behavior.
+ */
+.slide-item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  transform: scale(1.02);
+  z-index: 1;
+  display: block;
+}
+
+.slide-item.active {
+  opacity: 1;
+  visibility: visible;
+  transform: scale(1);
+  z-index: 2;
+}
+
+.slide-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-item:hover img {
+  transform: scale(1.04);
+}
+
+.notice-card-image-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: #f6f6f6;
+  display: block;
+}
+
+.standard-card .notice-card-image-wrapper {
+  aspect-ratio: 1 / 1;
+}
+
+.notice-card-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.notice-card:hover .notice-card-image-wrapper img {
+  transform: scale(1.04);
+}
+
+.related-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #161616;
+}
+
+.related-card-image-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: #f6f6f6;
+}
+
+.related-card-image-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
