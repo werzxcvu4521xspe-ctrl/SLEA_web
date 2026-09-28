@@ -119,7 +119,7 @@ export default function Footer() {
               className="insta-link"
               aria-label="인스타그램 바로가기"
             >
-              📸 Instagram
+               Instagram
             </a>
           </div>
         </div>

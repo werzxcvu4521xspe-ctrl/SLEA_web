@@ -195,7 +195,7 @@ function ShopContent() {
             {/* Group Buys */}
             <div>
               <h3 style={{ fontSize: '20px', borderBottom: '2px solid var(--color-emerald-deep)', paddingBottom: '8px', marginBottom: '24px' }}>
-                🔥 진행 중인 공동구매 딜
+                 진행 중인 공동구매 딜
               </h3>
               <div className="grid-2">
                 {GROUP_BUYS.map(gb => (
@@ -237,7 +237,7 @@ function ShopContent() {
             {/* Recommended Products */}
             <div>
               <h3 style={{ fontSize: '20px', borderBottom: '2px solid var(--color-emerald-deep)', paddingBottom: '8px', marginBottom: '24px' }}>
-                🌟 협회 추천 명품 셀렉션
+                 협회 추천 명품 셀렉션
               </h3>
               <div className="grid-3">
                 {approvedProducts.slice(0, 3).map(prod => (
@@ -278,7 +278,7 @@ function ShopContent() {
 
               {/* Proposal Form */}
               <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
-                <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '16px' }}>🏬 입점 및 판매 제휴 제안</h3>
+                <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '16px' }}>입점 및 판매 제휴 제안</h3>
                 <form className="newsletter-form" onSubmit={handlePartnerSubmit}>
                   <div className="form-group">
                     <label htmlFor="shop-brand">브랜드 및 업체명</label>

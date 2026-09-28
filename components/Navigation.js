@@ -75,7 +75,7 @@ export default function Navigation() {
                 onClick={() => setIsSearchOpen(true)}
                 aria-label="검색 열기"
               >
-                🔍
+                검색
               </button>
               <button 
                 type="button" 

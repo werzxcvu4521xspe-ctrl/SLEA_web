@@ -82,7 +82,7 @@ export default function SupportPage() {
                 title="다운로드"
                 onClick={() => handleDownload(res.id, res.name)}
               >
-                ⬇️
+                다운로드
               </button>
             </div>
           ))}

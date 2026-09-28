@@ -57,7 +57,7 @@ export default function ArchiveCard({ archive, preload = false }) {
         {/* Card Body */}
         <div className="card-body">
           <div className="card-meta">
-            <span className="card-location">📍 {formattedLocation}</span>
+            <span className="card-location">{formattedLocation}</span>
             <span className="card-owner">{representative} 대표</span>
           </div>
           <h3 className="card-title">{company_name}</h3>

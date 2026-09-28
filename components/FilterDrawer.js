@@ -105,7 +105,7 @@ export default function FilterDrawer({ isOpen, onClose }) {
               초기화
             </button>
             <button type="button" className="close-btn" onClick={onClose}>
-              ✕
+              X
             </button>
           </div>
         </div>

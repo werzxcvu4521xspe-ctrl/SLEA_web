@@ -71,7 +71,6 @@ export default function AuthCallbackPage() {
           </>
         ) : (
           <>
-            <div className="error-icon">⚠️</div>
             <p className="callback-error">{errorMsg}</p>
             <button className="goto-login-btn" onClick={() => router.push('/login')}>
               로그인 화면으로 이동

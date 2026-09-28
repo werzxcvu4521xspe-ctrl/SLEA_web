@@ -233,7 +233,7 @@ export default async function ArchiveDetailPage({ params }) {
                 <li>
                   <span className="info-lbl">공식 웹사이트</span>
                   <a href={archive.website_url} target="_blank" rel="noopener noreferrer" className="info-link-val">
-                    바로가기 🔗
+                    바로가기 
                   </a>
                 </li>
               )}
@@ -241,7 +241,7 @@ export default async function ArchiveDetailPage({ params }) {
                 <li>
                   <span className="info-lbl">소셜 미디어 (SNS)</span>
                   <a href={archive.sns_url} target="_blank" rel="noopener noreferrer" className="info-link-val">
-                    인스타그램 바로가기 📸
+                    인스타그램 바로가기 
                   </a>
                 </li>
               )}

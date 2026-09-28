@@ -20,7 +20,6 @@ export default function MapWidget({ address, companyName }) {
       <div className="map-visual-box">
         <div className="map-placeholder-bg">
           <div className="pulse-marker"></div>
-          <span className="location-pin">📍</span>
         </div>
         <span className="map-overlay-label">세종로컬맵 뷰어</span>
       </div>
@@ -35,7 +34,7 @@ export default function MapWidget({ address, companyName }) {
         {/* Action Buttons */}
         <div className="map-actions">
           <button type="button" className="action-btn copy-btn" onClick={handleCopyAddress}>
-            {copied ? '✅ 복사 완료' : '📋 주소 복사'}
+            {copied ? '복사 완료' : '주소 복사'}
           </button>
           <a href={kakaoMapUrl} target="_blank" rel="noopener noreferrer" className="action-btn map-link kakao">
             카카오 맵

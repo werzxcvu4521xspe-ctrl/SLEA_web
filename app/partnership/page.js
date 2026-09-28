@@ -48,7 +48,7 @@ export default function PartnershipPage() {
           {/* Partners List */}
           <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
             <h3 style={{ fontSize: '20px', color: 'var(--color-emerald-deep)', borderBottom: '2px solid var(--color-emerald-deep)', paddingBottom: '8px', marginBottom: '20px' }}>
-              🤝 주요 협력 & MOU 체결 기관
+               주요 협력 & MOU 체결 기관
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {PARTNERS.map((partner, i) => (
@@ -66,7 +66,7 @@ export default function PartnershipPage() {
           {/* Inquiry Form */}
           <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
             <h3 style={{ fontSize: '20px', color: 'var(--color-charcoal-deep)', borderBottom: '2px solid var(--color-orange-accent)', paddingBottom: '8px', marginBottom: '20px' }}>
-              ✉️ 전략적 제휴 및 MOU 문의
+               전략적 제휴 및 MOU 문의
             </h3>
             <p style={{ fontSize: '14px', color: 'var(--color-gray-dark)', lineHeight: '1.6', marginBottom: '20px' }}>
               협회와의 공동 사업 기획, 로컬 창업 인프라 매칭, 대학교 청년 현장 실습 등 다양한 협력을 환영합니다.

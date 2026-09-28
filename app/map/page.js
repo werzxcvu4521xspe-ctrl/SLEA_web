@@ -36,16 +36,16 @@ export default function MapPage() {
             </div>
             
             <div className="pins-container">
-              <div className="pin-marker p1">📍</div>
-              <div className="pin-marker p2">📍</div>
-              <div className="pin-marker p3">📍</div>
-              <div className="pin-marker p4">📍</div>
-              <div className="pin-marker p5">📍</div>
-              <div className="pin-marker p6">📍</div>
+              <div className="pin-marker p1"></div>
+              <div className="pin-marker p2"></div>
+              <div className="pin-marker p3"></div>
+              <div className="pin-marker p4"></div>
+              <div className="pin-marker p5"></div>
+              <div className="pin-marker p6"></div>
             </div>
           </div>
           <div className="map-legend">
-            <span>💡 마커(📍)를 클릭하여 상세 창업가 스토리 및 로드맵으로 바로 이동할 수 있습니다.</span>
+            <span>마커를 클릭하여 상세 창업가 스토리 및 로드맵으로 바로 이동할 수 있습니다.</span>
           </div>
         </div>
 
@@ -62,7 +62,7 @@ export default function MapPage() {
                   </Link>
                 </div>
                 <p className="place-addr">{place.address}</p>
-                <span className="place-coords-note">🎯 {place.coords}</span>
+                <span className="place-coords-note">{place.coords}</span>
               </div>
             ))}
           </div>

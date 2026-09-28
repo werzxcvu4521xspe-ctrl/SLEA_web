@@ -15,10 +15,10 @@ const VIDEOS = [
 ];
 
 const SHORTS = [
-  { id: 1, title: '3초만에 반하는 조치원 복숭아 병조림 ASMR 🍑', views: '1.2만회', img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=300&auto=format&fit=crop' },
-  { id: 2, title: '100년 양조장 펍 구석구석 인테리어 꿀팁 대공개 🍺', views: '8,400회', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=300&auto=format&fit=crop' },
-  { id: 3, title: '세종시 대표 한옥 찻집에서 차 마시는 올바른 방법 🍵', views: '5,600회', img: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=300&auto=format&fit=crop' },
-  { id: 4, title: '친환경 도자 식기 물레 성형 15초 챌린지 🏺', views: '2.3만회', img: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?q=80&w=300&auto=format&fit=crop' }
+  { id: 1, title: '3초만에 반하는 조치원 복숭아 병조림 ASMR', views: '1.2만회', img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=300&auto=format&fit=crop' },
+  { id: 2, title: '100년 양조장 펍 구석구석 인테리어 꿀팁 대공개', views: '8,400회', img: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?q=80&w=300&auto=format&fit=crop' },
+  { id: 3, title: '세종시 대표 한옥 찻집에서 차 마시는 올바른 방법', views: '5,600회', img: 'https://images.unsplash.com/photo-1576092768241-dec231879fc3?q=80&w=300&auto=format&fit=crop' },
+  { id: 4, title: '친환경 도자 식기 물레 성형 15초 챌린지', views: '2.3만회', img: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?q=80&w=300&auto=format&fit=crop' }
 ];
 
 function PRContent() {
@@ -111,7 +111,7 @@ function PRContent() {
                     style={{ position: 'absolute', right: '20px', top: '20px', fontSize: '20px', fontWeight: 'bold' }}
                     onClick={() => setSelectedStory(null)}
                   >
-                    ✕
+                    X
                   </button>
                   <span className="badge badge-emerald" style={{ marginBottom: '12px' }}>{selectedStory.type}</span>
                   <h2 style={{ fontSize: '22px', color: 'var(--color-charcoal-deep)', marginBottom: '6px', lineHeight: '1.3' }}>{selectedStory.title}</h2>
@@ -136,7 +136,7 @@ function PRContent() {
             {/* Promo Videos */}
             <div>
               <h3 style={{ fontSize: '20px', borderBottom: '2px solid var(--color-emerald-deep)', paddingBottom: '8px', marginBottom: '24px' }}>
-                🎬 고품격 홍보 및 스케치 영상관
+                 고품격 홍보 및 스케치 영상관
               </h3>
               <div className="grid-3">
                 {VIDEOS.map(vid => (
@@ -177,7 +177,7 @@ function PRContent() {
             {/* Shorts Channel */}
             <div>
               <h3 style={{ fontSize: '20px', borderBottom: '2px solid var(--color-emerald-deep)', paddingBottom: '8px', marginBottom: '24px' }}>
-                📱 세로형 쇼츠 채널
+                 세로형 쇼츠 채널
               </h3>
               <div className="shorts-container-row">
                 {SHORTS.map(short => (
@@ -190,7 +190,7 @@ function PRContent() {
                     <div className="shorts-play-btn">▶</div>
                     <div className="shorts-overlay">
                       <h4 style={{ fontSize: '13px', fontWeight: '800', lineHeight: '1.4', marginBottom: '4px' }}>{short.title}</h4>
-                      <span style={{ fontSize: '11px', color: '#ccc' }}>👀 {short.views}</span>
+                      <span style={{ fontSize: '11px', color: '#ccc' }}>{short.views}</span>
                     </div>
                   </div>
                 ))}
@@ -210,11 +210,10 @@ function PRContent() {
                     style={{ position: 'absolute', right: '16px', top: '16px', fontSize: '24px', color: '#fff', zIndex: 10 }}
                     onClick={() => setPlayingVideo(null)}
                   >
-                    ✕
+                    X
                   </button>
                   <div style={{ position: 'relative', width: '100%', paddingTop: '56.25%', background: '#111' }}>
                     <div style={{ position: 'absolute', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: '#fff', gap: '12px' }}>
-                      <span style={{ fontSize: '32px' }}>🎬</span>
                       <h3>{playingVideo.title}</h3>
                       <p style={{ fontSize: '13px', color: '#aaa' }}>[샘플 동영상 임베드 영역 - 실제 운영 시 YouTube iframe 연동]</p>
                     </div>

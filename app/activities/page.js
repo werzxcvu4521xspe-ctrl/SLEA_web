@@ -125,7 +125,7 @@ function ActivitiesContent() {
               </p>
 
               {/* Sero Day Photo Gallery */}
-              <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '16px' }}>📸 행사 사진 현황</h3>
+              <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '16px' }}>행사 사진 현황</h3>
               <div className="photo-gallery-grid" style={{ marginBottom: '40px' }}>
                 <div className="gallery-card">
                   <div className="gallery-img-wrapper" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600&auto=format&fit=crop")' }}>
@@ -157,7 +157,7 @@ function ActivitiesContent() {
               </div>
 
               {/* Sero Reviews */}
-              <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '16px' }}>💬 참여자 생생 후기</h3>
+              <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '16px' }}>참여자 생생 후기</h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 {seroReviews.map((rev, i) => (
                   <div key={i} style={{ padding: '20px', borderLeft: '4px solid var(--color-orange-accent)', background: 'var(--color-sand-light)', borderRadius: '0 var(--border-radius-md) var(--border-radius-md) 0' }}>
@@ -179,19 +179,19 @@ function ActivitiesContent() {
                 <h2 style={{ fontSize: '20px', color: 'var(--color-emerald-deep)', marginBottom: '16px' }}>멘토링 지원 프로그램</h2>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
-                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>🎓 대학교 전문 교수 멘토링</h4>
+                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>대학교 전문 교수 멘토링</h4>
                     <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>
                       고려대, 홍익대 등 세종 관내 대학 교수진과 1:1 매칭되어 학술 연구 기반의 기술 자문 및 산학 협력 R&D 사업 기회를 모색합니다.
                     </p>
                   </div>
                   <div>
-                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>💼 실무 분야 전문가 멘토링</h4>
+                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>실무 분야 전문가 멘토링</h4>
                     <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>
                       마케팅, 유통, 법률/특허, 세무/회계 등 10개 실무 분과 전문가 풀을 통해 현재 브랜드가 당면한 구체적인 문제의 처방을 얻습니다.
                     </p>
                   </div>
                   <div>
-                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>🚀 정기 로컬 창업 컨설팅</h4>
+                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>정기 로컬 창업 컨설팅</h4>
                     <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>
                       브랜드 아이덴티티 수립부터 패키징, 온라인 쇼핑몰 입점 및 크라우드 펀딩 런칭까지 단계별 패스트트랙 성장 솔루션을 제공합니다.
                     </p>
@@ -201,7 +201,7 @@ function ActivitiesContent() {
 
               {/* Mentoring Form */}
               <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
-                <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '16px' }}>📩 1:1 멘토링 및 컨설팅 신청</h3>
+                <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '16px' }}> 1:1 멘토링 및 컨설팅 신청</h3>
                 <form className="newsletter-form" onSubmit={handleMentoringSubmit}>
                   <div className="form-group">
                     <label>멘토링 희망 분과</label>
@@ -251,7 +251,7 @@ function ActivitiesContent() {
         {activeTab === 'education' && (
           <div className="animate-fade-in">
             <h3 style={{ fontSize: '20px', borderBottom: '2px solid var(--color-emerald-deep)', paddingBottom: '8px', marginBottom: '24px' }}>
-              📚 아카데미 교육 및 특강 리스트
+               아카데미 교육 및 특강 리스트
             </h3>
             <div className="grid-3">
               {educations.map((edu, i) => (
@@ -293,19 +293,19 @@ function ActivitiesContent() {
 
               <div className="grid-3">
                 <div style={{ border: '1px solid var(--color-gray-light)', padding: '20px', borderRadius: '8px', background: 'var(--color-sand-light)' }}>
-                  <h4 style={{ color: 'var(--color-orange-accent)', fontSize: '16px', marginBottom: '6px' }}>🛍️ 팝업그로잉마켓</h4>
+                  <h4 style={{ color: 'var(--color-orange-accent)', fontSize: '16px', marginBottom: '6px' }}>팝업그로잉마켓</h4>
                   <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>
                     백화점, 대형 아울렛 등 대형 유통망과 제휴하여 진행하는 고부가가치 로컬 브랜드 특별 팝업 위크 프로그램.
                   </p>
                 </div>
                 <div style={{ border: '1px solid var(--color-gray-light)', padding: '20px', borderRadius: '8px', background: 'var(--color-sand-light)' }}>
-                  <h4 style={{ color: 'var(--color-orange-accent)', fontSize: '16px', marginBottom: '6px' }}>🎨 기획 전시마켓</h4>
+                  <h4 style={{ color: 'var(--color-orange-accent)', fontSize: '16px', marginBottom: '6px' }}>기획 전시마켓</h4>
                   <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>
                     로컬 공예품, 패션, 도자 분야 창업가들의 예술 작품과 한정판 제품들을 갤러리/한옥 찻집 등에서 조화롭게 소개하는 기획전.
                   </p>
                 </div>
                 <div style={{ border: '1px solid var(--color-gray-light)', padding: '20px', borderRadius: '8px', background: 'var(--color-sand-light)' }}>
-                  <h4 style={{ color: 'var(--color-orange-accent)', fontSize: '16px', marginBottom: '6px' }}>🎪 상생 플리마켓</h4>
+                  <h4 style={{ color: 'var(--color-orange-accent)', fontSize: '16px', marginBottom: '6px' }}>상생 플리마켓</h4>
                   <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>
                     세로데이 행사 및 세종 축제 기간 중 시민들과 가깝게 소통할 수 있는 오픈 마켓으로 친근한 브랜드 이미지를 제공합니다.
                   </p>

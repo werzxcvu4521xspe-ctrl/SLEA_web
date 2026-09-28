@@ -930,7 +930,7 @@ export default function AdminPage() {
 
   const handleApprove = (id, name) => {
     if (userRole !== 'super_admin') {
-      setMsg({ type: 'error', text: '🔒 권한 부족: 회원 승인/반려 작업은 최고 관리자(Level 2)만 실행할 수 있습니다.' });
+      setMsg({ type: 'error', text: '권한 부족: 회원 승인/반려 작업은 최고 관리자(Level 2)만 실행할 수 있습니다.' });
       return;
     }
     persistPendingRegistrations(prev => prev.filter(item => item.id !== id));
@@ -939,7 +939,7 @@ export default function AdminPage() {
 
   const handleReject = (id, name) => {
     if (userRole !== 'super_admin') {
-      setMsg({ type: 'error', text: '🔒 권한 부족: 회원 승인/반려 작업은 최고 관리자(Level 2)만 실행할 수 있습니다.' });
+      setMsg({ type: 'error', text: '권한 부족: 회원 승인/반려 작업은 최고 관리자(Level 2)만 실행할 수 있습니다.' });
       return;
     }
     persistPendingRegistrations(prev => prev.filter(item => item.id !== id));
@@ -1136,7 +1136,6 @@ export default function AdminPage() {
       {/* Sidebar Section */}
       <aside className="admin-sidebar">
         <div className="sidebar-brand">
-          <span className="brand-logo">👑</span>
           <div>
             <h3 className="brand-title">협회 통합 관리툴</h3>
             <span className="brand-subtitle">Sejong Local Admin</span>
@@ -1188,28 +1187,28 @@ export default function AdminPage() {
             className={`nav-item ${activeSubTab === 'category' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('category'); setMsg({type:'',text:''}); }}
           >
-            카테고리 및 컨텐츠 설정
+            세로 쇼핑 관리
           </button>
           <button
             type="button"
             className={`nav-item ${activeSubTab === 'program' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('program'); setMsg({type:'',text:''}); }}
           >
-            프로그램 관리
+            세로데이 관리
           </button>
           <button
             type="button"
             className={`nav-item ${activeSubTab === 'talk' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('talk'); setMsg({type:'',text:''}); }}
           >
-            세로 토크 관리 {!isSuperAdmin && '🔒'}
+            세로 토크 관리
           </button>
           <button
             type="button"
             className={`nav-item ${activeSubTab === 'system' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('system'); setMsg({type:'',text:''}); }}
           >
-            시스템 설정 {!isSuperAdmin && '🔒'}
+            시스템 설정
           </button>
         </nav>
       </aside>
@@ -1237,7 +1236,7 @@ export default function AdminPage() {
 
         {msg.text && (
           <div className={`alert-box ${msg.type}`} style={{ marginBottom: '24px' }}>
-            {msg.type === 'error' ? '❌ ' : '✨ '} {msg.text}
+            {msg.text}
           </div>
         )}
 
@@ -1268,7 +1267,7 @@ export default function AdminPage() {
             <div className="overview-split" style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '30px', marginTop: '30px' }}>
               <div className="glass-panel" style={{ padding: '24px', backgroundColor: 'var(--color-white)' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '16px', borderBottom: '1px solid var(--color-gray-light)', paddingBottom: '10px' }}>
-                  📌 최근 정회원 신청 요약
+                   최근 정회원 신청 요약
                 </h3>
                 {pendingRegistrations.length > 0 ? (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
@@ -1291,7 +1290,7 @@ export default function AdminPage() {
 
               <div className="glass-panel" style={{ padding: '24px', backgroundColor: 'var(--color-white)' }}>
                 <h3 style={{ fontSize: '16px', fontWeight: '800', marginBottom: '16px', borderBottom: '1px solid var(--color-gray-light)', paddingBottom: '10px' }}>
-                  ⚡ 시스템 로그 요약
+                   시스템 로그 요약
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '12px', color: 'var(--color-gray-dark)' }}>
                   <div>• [04:12] Supabase DB 연결 활성화 완료</div>
@@ -1308,11 +1307,11 @@ export default function AdminPage() {
           <div className="tab-view animate-fade-in glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
               <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', margin: '0' }}>
-                🕒 승인 심사 대기자 목록 ({pendingRegistrations.length})
+                 승인 심사 대기자 목록 ({pendingRegistrations.length})
               </h3>
               {!isSuperAdmin && (
                 <span style={{ color: 'var(--color-orange-accent)', fontSize: '13px', fontWeight: '700' }}>
-                  🔒 Level 1 일반관리자는 승인 처리가 불가합니다 (읽기 전용).
+                   Level 1 일반관리자는 승인 처리가 불가합니다 (읽기 전용).
                 </span>
               )}
             </div>
@@ -1362,7 +1361,7 @@ export default function AdminPage() {
                               disabled={!isSuperAdmin}
                               onClick={() => handleApprove(reg.id, reg.name)}
                             >
-                              {!isSuperAdmin && '🔒 '}승인
+                              승인
                             </button>
                             <button
                               type="button"
@@ -1370,7 +1369,7 @@ export default function AdminPage() {
                               disabled={!isSuperAdmin}
                               onClick={() => handleReject(reg.id, reg.name)}
                             >
-                              {!isSuperAdmin && '🔒 '}반려
+                              반려
                             </button>
                           </div>
                         </td>
@@ -1381,7 +1380,6 @@ export default function AdminPage() {
               </div>
             ) : (
               <div style={{ textAlign: 'center', padding: '60px 0', color: '#888' }}>
-                <span style={{ fontSize: '40px' }}>🎉</span>
                 <p style={{ marginTop: '12px', fontWeight: '700' }}>모든 정회원 신청 승인 심사가 완료되었습니다!</p>
               </div>
             )}
@@ -1548,7 +1546,7 @@ export default function AdminPage() {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '20px', marginBottom: '20px' }}>
               <div>
                 <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', margin: '0 0 6px' }}>
-                  📩 멘토링 및 컨설팅 신청 내역 ({mentoringRequests.length})
+                   멘토링 및 컨설팅 신청 내역 ({mentoringRequests.length})
                 </h3>
                 <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', margin: 0 }}>
                   협회활동 페이지의 “1:1 멘토링 및 컨설팅 신청” 폼으로 접수된 내용을 확인합니다.
@@ -1615,7 +1613,6 @@ export default function AdminPage() {
               </div>
             ) : (
               <div style={{ textAlign: 'center', padding: '70px 20px', color: '#888' }}>
-                <span style={{ fontSize: '44px' }}>📭</span>
                 <p style={{ marginTop: '12px', fontWeight: '800', color: 'var(--color-charcoal-deep)' }}>
                   아직 접수된 멘토링 신청이 없습니다.
                 </p>
@@ -1902,7 +1899,7 @@ export default function AdminPage() {
               {/* Current Categories List */}
               <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
                 <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '20px' }}>
-                  📁 활성 브랜드 카테고리 목록 ({categories.length})
+                   활성 브랜드 카테고리 목록 ({categories.length})
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                   {categories.map((cat) => (
@@ -1951,7 +1948,7 @@ export default function AdminPage() {
             <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
                 <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', margin: 0 }}>
-                  🛒 쇼핑몰 게시글 관리 ({shopProducts.length})
+                   쇼핑몰 게시글 관리 ({shopProducts.length})
                   {shopProducts.filter((p) => p.status === '검토중').length > 0 && (
                     <span style={{ marginLeft: '10px', fontSize: '12px', fontWeight: '800', color: 'var(--color-orange-accent)' }}>
                       승인 대기 {shopProducts.filter((p) => p.status === '검토중').length}건
@@ -2319,7 +2316,7 @@ export default function AdminPage() {
                     ➕ 새 글 등록
                   </button>
                 ) : (
-                  <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>🔒 열람만 가능 (최고 관리자 전용 편집)</span>
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>열람만 가능 (최고 관리자 전용 편집)</span>
                 )}
               </div>
 
@@ -2507,7 +2504,6 @@ export default function AdminPage() {
           <div className="tab-view animate-fade-in">
             {!isSuperAdmin ? (
               <div className="glass-panel" style={{ padding: '50px 30px', textAlign: 'center', backgroundColor: 'var(--color-white)' }}>
-                <span style={{ fontSize: '64px' }}>🔒</span>
                 <h3 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--color-charcoal-deep)', marginTop: '20px' }}>
                   접근 권한 제한 (최고 관리자 전용)
                 </h3>
@@ -2518,7 +2514,7 @@ export default function AdminPage() {
             ) : (
               <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)', display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', borderBottom: '1px solid var(--color-gray-light)', paddingBottom: '10px' }}>
-                  ⚙️ 데이터베이스 & 인프라 권한 설정 (Level 2 Authorized)
+                   데이터베이스 & 인프라 권한 설정 (Level 2 Authorized)
                 </h3>
                 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>

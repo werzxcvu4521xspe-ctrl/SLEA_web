@@ -198,7 +198,6 @@ export default async function ArchivePage({ searchParams }) {
           )
         ) : (
           <div className="empty-results-box">
-            <span className="empty-icon">🔍</span>
             <h3>조건에 맞는 창업가 브랜드가 없습니다.</h3>
             <p>검색어나 상세 필터 조건을 변경해 보세요.</p>
           </div>

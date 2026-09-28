@@ -92,7 +92,6 @@ function MembersContent() {
   if (!isAdmin) {
     return (
       <div className="container" style={{ padding: '150px 20px', textAlign: 'center', minHeight: '70vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '24px' }}>
-        <span style={{ fontSize: '64px' }}>🔒</span>
         <h2 style={{ fontSize: '28px', fontWeight: '900', color: 'var(--color-charcoal-deep)', letterSpacing: '-0.5px' }}>접근 권한이 제한되었습니다</h2>
         <p style={{ fontSize: '15.5px', color: 'var(--color-gray-dark)', maxWidth: '480px', lineHeight: '1.7', margin: '0' }}>
           회원관리 등록 현황 및 디렉토리 열람 기능은 사단법인 세종로컬창업가협회의 **승인된 관리자(Level 1 / Level 2)** 권한이 있는 계정만 접근할 수 있습니다.
@@ -151,19 +150,19 @@ function MembersContent() {
                 <h3 style={{ fontSize: '20px', color: 'var(--color-emerald-deep)', marginBottom: '16px' }}>정회원 혜택 및 절차</h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <div>
-                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>✨ 브랜드 아카이빙 및 로컬 맵 무료 등재</h4>
+                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>브랜드 아카이빙 및 로컬 맵 무료 등재</h4>
                     <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>
                       협회 통합 사이트 내 브랜드 스토리 상세 페이지 제작 및 지도 내 핀 마커 제공을 통해 온라인 노출 극대화.
                     </p>
                   </div>
                   <div>
-                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>🎪 협회 네트워킹 및 기획 팝업 우선 참가</h4>
+                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>협회 네트워킹 및 기획 팝업 우선 참가</h4>
                     <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>
                       매월 열리는 세로데이 정기 네트워킹 우선 무료 참여, 그리고 팝업마켓 행사 입점비 감면 및 우선권 부여.
                     </p>
                   </div>
                   <div>
-                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>🏦 연회비 및 납부 안내</h4>
+                    <h4 style={{ color: 'var(--color-charcoal-deep)', fontSize: '15px', marginBottom: '4px' }}>연회비 및 납부 안내</h4>
                     <p style={{ fontSize: '13.5px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>
                       - 연회비: 100,000원 <br />
                       - 납부 계좌: 우리은행 1005-901-223456 (예금주: 사단법인 세종로컬창업가협회)
@@ -172,7 +171,7 @@ function MembersContent() {
                 </div>
 
                 <div style={{ marginTop: '24px', padding: '16px', background: 'var(--color-emerald-pale)', borderRadius: '8px', border: '1px solid rgba(108, 191, 171, 0.24)' }}>
-                  <h4 style={{ color: 'var(--color-emerald-deep)', marginBottom: '6px', fontSize: '14px' }}>📋 구글폼 간편 등록 신청</h4>
+                  <h4 style={{ color: 'var(--color-emerald-deep)', marginBottom: '6px', fontSize: '14px' }}>구글폼 간편 등록 신청</h4>
                   <p style={{ fontSize: '13px', color: 'var(--color-gray-dark)', marginBottom: '12px' }}>
                     웹 신청이 어렵거나 모바일에서 구글 계정으로 빠르게 신청하고 싶으신가요?
                   </p>
@@ -183,7 +182,7 @@ function MembersContent() {
                     className="view-all-link"
                     style={{ fontSize: '13px', fontWeight: '800', color: 'var(--color-emerald-deep)', borderColor: 'var(--color-emerald-deep)' }}
                   >
-                    공식 구글폼 가입 신청 바로가기 🔗
+                    공식 구글폼 가입 신청 바로가기
                   </a>
                 </div>
               </div>
@@ -311,7 +310,7 @@ function MembersContent() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   style={{ width: '100%', border: '1px solid var(--color-gray-light)', padding: '10px 12px 10px 32px', borderRadius: '4px', background: 'var(--color-sand-light)', fontSize: '14px' }}
                 />
-                <span style={{ position: 'absolute', left: '10px', top: '12px' }}>🔍</span>
+                <span style={{ position: 'absolute', left: '10px', top: '12px' }}></span>
               </div>
 
               {/* Category Dropdowns */}
@@ -371,14 +370,14 @@ function MembersContent() {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span className="badge badge-emerald">{member.type}</span>
-                      <span style={{ fontSize: '12px', color: 'var(--color-gray-medium)', fontWeight: '700' }}>📍 {member.region}</span>
+                      <span style={{ fontSize: '12px', color: 'var(--color-gray-medium)', fontWeight: '700' }}>{member.region}</span>
                     </div>
                     <div>
                       <h4 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', marginBottom: '4px' }}>{member.brand}</h4>
                       <span style={{ fontSize: '13px', color: 'var(--color-gray-dark)' }}>대표: <strong>{member.rep}</strong></span>
                     </div>
                     <div style={{ borderTop: '1px solid var(--color-gray-light)', paddingTop: '10px', marginTop: '4px' }}>
-                      <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--color-orange-accent)', display: 'block', marginBottom: '2px' }}>🤝 협업 가능 분야</span>
+                      <span style={{ fontSize: '11px', fontWeight: '800', color: 'var(--color-orange-accent)', display: 'block', marginBottom: '2px' }}>협업 가능 분야</span>
                       <p style={{ fontSize: '13px', color: 'var(--color-gray-dark)', lineHeight: '1.5' }}>{member.collaboration}</p>
                     </div>
                   </div>
@@ -386,7 +385,7 @@ function MembersContent() {
               </div>
             ) : (
               <div className="empty-results-box">
-                <span className="empty-icon">🔍</span>
+                <span className="empty-icon"></span>
                 <h3>조건에 일치하는 협회 정회원이 없습니다.</h3>
                 <p>다른 검색어 및 필터 조건을 시도해 보세요.</p>
               </div>

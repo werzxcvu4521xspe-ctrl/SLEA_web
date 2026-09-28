@@ -55,14 +55,14 @@ export default function ArchiveFilterBar({ totalCount }) {
             onChange={(e) => setSearchInput(e.target.value)}
             className="inline-search-input"
           />
-          <button type="submit" className="search-submit">🔍</button>
+          <button type="submit" className="search-submit">검색</button>
         </form>
         <button 
           type="button" 
           className="advanced-filter-btn glass-panel"
           onClick={() => setIsDrawerOpen(true)}
         >
-          ⚙️ 상세 필터
+           상세 필터
         </button>
       </div>
 

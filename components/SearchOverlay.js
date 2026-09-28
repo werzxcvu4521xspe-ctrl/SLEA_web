@@ -58,15 +58,15 @@ export default function SearchOverlay({ isOpen, onClose }) {
             />
             {keyword && (
               <button type="button" className="clear-btn" onClick={() => setKeyword('')}>
-                ✕
+                X
               </button>
             )}
             <button type="submit" className="submit-btn">
-              🔍
+              검색
             </button>
           </form>
           <button type="button" className="close-btn" onClick={handleClose} aria-label="검색 닫기">
-            ✕
+            X
           </button>
         </div>
 

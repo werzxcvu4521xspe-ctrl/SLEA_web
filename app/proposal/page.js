@@ -54,7 +54,7 @@ export default function ProposalPage() {
           </ul>
 
           <div className="contact-direct">
-            <p className="direct-lbl">📧 직통 이메일 문의</p>
+            <p className="direct-lbl">직통 이메일 문의</p>
             <p className="direct-val">partnership@sejonglocal.org</p>
           </div>
         </div>
@@ -63,7 +63,7 @@ export default function ProposalPage() {
         <div className="form-panel glass-panel">
           {submitted ? (
             <div className="success-box">
-              <span className="success-icon">✉️</span>
+              <span className="success-icon"></span>
               <h3>제안이 성공적으로 전달되었습니다!</h3>
               <p>기입해 주신 이메일({email})을 통해 빠른 시일 내에 연락드리겠습니다.</p>
               <button type="button" className="retry-btn" onClick={() => setSubmitted(false)}>
@@ -342,7 +342,24 @@ export default function ProposalPage() {
         }
 
         .success-icon {
-          font-size: 48px;
+          display: block;
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          background-color: var(--color-emerald-deep);
+          position: relative;
+        }
+
+        .success-icon::after {
+          content: '';
+          position: absolute;
+          left: 15px;
+          top: 12px;
+          width: 10px;
+          height: 20px;
+          border: solid var(--color-white);
+          border-width: 0 3px 3px 0;
+          transform: rotate(45deg);
         }
 
         .success-box h3 {

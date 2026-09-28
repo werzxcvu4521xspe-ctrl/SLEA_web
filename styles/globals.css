@@ -968,7 +968,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .pin-marker {
   position: absolute;
-  font-size: 24px;
+  width: 16px;
+  height: 16px;
+  background-color: var(--color-orange-accent);
+  border: 3px solid var(--color-white);
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   animation: bouncePin 2s infinite ease-in-out;
   cursor: pointer;
 }

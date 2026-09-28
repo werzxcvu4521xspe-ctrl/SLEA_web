@@ -8,7 +8,7 @@ export default function ArchiveListRow({ archive }) {
     <div className="list-row-container transition-base">
       <Link href={`/archive/${id}`} className="row-link">
         <div className="row-meta">
-          <span className="row-location">📍 {formattedLocation}</span>
+          <span className="row-location">{formattedLocation}</span>
           <span className="row-category">{category}</span>
         </div>
         <div className="row-main">

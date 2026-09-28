@@ -78,11 +78,11 @@ function CommunityContent() {
   });
 
   const categoryNames = {
-    collab: '🤝 협업 제안',
-    info: '💡 사업 정보',
-    support: '🏛️ 지원사업',
-    jobs: '💼 구인구직',
-    trade: '🔄 중고거래'
+    collab: '협업 제안',
+    info: '사업 정보',
+    support: '지원사업',
+    jobs: '구인구직',
+    trade: '중고거래'
   };
 
   return (
@@ -131,7 +131,7 @@ function CommunityContent() {
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{ width: '100%', border: '1px solid var(--color-gray-light)', padding: '10px 12px 10px 32px', borderRadius: '4px', background: 'var(--color-sand-light)', fontSize: '14px' }}
             />
-            <span style={{ position: 'absolute', left: '10px', top: '12px' }}>🔍</span>
+            <span style={{ position: 'absolute', left: '10px', top: '12px' }}></span>
           </div>
 
           <button 
@@ -140,7 +140,7 @@ function CommunityContent() {
             style={{ height: '42px', padding: '0 24px', fontSize: '14px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '6px' }}
             onClick={() => setIsWriteOpen(true)}
           >
-            ✏️ 글쓰기
+             글쓰기
           </button>
         </div>
 
@@ -197,9 +197,9 @@ function CommunityContent() {
               style={{ position: 'absolute', right: '20px', top: '20px', fontSize: '20px', fontWeight: 'bold' }}
               onClick={() => setIsWriteOpen(false)}
             >
-              ✕
+              X
             </button>
-            <h2 style={{ fontSize: '22px', color: 'var(--color-charcoal-deep)', marginBottom: '20px' }}>✏️ 커뮤니티 글쓰기</h2>
+            <h2 style={{ fontSize: '22px', color: 'var(--color-charcoal-deep)', marginBottom: '20px' }}>커뮤니티 글쓰기</h2>
             
             <form onSubmit={handleCreatePost} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div className="form-group">
@@ -209,11 +209,11 @@ function CommunityContent() {
                   onChange={(e) => setWriteCategory(e.target.value)}
                   style={{ border: '1px solid var(--color-gray-light)', padding: '10px', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '600' }}
                 >
-                  <option value="collab">🤝 협업 제안</option>
-                  <option value="info">💡 사업 정보</option>
-                  <option value="support">🏛️ 지원사업</option>
-                  <option value="jobs">💼 구인구직</option>
-                  <option value="trade">🔄 중고거래</option>
+                  <option value="collab">협업 제안</option>
+                  <option value="info">사업 정보</option>
+                  <option value="support">지원사업</option>
+                  <option value="jobs">구인구직</option>
+                  <option value="trade">중고거래</option>
                 </select>
               </div>
 
@@ -275,7 +275,7 @@ function CommunityContent() {
               style={{ position: 'absolute', right: '20px', top: '20px', fontSize: '20px', fontWeight: 'bold' }}
               onClick={() => setSelectedPost(null)}
             >
-              ✕
+              X
             </button>
             <span className="badge badge-emerald" style={{ marginBottom: '12px' }}>
               {categoryNames[selectedPost.category]}
