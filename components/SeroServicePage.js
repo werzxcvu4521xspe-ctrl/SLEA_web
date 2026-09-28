@@ -131,8 +131,44 @@ export default function SeroServicePage({ slug }) {
   const [selectedProductIndex, setSelectedProductIndex] = useState(null);
   const [products, setProducts] = useState(() => DEFAULT_SHOP_PRODUCTS.map(mapShopProduct));
   const [memberSubmissions, setMemberSubmissions] = useState([]);
+  const [talkImages, setTalkImages] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
+
+  const MAX_TALK_IMAGES = 5;
+
+  const handleTalkImagesUpload = (event) => {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+
+    const remainingSlots = MAX_TALK_IMAGES - talkImages.length;
+    if (remainingSlots <= 0) {
+      alert(`사진은 게시물당 최대 ${MAX_TALK_IMAGES}장까지 첨부할 수 있습니다.`);
+      event.target.value = '';
+      return;
+    }
+
+    const filesToRead = files.slice(0, remainingSlots);
+    if (files.length > remainingSlots) {
+      alert(`사진은 게시물당 최대 ${MAX_TALK_IMAGES}장까지 첨부할 수 있습니다. 앞의 ${remainingSlots}장만 추가됩니다.`);
+    }
+
+    filesToRead.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setTalkImages((prev) => (
+          prev.length >= MAX_TALK_IMAGES ? prev : [...prev, reader.result]
+        ));
+      };
+      reader.readAsDataURL(file);
+    });
+
+    event.target.value = '';
+  };
+
+  const removeTalkImage = (index) => {
+    setTalkImages((prev) => prev.filter((_, i) => i !== index));
+  };
 
   // Reset currentPage when talkType changes
   useEffect(() => {
@@ -348,6 +384,7 @@ export default function SeroServicePage({ slug }) {
       title: formState.title || '새로운 세로 토크 글',
       author: formState.author || '회원사',
       content: formState.content || '',
+      images: talkImages,
       userEmail: user.email,
       userId: user.id,
       createdAt: new Date().toISOString()
@@ -356,6 +393,7 @@ export default function SeroServicePage({ slug }) {
     saveItem('sero-talk', post);
     setSubmitted('세로 토크 글이 등록되었습니다.');
     setFormState({});
+    setTalkImages([]);
   };
 
   const handleCreateComment = (e) => {
@@ -877,14 +915,22 @@ export default function SeroServicePage({ slug }) {
               </div>
               <div className="mini-list">
                 {paginatedTalkPosts.map((post) => (
-                  <article 
-                    key={post.id} 
-                    onClick={() => setSelectedPost(post)} 
+                  <article
+                    key={post.id}
+                    onClick={() => setSelectedPost(post)}
                     style={{ cursor: 'pointer' }}
                     className="talk-article-card"
                   >
-                    <strong>{post.title}</strong>
-                    <span>{post.type} · {post.author}</span>
+                    {post.images && post.images.length > 0 && (
+                      <div className="talk-article-thumb">
+                        <img src={post.images[0]} alt="" />
+                        {post.images.length > 1 && <span>+{post.images.length - 1}</span>}
+                      </div>
+                    )}
+                    <div className="talk-article-copy">
+                      <strong>{post.title}</strong>
+                      <span>{post.type} · {post.author}</span>
+                    </div>
                   </article>
                 ))}
               </div>
@@ -917,6 +963,26 @@ export default function SeroServicePage({ slug }) {
                 <input required value={formState.title || ''} onChange={(e) => updateField('title', e.target.value)} placeholder="제목" />
                 <input value={formState.author || ''} onChange={(e) => updateField('author', e.target.value)} placeholder="작성자/브랜드명" />
                 <textarea value={formState.content || ''} onChange={(e) => updateField('content', e.target.value)} placeholder="내용" />
+
+                <label className="talk-image-label">사진 첨부 (최대 {MAX_TALK_IMAGES}장)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleTalkImagesUpload}
+                  disabled={talkImages.length >= MAX_TALK_IMAGES}
+                />
+                {talkImages.length > 0 && (
+                  <div className="talk-image-preview-grid">
+                    {talkImages.map((src, idx) => (
+                      <div key={idx} className="talk-image-preview-item">
+                        <img src={src} alt={`첨부 이미지 ${idx + 1}`} />
+                        <button type="button" onClick={() => removeTalkImage(idx)} aria-label="이미지 제거">×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <button type="submit">글 등록하기</button>
                 {submitted && <span className="form-result">{submitted}</span>}
               </form>
@@ -951,6 +1017,15 @@ export default function SeroServicePage({ slug }) {
               </div>
 
               <div className="modal-content-body">
+                {selectedPost.images && selectedPost.images.length > 0 && (
+                  <div className="talk-detail-image-grid">
+                    {selectedPost.images.map((src, idx) => (
+                      <div key={idx} className="talk-detail-image-item">
+                        <img src={src} alt={`${selectedPost.title} 첨부 이미지 ${idx + 1}`} />
+                      </div>
+                    ))}
+                  </div>
+                )}
                 <p>{selectedPost.content || '등록된 내용이 없습니다.'}</p>
               </div>
 
@@ -1001,6 +1076,9 @@ export default function SeroServicePage({ slug }) {
       <style jsx>{`
         /* Talk Detail Modal CSS */
         .talk-article-card {
+          display: flex;
+          align-items: flex-start;
+          gap: 14px;
           cursor: pointer;
           transition: transform 0.2s ease, border-color 0.2s ease;
         }
@@ -1008,6 +1086,108 @@ export default function SeroServicePage({ slug }) {
         .talk-article-card:hover {
           transform: translateY(-2px);
           border-color: var(--color-orange-accent) !important;
+        }
+
+        .talk-article-copy {
+          flex: 1;
+          min-width: 0;
+        }
+
+        .talk-article-thumb {
+          position: relative;
+          flex: 0 0 auto;
+          width: 64px;
+          height: 64px;
+          overflow: hidden;
+          background: var(--color-white);
+          border: 1px solid var(--color-gray-light);
+        }
+
+        .talk-article-thumb img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        .talk-article-thumb span {
+          position: absolute;
+          right: 2px;
+          bottom: 2px;
+          margin: 0;
+          padding: 1px 5px;
+          background: rgba(0, 0, 0, 0.65);
+          color: #ffffff;
+          font-size: 10px;
+          font-weight: 900;
+        }
+
+        .talk-image-label {
+          display: block;
+          margin-top: 4px;
+          font-size: 12px;
+          font-weight: 800;
+          color: var(--color-gray-dark);
+        }
+
+        .talk-image-preview-grid {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 8px;
+        }
+
+        .talk-image-preview-item {
+          position: relative;
+          aspect-ratio: 1 / 1;
+          overflow: hidden;
+          background: var(--color-sand-light);
+          border: 1px solid var(--color-gray-light);
+        }
+
+        .talk-image-preview-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        .talk-image-preview-item button {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0.6);
+          color: #ffffff;
+          border: none;
+          border-radius: 50%;
+          font-size: 13px;
+          line-height: 1;
+          cursor: pointer;
+        }
+
+        .talk-detail-image-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+          gap: 10px;
+          margin-bottom: 18px;
+        }
+
+        .talk-detail-image-item {
+          aspect-ratio: 1 / 1;
+          overflow: hidden;
+          background: var(--color-sand-light);
+          border-radius: 4px;
+        }
+
+        .talk-detail-image-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
         }
 
         .talk-pagination {

@@ -2069,3 +2069,12 @@ h1, h2, h3, h4, h5, h6 {
   height: 100%;
   object-fit: cover;
 }
+
+/* SeroServicePage.js (세로 회원사 tab): same Link-scoping issue as above —
+   .member-content-card is applied directly to a next/link <Link>, so its
+   component-scoped display:flex rule never applies and the card/image
+   layout breaks. Defined globally here so it always applies. */
+.member-content-card {
+  display: flex;
+  flex-direction: column;
+}

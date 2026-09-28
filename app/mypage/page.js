@@ -116,6 +116,8 @@ export default function MyPage() {
   const [editingPost, setEditingPost] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
+  const [editImages, setEditImages] = useState([]);
+  const MAX_TALK_IMAGES = 5;
 
   // Close whichever edit modal is open on Escape
   useEffect(() => {
@@ -134,6 +136,40 @@ export default function MyPage() {
     setEditingPost(post);
     setEditTitle(post.title || '');
     setEditContent(post.content || '');
+    setEditImages(Array.isArray(post.images) ? post.images : []);
+  };
+
+  const handleEditImagesUpload = (event) => {
+    const files = Array.from(event.target.files || []);
+    if (!files.length) return;
+
+    setEditImages((current) => {
+      const remainingSlots = MAX_TALK_IMAGES - current.length;
+      if (remainingSlots <= 0) {
+        alert(`사진은 게시물당 최대 ${MAX_TALK_IMAGES}장까지 첨부할 수 있습니다.`);
+        return current;
+      }
+      const filesToRead = files.slice(0, remainingSlots);
+      if (files.length > remainingSlots) {
+        alert(`사진은 게시물당 최대 ${MAX_TALK_IMAGES}장까지 첨부할 수 있습니다. 앞의 ${remainingSlots}장만 추가됩니다.`);
+      }
+      filesToRead.forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          setEditImages((prev) => (
+            prev.length >= MAX_TALK_IMAGES ? prev : [...prev, reader.result]
+          ));
+        };
+        reader.readAsDataURL(file);
+      });
+      return current;
+    });
+
+    event.target.value = '';
+  };
+
+  const removeEditImage = (index) => {
+    setEditImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const saveEditPost = (e) => {
@@ -148,6 +184,7 @@ export default function MyPage() {
             ...p,
             title: editTitle.trim(),
             content: editContent.trim(),
+            images: editImages,
             updatedAt: new Date().toISOString()
           };
         }
@@ -875,6 +912,18 @@ export default function MyPage() {
                   <span className="talk-type-tag" style={{ display: 'inline-block', fontSize: '10px', background: 'var(--color-orange-accent)', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
                     {post.type}
                   </span>
+                  {post.images && post.images.length > 0 && (
+                    <div style={{ display: 'flex', gap: '6px', margin: '8px 0' }}>
+                      {post.images.slice(0, 3).map((src, idx) => (
+                        <div key={idx} style={{ position: 'relative', width: '44px', height: '44px', flex: '0 0 auto', overflow: 'hidden', border: '1px solid #e4e4e7' }}>
+                          <img src={src} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                        </div>
+                      ))}
+                      {post.images.length > 3 && (
+                        <span style={{ fontSize: '11px', color: '#999', alignSelf: 'center' }}>+{post.images.length - 3}</span>
+                      )}
+                    </div>
+                  )}
                   <strong style={{ display: 'block', fontSize: '16px', margin: '8px 0', color: 'var(--color-charcoal-deep)' }}>{post.title}</strong>
                   <p style={{ fontSize: '13px', color: '#666', margin: '0 0 12px 0', lineHeight: '1.4', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                     {post.content || '(내용 없음)'}
@@ -926,13 +975,33 @@ export default function MyPage() {
               </div>
               <div className="edit-form-group">
                 <label>내용</label>
-                <textarea 
-                  required 
-                  value={editContent} 
-                  onChange={(e) => setEditContent(e.target.value)} 
-                  placeholder="내용을 입력해 주세요" 
+                <textarea
+                  required
+                  value={editContent}
+                  onChange={(e) => setEditContent(e.target.value)}
+                  placeholder="내용을 입력해 주세요"
                   rows={6}
                 />
+              </div>
+              <div className="edit-form-group">
+                <label>사진 첨부 (최대 {MAX_TALK_IMAGES}장)</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleEditImagesUpload}
+                  disabled={editImages.length >= MAX_TALK_IMAGES}
+                />
+                {editImages.length > 0 && (
+                  <div className="edit-image-preview-grid">
+                    {editImages.map((src, idx) => (
+                      <div key={idx} className="edit-image-preview-item">
+                        <img src={src} alt={`첨부 이미지 ${idx + 1}`} />
+                        <button type="button" onClick={() => removeEditImage(idx)} aria-label="이미지 제거">×</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="edit-modal-actions">
                 <button type="submit" className="save-btn">저장하기</button>
@@ -1137,6 +1206,47 @@ export default function MyPage() {
           border: 1px solid #d4d4d8;
           border-radius: 4px;
           font-family: inherit;
+        }
+
+        .edit-image-preview-grid {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 8px;
+          margin-top: 10px;
+        }
+
+        .edit-image-preview-item {
+          position: relative;
+          aspect-ratio: 1 / 1;
+          overflow: hidden;
+          background: #f4f4f5;
+          border: 1px solid #e4e4e7;
+          border-radius: 4px;
+        }
+
+        .edit-image-preview-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+        }
+
+        .edit-image-preview-item button {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0.6);
+          color: #ffffff;
+          border: none;
+          border-radius: 50%;
+          font-size: 13px;
+          line-height: 1;
+          cursor: pointer;
         }
 
         .edit-modal-actions {
