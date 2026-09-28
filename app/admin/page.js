@@ -5,12 +5,15 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 import { DEFAULT_SERO_DAY_PROGRAMS } from '@/lib/seroDayPrograms';
+import { DEFAULT_SERO_TALK_POSTS } from '@/lib/seroTalkPosts';
 import Link from 'next/link';
 
 const CONTENT_STORAGE_KEY = 'sejong_site_content_sections';
 const MENTORING_STORAGE_KEY = 'sejong_mentoring_requests';
 const MEMBER_STORAGE_KEY = 'sejong_admin_members';
 const PENDING_REGISTRATION_STORAGE_KEY = 'sejong_pending_registrations';
+const TALK_STORAGE_KEY = 'sejong_sero_service_sero-talk';
+const TALK_TYPE_OPTIONS = ['자유 게시판', 'MOU 제안', '콜라보 프로젝트'];
 
 const ROLE_OPTIONS = [
   { value: 'super_admin', label: '최고 관리자', shortLabel: 'Level 2', description: '전체 운영 권한' },
@@ -483,7 +486,7 @@ export default function AdminPage() {
   
   const [loading, setLoading] = useState(true);
   const [userRole, setUserRole] = useState(null); // 'super_admin', 'staff_admin', 'user', null
-  const [activeSubTab, setActiveSubTab] = useState('home'); // 'home', 'approval', 'inquiries', 'content', 'category', 'system', 'program'
+  const [activeSubTab, setActiveSubTab] = useState('home'); // 'home', 'approval', 'inquiries', 'content', 'category', 'system', 'program', 'talk'
   const [siteSections, setSiteSections] = useState(CURRENT_SITE_SECTIONS);
   const [selectedSectionId, setSelectedSectionId] = useState(CURRENT_SITE_SECTIONS[0].id);
   const [sectionFilter, setSectionFilter] = useState('all');
@@ -526,6 +529,13 @@ export default function AdminPage() {
   ]);
   const [newCatName, setNewCatName] = useState('');
   const [newCatCode, setNewCatCode] = useState('');
+
+  // Sero Talk management state
+  const [talkPosts, setTalkPosts] = useState([]);
+  const [isTalkModalOpen, setIsTalkModalOpen] = useState(false);
+  const [editingTalkPost, setEditingTalkPost] = useState(null);
+  const [talkForm, setTalkForm] = useState({ type: '자유 게시판', title: '', author: '', content: '' });
+  const [talkTypeFilter, setTalkTypeFilter] = useState('all');
 
   const [msg, setMsg] = useState({ type: '', text: '' });
 
@@ -676,6 +686,115 @@ export default function AdminPage() {
       description: ''
     });
     setIsProgModalOpen(true);
+  };
+
+  // Sero Talk: load posts from the same storage key the public 세로 토크 board uses
+  useEffect(() => {
+    const stored = localStorage.getItem(TALK_STORAGE_KEY);
+    if (stored) {
+      try {
+        setTalkPosts(JSON.parse(stored));
+      } catch {
+        setTalkPosts(DEFAULT_SERO_TALK_POSTS);
+      }
+    } else {
+      setTalkPosts(DEFAULT_SERO_TALK_POSTS);
+    }
+  }, []);
+
+  const saveTalkPostsToStorage = (list) => {
+    localStorage.setItem(TALK_STORAGE_KEY, JSON.stringify(list));
+    setTalkPosts(list);
+  };
+
+  const handleAddOrEditTalkPost = (e) => {
+    e.preventDefault();
+    if (!isSuperAdmin) {
+      setMsg({ type: 'error', text: '최고 관리자만 세로 토크 글을 편집할 수 있습니다.' });
+      return;
+    }
+    if (!talkForm.title.trim()) {
+      setMsg({ type: 'error', text: '제목을 입력해 주세요.' });
+      return;
+    }
+
+    let updatedList = [];
+    if (editingTalkPost) {
+      updatedList = talkPosts.map((post) =>
+        post.id === editingTalkPost.id
+          ? { ...post, ...talkForm, title: talkForm.title.trim(), author: talkForm.author.trim() || post.author }
+          : post
+      );
+      setMsg({ type: 'success', text: '세로 토크 글이 수정되었습니다.' });
+    } else {
+      const newPost = {
+        id: Date.now(),
+        type: talkForm.type,
+        title: talkForm.title.trim(),
+        author: talkForm.author.trim() || '협회 사무국',
+        content: talkForm.content,
+        createdAt: new Date().toISOString(),
+        comments: []
+      };
+      updatedList = [newPost, ...talkPosts];
+      setMsg({ type: 'success', text: '새 세로 토크 글이 등록되었습니다.' });
+    }
+
+    saveTalkPostsToStorage(updatedList);
+    setIsTalkModalOpen(false);
+    setEditingTalkPost(null);
+    setTalkForm({ type: '자유 게시판', title: '', author: '', content: '' });
+    window.setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+  };
+
+  const handleDeleteTalkPost = (id) => {
+    if (!isSuperAdmin) {
+      setMsg({ type: 'error', text: '최고 관리자만 세로 토크 글을 삭제할 수 있습니다.' });
+      return;
+    }
+    if (window.confirm('정말 이 글을 삭제하시겠습니까? 댓글도 함께 삭제됩니다.')) {
+      const updatedList = talkPosts.filter((post) => post.id !== id);
+      saveTalkPostsToStorage(updatedList);
+      setMsg({ type: 'success', text: '글이 삭제되었습니다.' });
+      window.setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+    }
+  };
+
+  const handleDeleteTalkComment = (postId, commentId) => {
+    if (!isSuperAdmin) {
+      setMsg({ type: 'error', text: '최고 관리자만 댓글을 삭제할 수 있습니다.' });
+      return;
+    }
+    const updatedList = talkPosts.map((post) => {
+      if (post.id !== postId) return post;
+      return { ...post, comments: (post.comments || []).filter((c) => c.id !== commentId) };
+    });
+    saveTalkPostsToStorage(updatedList);
+  };
+
+  const openEditTalkModal = (post) => {
+    if (!isSuperAdmin) {
+      setMsg({ type: 'error', text: '최고 관리자만 세로 토크 글을 편집할 수 있습니다.' });
+      return;
+    }
+    setEditingTalkPost(post);
+    setTalkForm({
+      type: post.type || '자유 게시판',
+      title: post.title || '',
+      author: post.author || '',
+      content: post.content || ''
+    });
+    setIsTalkModalOpen(true);
+  };
+
+  const openAddTalkModal = () => {
+    if (!isSuperAdmin) {
+      setMsg({ type: 'error', text: '최고 관리자만 세로 토크 글을 작성할 수 있습니다.' });
+      return;
+    }
+    setEditingTalkPost(null);
+    setTalkForm({ type: '자유 게시판', title: '', author: '', content: '' });
+    setIsTalkModalOpen(true);
   };
 
   useEffect(() => {
@@ -973,6 +1092,9 @@ export default function AdminPage() {
   });
   const adminMemberCount = members.filter(member => member.role === 'super_admin' || member.role === 'staff_admin').length;
   const activeMemberCount = members.filter(member => member.status === 'active').length;
+  const filteredTalkPosts = talkTypeFilter === 'all'
+    ? talkPosts
+    : talkPosts.filter((post) => post.type === talkTypeFilter);
 
   return (
     <div className="admin-outer-container">
@@ -1033,15 +1155,22 @@ export default function AdminPage() {
           >
             📁 카테고리 및 컨텐츠 설정
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`nav-item ${activeSubTab === 'program' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('program'); setMsg({type:'',text:''}); }}
           >
             📋 프로그램 관리
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
+            className={`nav-item ${activeSubTab === 'talk' ? 'active' : ''}`}
+            onClick={() => { setActiveSubTab('talk'); setMsg({type:'',text:''}); }}
+          >
+            🗨️ 세로 토크 관리 {!isSuperAdmin && '🔒'}
+          </button>
+          <button
+            type="button"
             className={`nav-item ${activeSubTab === 'system' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('system'); setMsg({type:'',text:''}); }}
           >
@@ -1098,6 +1227,7 @@ export default function AdminPage() {
               {activeSubTab === 'content' && '섹션별 사이트 콘텐츠 관리'}
               {activeSubTab === 'category' && '쇼핑몰 카테고리 관리'}
               {activeSubTab === 'program' && '세로데이 프로그램 일정 및 관리'}
+              {activeSubTab === 'talk' && '세로 토크 게시글 관리 (최고 관리자 전용 편집)'}
               {activeSubTab === 'system' && '시스템 인프라 및 권한 설정'}
             </h1>
           </div>
@@ -1980,6 +2110,204 @@ export default function AdminPage() {
 
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
                       <button type="button" onClick={() => setIsProgModalOpen(false)} style={{ height: '40px', padding: '0 20px', background: '#e0e0e0', color: 'var(--color-charcoal-deep)', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: '700' }}>
+                        취소
+                      </button>
+                      <button type="submit" style={{ height: '40px', padding: '0 20px', background: 'var(--color-orange-accent)', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}>
+                        저장하기
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {activeSubTab === 'talk' && (
+          <div className="tab-view animate-fade-in">
+            <div className="glass-panel" style={{ padding: '24px', backgroundColor: 'var(--color-white)', border: '1px solid var(--color-gray-light)', borderRadius: '6px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '12px' }}>
+                <div>
+                  <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-charcoal-deep)', margin: 0 }}>세로 토크 게시글 목록</h3>
+                  <p style={{ fontSize: '12px', color: 'var(--color-gray-dark)', margin: '4px 0 0' }}>
+                    세로 토크 게시판의 글과 댓글을 관리합니다. 글쓰기·수정·삭제는 <strong>최고 관리자</strong>만 가능합니다.
+                  </p>
+                </div>
+                {isSuperAdmin ? (
+                  <button type="button" className="btn-primary" onClick={openAddTalkModal} style={{ height: '40px', padding: '0 16px', background: 'var(--color-orange-accent)', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}>
+                    ➕ 새 글 등록
+                  </button>
+                ) : (
+                  <span style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>🔒 열람만 가능 (최고 관리자 전용 편집)</span>
+                )}
+              </div>
+
+              {msg.text && (
+                <div className={`alert ${msg.type === 'success' ? 'success-alert' : 'error-alert'}`} style={{ marginBottom: '16px', padding: '12px 16px', borderRadius: '4px', fontSize: '13px', fontWeight: '700', backgroundColor: msg.type === 'success' ? 'var(--color-emerald-pale)' : 'var(--color-orange-light)', color: msg.type === 'success' ? 'var(--color-emerald-deep)' : 'var(--color-orange-accent)' }}>
+                  {msg.text}
+                </div>
+              )}
+
+              <div style={{ display: 'flex', gap: '8px', marginBottom: '16px', flexWrap: 'wrap' }}>
+                {['all', ...TALK_TYPE_OPTIONS].map((type) => (
+                  <button
+                    key={type}
+                    type="button"
+                    onClick={() => setTalkTypeFilter(type)}
+                    style={{
+                      padding: '6px 12px',
+                      fontSize: '12px',
+                      fontWeight: '800',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                      border: talkTypeFilter === type ? 'none' : '1px solid var(--color-gray-light)',
+                      background: talkTypeFilter === type ? 'var(--color-charcoal-deep)' : '#fff',
+                      color: talkTypeFilter === type ? '#fff' : 'var(--color-gray-dark)'
+                    }}
+                  >
+                    {type === 'all' ? '전체' : type}
+                  </button>
+                ))}
+              </div>
+
+              <div className="table-responsive" style={{ overflowX: 'auto' }}>
+                <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-light)', textAlign: 'left', color: 'var(--color-gray-dark)', fontWeight: '700' }}>
+                      <th style={{ padding: '12px 8px' }}>유형</th>
+                      <th style={{ padding: '12px 8px' }}>제목 / 작성자</th>
+                      <th style={{ padding: '12px 8px' }}>작성일</th>
+                      <th style={{ padding: '12px 8px' }}>댓글</th>
+                      <th style={{ padding: '12px 8px', textAlign: 'right' }}>관리</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filteredTalkPosts.map((post) => (
+                      <tr key={post.id} style={{ borderBottom: '1px solid var(--color-gray-light)' }}>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top' }}>
+                          <span style={{ display: 'inline-block', padding: '4px 8px', fontSize: '12px', fontWeight: '700', borderRadius: '4px', background: 'var(--color-sand-light)', color: 'var(--color-charcoal-deep)' }}>
+                            {post.type}
+                          </span>
+                        </td>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top' }}>
+                          <strong style={{ fontSize: '15px', fontWeight: '800', color: 'var(--color-charcoal-deep)' }}>{post.title}</strong>
+                          <p style={{ margin: '4px 0 0', fontSize: '12px', color: 'var(--color-gray-dark)' }}>{post.author}</p>
+                        </td>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top', fontSize: '12px', color: 'var(--color-gray-dark)' }}>
+                          {post.createdAt ? new Date(post.createdAt).toLocaleDateString() : '-'}
+                        </td>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top', fontWeight: '700' }}>
+                          {(post.comments || []).length}
+                        </td>
+                        <td style={{ padding: '16px 8px', verticalAlign: 'top', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                          <button
+                            type="button"
+                            onClick={() => openEditTalkModal(post)}
+                            disabled={!isSuperAdmin}
+                            style={{
+                              marginRight: '8px',
+                              padding: '6px 12px',
+                              fontSize: '12px',
+                              fontWeight: '700',
+                              border: '1px solid var(--color-gray-light)',
+                              background: '#fff',
+                              color: isSuperAdmin ? 'var(--color-charcoal-deep)' : '#ccc',
+                              cursor: isSuperAdmin ? 'pointer' : 'not-allowed',
+                              borderRadius: '4px'
+                            }}
+                          >
+                            수정
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteTalkPost(post.id)}
+                            disabled={!isSuperAdmin}
+                            style={{
+                              padding: '6px 12px',
+                              fontSize: '12px',
+                              fontWeight: '700',
+                              border: '1px solid rgba(229,76,28,0.2)',
+                              background: isSuperAdmin ? 'var(--color-orange-light)' : '#f2f2f2',
+                              color: isSuperAdmin ? 'var(--color-orange-accent)' : '#ccc',
+                              cursor: isSuperAdmin ? 'pointer' : 'not-allowed',
+                              borderRadius: '4px'
+                            }}
+                          >
+                            삭제
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredTalkPosts.length === 0 && (
+                      <tr>
+                        <td colSpan="5" style={{ textAlign: 'center', padding: '60px 0', color: 'var(--color-gray-dark)', fontWeight: '600' }}>
+                          등록된 세로 토크 글이 없습니다.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Talk Post Add/Edit Modal */}
+            {isTalkModalOpen && isSuperAdmin && (
+              <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+                <div className="modal-content" style={{ background: '#fff', padding: '30px', borderRadius: '8px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+                  <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-charcoal-deep)', margin: '0 0 20px 0' }}>{editingTalkPost ? '세로 토크 글 수정' : '새 세로 토크 글 등록'}</h3>
+                  <form onSubmit={handleAddOrEditTalkPost} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>게시판 유형 *</label>
+                      <select value={talkForm.type} onChange={(e) => setTalkForm({ ...talkForm, type: e.target.value })} style={{ height: '40px', padding: '0 8px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }}>
+                        {TALK_TYPE_OPTIONS.map((type) => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>제목 *</label>
+                      <input required value={talkForm.title} onChange={(e) => setTalkForm({ ...talkForm, title: e.target.value })} placeholder="글 제목" style={{ height: '40px', padding: '0 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }} />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>작성자 / 브랜드명</label>
+                      <input value={talkForm.author} onChange={(e) => setTalkForm({ ...talkForm, author: e.target.value })} placeholder="예: 협회 사무국" style={{ height: '40px', padding: '0 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', fontWeight: '700' }} />
+                    </div>
+
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                      <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>내용</label>
+                      <textarea value={talkForm.content} onChange={(e) => setTalkForm({ ...talkForm, content: e.target.value })} placeholder="본문 내용을 입력하세요." style={{ minHeight: '140px', padding: '8px 12px', border: '1px solid var(--color-gray-light)', borderRadius: '4px', background: 'var(--color-sand-light)', resize: 'vertical', font: 'inherit', fontSize: '14px', fontWeight: '700' }} />
+                    </div>
+
+                    {editingTalkPost && (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                        <label style={{ fontSize: '12px', fontWeight: '800', color: 'var(--color-gray-dark)' }}>댓글 ({(editingTalkPost.comments || []).length})</label>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxHeight: '160px', overflowY: 'auto', border: '1px solid var(--color-gray-light)', borderRadius: '4px', padding: '10px' }}>
+                          {(talkPosts.find((p) => p.id === editingTalkPost.id)?.comments || []).map((comment) => (
+                            <div key={comment.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', fontSize: '12.5px', borderBottom: '1px solid var(--color-gray-light)', paddingBottom: '8px' }}>
+                              <div>
+                                <strong>{comment.author}{comment.authorBrand ? ` · ${comment.authorBrand}` : ''}</strong>
+                                <p style={{ margin: '2px 0 0', color: 'var(--color-gray-dark)' }}>{comment.body}</p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteTalkComment(editingTalkPost.id, comment.id)}
+                                style={{ flexShrink: 0, padding: '4px 8px', fontSize: '11px', fontWeight: '700', border: '1px solid rgba(229,76,28,0.2)', background: 'var(--color-orange-light)', color: 'var(--color-orange-accent)', cursor: 'pointer', borderRadius: '4px' }}
+                              >
+                                삭제
+                              </button>
+                            </div>
+                          ))}
+                          {(!editingTalkPost.comments || editingTalkPost.comments.length === 0) && (
+                            <span style={{ fontSize: '12px', color: 'var(--color-gray-dark)' }}>등록된 댓글이 없습니다.</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '10px' }}>
+                      <button type="button" onClick={() => { setIsTalkModalOpen(false); setEditingTalkPost(null); }} style={{ height: '40px', padding: '0 20px', background: '#e0e0e0', color: 'var(--color-charcoal-deep)', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: '700' }}>
                         취소
                       </button>
                       <button type="submit" style={{ height: '40px', padding: '0 20px', background: 'var(--color-orange-accent)', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '4px', fontWeight: 'bold' }}>
