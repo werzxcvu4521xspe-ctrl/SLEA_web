@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabaseClient';
 import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 import { DEFAULT_SERO_DAY_PROGRAMS } from '@/lib/seroDayPrograms';
 import { DEFAULT_SERO_TALK_POSTS } from '@/lib/seroTalkPosts';
+import { DEFAULT_SHOP_PRODUCTS } from '@/lib/shopProducts';
 import Link from 'next/link';
 
 const CONTENT_STORAGE_KEY = 'sejong_site_content_sections';
@@ -14,6 +15,8 @@ const MEMBER_STORAGE_KEY = 'sejong_admin_members';
 const PENDING_REGISTRATION_STORAGE_KEY = 'sejong_pending_registrations';
 const TALK_STORAGE_KEY = 'sejong_sero_service_sero-talk';
 const TALK_TYPE_OPTIONS = ['자유 게시판', 'MOU 제안', '콜라보 프로젝트'];
+const SHOP_STORAGE_KEY = 'sejong_shop_products';
+const SHOP_PAGE_SIZE = 10;
 
 const ROLE_OPTIONS = [
   { value: 'super_admin', label: '최고 관리자', shortLabel: 'Level 2', description: '전체 운영 권한' },
@@ -537,6 +540,10 @@ export default function AdminPage() {
   const [talkForm, setTalkForm] = useState({ type: '자유 게시판', title: '', author: '', content: '' });
   const [talkTypeFilter, setTalkTypeFilter] = useState('all');
 
+  // Shop product management state
+  const [shopProducts, setShopProducts] = useState([]);
+  const [shopPage, setShopPage] = useState(1);
+
   const [msg, setMsg] = useState({ type: '', text: '' });
 
   // Check role & override status
@@ -795,6 +802,38 @@ export default function AdminPage() {
     setEditingTalkPost(null);
     setTalkForm({ type: '자유 게시판', title: '', author: '', content: '' });
     setIsTalkModalOpen(true);
+  };
+
+  // Shop products: load from the same storage key the public 쇼핑몰 page uses
+  useEffect(() => {
+    const stored = localStorage.getItem(SHOP_STORAGE_KEY);
+    if (stored) {
+      try {
+        setShopProducts(JSON.parse(stored));
+      } catch {
+        setShopProducts(DEFAULT_SHOP_PRODUCTS);
+      }
+    } else {
+      setShopProducts(DEFAULT_SHOP_PRODUCTS);
+    }
+  }, []);
+
+  const saveShopProductsToStorage = (list) => {
+    localStorage.setItem(SHOP_STORAGE_KEY, JSON.stringify(list));
+    setShopProducts(list);
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  const handleDeleteShopProduct = (id, name) => {
+    if (window.confirm(`"${name}" 게시글을 삭제하시겠습니까?`)) {
+      const updatedList = shopProducts.filter((p) => p.id !== id);
+      saveShopProductsToStorage(updatedList);
+      setMsg({ type: 'success', text: '쇼핑몰 게시글이 삭제되었습니다.' });
+      // Keep the current page in range once the list shrinks
+      const nextTotalPages = Math.max(1, Math.ceil(updatedList.length / SHOP_PAGE_SIZE));
+      setShopPage((prev) => Math.min(prev, nextTotalPages));
+      window.setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+    }
   };
 
   useEffect(() => {
@@ -1125,56 +1164,56 @@ export default function AdminPage() {
             className={`nav-item ${activeSubTab === 'home' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('home'); setMsg({type:'',text:''}); }}
           >
-            🏠 대시보드 홈
+            대시보드 홈
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`nav-item ${activeSubTab === 'approval' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('approval'); setMsg({type:'',text:''}); }}
           >
-            📋 회원 가입 승인/회원 관리 {pendingRegistrations.length > 0 && <span className="indicator-dot">{pendingRegistrations.length}</span>}
+            회원 가입 승인/회원 관리 {pendingRegistrations.length > 0 && <span className="indicator-dot">{pendingRegistrations.length}</span>}
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`nav-item ${activeSubTab === 'inquiries' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('inquiries'); setMsg({type:'',text:''}); }}
           >
-            📩 신청/문의 관리 {mentoringRequests.length > 0 && <span className="indicator-dot">{mentoringRequests.length}</span>}
+            신청/문의 관리 {mentoringRequests.length > 0 && <span className="indicator-dot">{mentoringRequests.length}</span>}
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`nav-item ${activeSubTab === 'content' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('content'); setMsg({type:'',text:''}); }}
           >
-            ✏️ 사이트 콘텐츠 관리 <span className="indicator-dot muted">{siteSections.length}</span>
+            사이트 콘텐츠 관리 <span className="indicator-dot muted">{siteSections.length}</span>
           </button>
-          <button 
-            type="button" 
+          <button
+            type="button"
             className={`nav-item ${activeSubTab === 'category' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('category'); setMsg({type:'',text:''}); }}
           >
-            📁 카테고리 및 컨텐츠 설정
+            카테고리 및 컨텐츠 설정
           </button>
           <button
             type="button"
             className={`nav-item ${activeSubTab === 'program' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('program'); setMsg({type:'',text:''}); }}
           >
-            📋 프로그램 관리
+            프로그램 관리
           </button>
           <button
             type="button"
             className={`nav-item ${activeSubTab === 'talk' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('talk'); setMsg({type:'',text:''}); }}
           >
-            🗨️ 세로 토크 관리 {!isSuperAdmin && '🔒'}
+            세로 토크 관리 {!isSuperAdmin && '🔒'}
           </button>
           <button
             type="button"
             className={`nav-item ${activeSubTab === 'system' ? 'active' : ''}`}
             onClick={() => { setActiveSubTab('system'); setMsg({type:'',text:''}); }}
           >
-            ⚙️ 시스템 설정 {!isSuperAdmin && '🔒'}
+            시스템 설정 {!isSuperAdmin && '🔒'}
           </button>
         </nav>
 
@@ -1878,8 +1917,9 @@ export default function AdminPage() {
                       onChange={(e) => setNewCatName(e.target.value)} 
                     />
                   </div>
-                  <button type="submit" className="subscribe-btn" style={{ height: '46px', marginTop: '10px' }}>
-                    카테고리 생성 등록 ➔
+                  <button type="submit" className="category-submit-btn">
+                    카테고리 생성 등록
+                    <span className="category-submit-arrow">→</span>
                   </button>
                 </form>
               </div>
@@ -1930,6 +1970,113 @@ export default function AdminPage() {
                   ))}
                 </div>
               </div>
+            </div>
+
+            {/* Shop posts (listing) management */}
+            <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
+                <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', margin: 0 }}>
+                  🛒 쇼핑몰 게시글 관리 ({shopProducts.length})
+                </h3>
+                <span style={{ fontSize: '12px', color: 'var(--color-gray-dark)' }}>
+                  쇼핑몰에 등록된 상품 게시글을 삭제할 수 있습니다.
+                </span>
+              </div>
+
+              <div style={{ overflowX: 'auto' }}>
+                <table className="admin-table" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '2px solid var(--color-gray-light)', textAlign: 'left' }}>
+                      <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)' }}>카테고리</th>
+                      <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)' }}>상품명</th>
+                      <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)' }}>브랜드</th>
+                      <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)' }}>가격</th>
+                      <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)', textAlign: 'right' }}>관리</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {shopProducts
+                      .slice((shopPage - 1) * SHOP_PAGE_SIZE, shopPage * SHOP_PAGE_SIZE)
+                      .map((product) => (
+                        <tr key={product.id} style={{ borderBottom: '1px solid var(--color-gray-light)' }}>
+                          <td style={{ padding: '10px 8px', fontSize: '13px' }}>{product.category}</td>
+                          <td style={{ padding: '10px 8px', fontSize: '13px', fontWeight: '700' }}>{product.name}</td>
+                          <td style={{ padding: '10px 8px', fontSize: '13px' }}>{product.brand}</td>
+                          <td style={{ padding: '10px 8px', fontSize: '13px' }}>{product.price}</td>
+                          <td style={{ padding: '10px 8px', textAlign: 'right' }}>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteShopProduct(product.id, product.name)}
+                              style={{
+                                background: 'none',
+                                color: 'var(--color-orange-accent)',
+                                fontWeight: '800',
+                                fontSize: '12px',
+                                cursor: 'pointer',
+                                border: 'none'
+                              }}
+                            >
+                              삭제
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    {shopProducts.length === 0 && (
+                      <tr>
+                        <td colSpan={5} style={{ padding: '24px 8px', textAlign: 'center', fontSize: '13px', color: 'var(--color-gray-dark)' }}>
+                          등록된 쇼핑몰 게시글이 없습니다.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Page indicator */}
+              {shopProducts.length > SHOP_PAGE_SIZE && (
+                <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '6px', marginTop: '20px', flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setShopPage((p) => Math.max(1, p - 1))}
+                    disabled={shopPage === 1}
+                    style={{
+                      width: '32px', height: '32px', borderRadius: '4px', border: '1px solid var(--color-gray-light)',
+                      background: 'var(--color-white)', cursor: shopPage === 1 ? 'not-allowed' : 'pointer',
+                      color: shopPage === 1 ? 'var(--color-gray-medium)' : 'var(--color-charcoal-deep)'
+                    }}
+                  >
+                    ‹
+                  </button>
+                  {Array.from({ length: Math.ceil(shopProducts.length / SHOP_PAGE_SIZE) }, (_, i) => i + 1).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      onClick={() => setShopPage(pageNum)}
+                      style={{
+                        width: '32px', height: '32px', borderRadius: '4px', border: '1px solid var(--color-gray-light)',
+                        background: shopPage === pageNum ? 'var(--color-emerald-deep)' : 'var(--color-white)',
+                        color: shopPage === pageNum ? 'var(--color-white)' : 'var(--color-charcoal-deep)',
+                        fontWeight: '700', fontSize: '13px', cursor: 'pointer'
+                      }}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setShopPage((p) => Math.min(Math.ceil(shopProducts.length / SHOP_PAGE_SIZE), p + 1))}
+                    disabled={shopPage >= Math.ceil(shopProducts.length / SHOP_PAGE_SIZE)}
+                    style={{
+                      width: '32px', height: '32px', borderRadius: '4px', border: '1px solid var(--color-gray-light)',
+                      background: 'var(--color-white)',
+                      cursor: shopPage >= Math.ceil(shopProducts.length / SHOP_PAGE_SIZE) ? 'not-allowed' : 'pointer',
+                      color: shopPage >= Math.ceil(shopProducts.length / SHOP_PAGE_SIZE) ? 'var(--color-gray-medium)' : 'var(--color-charcoal-deep)'
+                    }}
+                  >
+                    ›
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -2389,6 +2536,39 @@ export default function AdminPage() {
       </main>
 
       <style jsx>{`
+        .category-submit-btn {
+          width: 100%;
+          height: 48px;
+          margin-top: 10px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          background-color: var(--color-charcoal-deep);
+          color: var(--color-white);
+          font-size: 15px;
+          font-weight: 700;
+          border: none;
+          border-radius: var(--border-radius-sm, 6px);
+          cursor: pointer;
+          transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .category-submit-btn:hover {
+          background-color: var(--color-orange-accent);
+          transform: translateY(-2px);
+        }
+
+        .category-submit-arrow {
+          font-size: 15px;
+          line-height: 1;
+          transition: transform 0.2s ease;
+        }
+
+        .category-submit-btn:hover .category-submit-arrow {
+          transform: translateX(3px);
+        }
+
         .admin-outer-container {
           display: flex;
           min-height: 90vh;

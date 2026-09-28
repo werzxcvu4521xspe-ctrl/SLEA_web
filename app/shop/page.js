@@ -2,15 +2,9 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { DEFAULT_SHOP_PRODUCTS } from '@/lib/shopProducts';
 
-const PRODUCTS = [
-  { id: 1, category: 'food', name: '조치원 복숭아 수제 병조림 세트', price: '24,000원', brand: '디저트 카페 도원', img: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=300&auto=format&fit=crop' },
-  { id: 2, category: 'craft', name: '세종 세라믹 핸드메이드 머그컵', price: '18,500원', brand: '공방 세종', img: 'https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?q=80&w=300&auto=format&fit=crop' },
-  { id: 3, category: 'goods', name: '한글도시 세종 친환경 린넨 에코백', price: '12,000원', brand: '세종 굿즈 팩토리', img: 'https://images.unsplash.com/photo-1544816155-12df9643f363?q=80&w=300&auto=format&fit=crop' },
-  { id: 4, category: 'beauty', name: '세종 조치원 국화꽃 에센셜 보디 오일', price: '32,000원', brand: '뷰티 로컬 랩', img: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?q=80&w=300&auto=format&fit=crop' },
-  { id: 5, category: 'pet', name: '유기농 쌀비지 애견 수제 간식 쿠키', price: '8,900원', brand: '밀마루 베이커리', img: 'https://images.unsplash.com/photo-1582794543139-8ac9cb0f7b11?q=80&w=300&auto=format&fit=crop' },
-  { id: 6, category: 'fashion', name: '세종 전통 한지 혼방 워셔블 셔츠', price: '59,000원', brand: '아뜰리에 세종', img: 'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=300&auto=format&fit=crop' }
-];
+const SHOP_STORAGE_KEY = 'sejong_shop_products';
 
 const GROUP_BUYS = [
   { id: 1, name: '조치원 복숭아 사이더 (스파클링 와인) 6병입', normalPrice: '72,000원', discountPrice: '43,200원', progress: 78, current: 78, target: 100, daysLeft: 4, img: 'https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?q=80&w=300&auto=format&fit=crop' },
@@ -26,6 +20,9 @@ function ShopContent() {
   // Brand Shop Category State
   const [subCategory, setSubCategory] = useState('all');
 
+  // Products (managed by admins in /admin > 카테고리 및 컨텐츠 설정)
+  const [products, setProducts] = useState(DEFAULT_SHOP_PRODUCTS);
+
   // Partner proposal
   const [partnerName, setPartnerName] = useState('');
   const [partnerProduct, setPartnerProduct] = useState('');
@@ -34,6 +31,24 @@ function ShopContent() {
   useEffect(() => {
     setActiveTab(tabParam);
   }, [tabParam]);
+
+  useEffect(() => {
+    const loadProducts = () => {
+      const stored = localStorage.getItem(SHOP_STORAGE_KEY);
+      if (stored) {
+        try {
+          setProducts(JSON.parse(stored));
+        } catch {
+          setProducts(DEFAULT_SHOP_PRODUCTS);
+        }
+      } else {
+        setProducts(DEFAULT_SHOP_PRODUCTS);
+      }
+    };
+    loadProducts();
+    window.addEventListener('storage', loadProducts);
+    return () => window.removeEventListener('storage', loadProducts);
+  }, []);
 
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
@@ -54,8 +69,8 @@ function ShopContent() {
 
   // Filtered Products
   const filteredProducts = subCategory === 'all' 
-    ? PRODUCTS 
-    : PRODUCTS.filter(p => p.category === subCategory);
+    ? products 
+    : products.filter(p => p.category === subCategory);
 
   return (
     <div className="shop-page-wrapper">
@@ -222,7 +237,7 @@ function ShopContent() {
                 🌟 협회 추천 명품 셀렉션
               </h3>
               <div className="grid-3">
-                {PRODUCTS.slice(0, 3).map(prod => (
+                {products.slice(0, 3).map(prod => (
                   <div key={prod.id} className="glass-panel" style={{ backgroundColor: 'var(--color-white)', overflow: 'hidden', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ height: '180px', backgroundImage: `url("${prod.img}")`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '8px' }} />
                     <span className="badge badge-emerald" style={{ width: 'fit-content' }}>MD 추천</span>
