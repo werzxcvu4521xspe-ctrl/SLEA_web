@@ -545,34 +545,28 @@ export default function AdminPage() {
   const [talkForm, setTalkForm] = useState({ type: '자유 게시판', title: '', author: '', content: '' });
   const [talkTypeFilter, setTalkTypeFilter] = useState('all');
 
+  // Close whichever modal is open on Escape
+  useEffect(() => {
+    if (!isProgModalOpen && !isTalkModalOpen) return;
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      setIsProgModalOpen(false);
+      setIsTalkModalOpen(false);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [isProgModalOpen, isTalkModalOpen]);
+
   // Shop product management state
   const [shopProducts, setShopProducts] = useState([]);
   const [shopPage, setShopPage] = useState(1);
 
   const [msg, setMsg] = useState({ type: '', text: '' });
 
-  // Check role & override status
+  // Check role via the real Supabase session only (no client-side override)
   const checkRole = useCallback(async () => {
     setLoading(true);
-    
-    // Check override first
-    const override = localStorage.getItem('sejong_role_override');
-    if (override) {
-      if (override === 'none') {
-        router.push('/login');
-        return;
-      }
-      if (override === 'user') {
-        alert('관리자 권한이 없습니다. 일반 계정은 마이페이지로 이동합니다.');
-        router.push('/mypage');
-        return;
-      }
-      setUserRole(override);
-      setLoading(false);
-      return;
-    }
 
-    // Fallback: Real session check
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) {
       router.push('/login');
@@ -914,19 +908,6 @@ export default function AdminPage() {
 
     return () => window.clearTimeout(registrationLoadTimer);
   }, []);
-
-  // Simulate Role Switching
-  const handleSimulateRole = (role) => {
-    localStorage.setItem('sejong_role_override', role);
-    window.dispatchEvent(new Event('sejong_role_update'));
-    setMsg({ type: 'success', text: `시뮬레이터: 권한이 [${role === 'super_admin' ? '최고 관리자 (Level 2)' : role === 'staff_admin' ? '일반 관리자 (Level 1)' : role === 'user' ? '일반 회원' : '비로그인'}] 상태로 전환되었습니다.` });
-    
-    if (role === 'user' || role === 'none') {
-      checkRole();
-    } else {
-      setUserRole(role);
-    }
-  };
 
   // Actions
   const persistPendingRegistrations = (updater) => {
@@ -2173,7 +2154,7 @@ export default function AdminPage() {
             {/* Program Add/Edit Modal */}
             {isProgModalOpen && (
               <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-                <div className="modal-content" style={{ background: '#fff', padding: '30px', borderRadius: '8px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+                <div className="modal-content" role="dialog" aria-modal="true" style={{ background: 'var(--color-white)', padding: '30px', borderRadius: '8px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
                   <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-charcoal-deep)', margin: '0 0 20px 0' }}>{editingProgram ? '프로그램 수정' : '새 프로그램 등록'}</h3>
                   <form onSubmit={handleAddOrEditProgram} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div style={{ display: 'flex', gap: '16px' }}>
@@ -2378,7 +2359,7 @@ export default function AdminPage() {
             {/* Talk Post Add/Edit Modal */}
             {isTalkModalOpen && isSuperAdmin && (
               <div className="modal-backdrop" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
-                <div className="modal-content" style={{ background: '#fff', padding: '30px', borderRadius: '8px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
+                <div className="modal-content" role="dialog" aria-modal="true" style={{ background: 'var(--color-white)', padding: '30px', borderRadius: '8px', width: '100%', maxWidth: '600px', maxHeight: '90vh', overflowY: 'auto' }}>
                   <h3 style={{ fontSize: '18px', fontWeight: '800', color: 'var(--color-charcoal-deep)', margin: '0 0 20px 0' }}>{editingTalkPost ? '세로 토크 글 수정' : '새 세로 토크 글 등록'}</h3>
                   <form onSubmit={handleAddOrEditTalkPost} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
@@ -2458,16 +2439,6 @@ export default function AdminPage() {
                 <p style={{ fontSize: '14.5px', color: 'var(--color-gray-dark)', maxWidth: '450px', margin: '12px auto 0', lineHeight: '1.6' }}>
                   데이터베이스 접속 권한, 백업 복구, API 토큰 키 발급 등 인프라 설정 영역은 **최고 관리자(Level 2)** 외에 일반 관리자는 접근할 수 없습니다.
                 </p>
-                <div style={{ marginTop: '24px' }}>
-                  <button 
-                    type="button" 
-                    className="subscribe-btn"
-                    style={{ padding: '10px 24px', height: 'auto', borderRadius: '4px' }}
-                    onClick={() => handleSimulateRole('super_admin')}
-                  >
-                    최고 관리자 권한으로 변경하여 테스트하기
-                  </button>
-                </div>
               </div>
             ) : (
               <div className="glass-panel" style={{ padding: '30px', backgroundColor: 'var(--color-white)', display: 'flex', flexDirection: 'column', gap: '24px' }}>

@@ -26,13 +26,6 @@ function MembersContent() {
 
   useEffect(() => {
     const checkRole = () => {
-      const override = localStorage.getItem('sejong_role_override');
-      if (override) {
-        setUserRole(override === 'none' ? null : override);
-        setCheckingAuth(false);
-        return;
-      }
-
       if (!isSupabaseConfigured) {
         const localUserStr = localStorage.getItem('sejong_session_user');
         if (localUserStr) {

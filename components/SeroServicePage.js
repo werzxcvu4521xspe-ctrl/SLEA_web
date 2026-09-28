@@ -132,6 +132,18 @@ export default function SeroServicePage({ slug }) {
     setCurrentPage(1);
   }, [talkType]);
 
+  // Close whichever detail modal is open on Escape
+  useEffect(() => {
+    if (selectedPost === null && selectedProductIndex === null) return;
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      setSelectedPost(null);
+      setSelectedProductIndex(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [selectedPost, selectedProductIndex]);
+
   const filteredTalkPosts = useMemo(() => {
     return talkPosts.filter((post) => post.type === talkType);
   }, [talkPosts, talkType]);
@@ -806,7 +818,7 @@ export default function SeroServicePage({ slug }) {
 
         {selectedProduct && (
           <div className="talk-detail-overlay" onClick={closeProductDetail}>
-            <div className="talk-detail-modal product-detail-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="talk-detail-modal product-detail-modal" role="dialog" aria-modal="true" aria-label={selectedProduct.name} onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <span className="talk-type-badge">{selectedProduct.category}</span>
                 <button className="close-btn" onClick={closeProductDetail} aria-label="닫기">×</button>
@@ -925,7 +937,7 @@ export default function SeroServicePage({ slug }) {
 
         {selectedPost && (
           <div className="talk-detail-overlay" onClick={() => setSelectedPost(null)}>
-            <div className="talk-detail-modal glass-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="talk-detail-modal glass-panel" role="dialog" aria-modal="true" aria-label={selectedPost.title} onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <span className="talk-type-badge">{selectedPost.type}</span>
                 <button className="close-btn" onClick={() => setSelectedPost(null)}>×</button>

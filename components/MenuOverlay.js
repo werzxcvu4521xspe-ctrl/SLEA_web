@@ -6,8 +6,6 @@ import { usePathname } from 'next/navigation';
 import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 import { SERVICE_CATEGORIES } from '@/lib/serviceCategories';
 
-const ROLE_OVERRIDE_KEY = 'sejong_role_override';
-
 export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose }) {
   const [user, setUser] = useState(null);
   const [userRole, setUserRole] = useState(null);
@@ -15,11 +13,6 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
 
   useEffect(() => {
     const checkRole = (session) => {
-      const override = localStorage.getItem(ROLE_OVERRIDE_KEY);
-      if (override) {
-        setUserRole(override === 'none' ? null : override);
-        return;
-      }
       if (session?.user) {
         const role = session.user.user_metadata?.role || 'user';
         setUserRole(role);
@@ -35,21 +28,14 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
           try {
             const localUser = JSON.parse(localUserStr);
             setUser(localUser);
-            // Check override first
-            const override = localStorage.getItem(ROLE_OVERRIDE_KEY);
-            if (override) {
-              setUserRole(override === 'none' ? null : override);
-            } else {
-              setUserRole(localUser.role || 'visitor');
-            }
+            setUserRole(localUser.role || 'visitor');
           } catch {
             setUser(null);
             setUserRole(null);
           }
         } else {
           setUser(null);
-          const override = localStorage.getItem(ROLE_OVERRIDE_KEY);
-          setUserRole(override === 'none' ? null : override);
+          setUserRole(null);
         }
       };
 
@@ -83,7 +69,6 @@ export default function MenuOverlay({ isOpen, isBannerVisible = true, onClose })
   const displayName = user?.name || user?.email || (showAdminMenu ? '테스트 관리자' : '일반 회원');
 
   const handleLogout = async () => {
-    localStorage.removeItem(ROLE_OVERRIDE_KEY);
     localStorage.removeItem('sejong_session_user');
     setUserRole(null);
     setUser(null);

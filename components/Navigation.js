@@ -16,13 +16,6 @@ export default function Navigation() {
 
   useEffect(() => {
     const checkRole = () => {
-      // Priority 1: Local override for demo/testing
-      const override = localStorage.getItem('sejong_role_override');
-      if (override) {
-        setUserRole(override === 'none' ? null : override);
-        return;
-      }
-      
       if (!isSupabaseConfigured) {
         const localUserStr = localStorage.getItem('sejong_session_user');
         if (localUserStr) {

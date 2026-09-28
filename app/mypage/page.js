@@ -9,17 +9,6 @@ import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
 const SHOP_STORAGE_KEY = 'sejong_sero_service_sero-shop';
 const MENTORING_STORAGE_KEY = 'sejong_sero_service_mentoring-day';
 const TALK_STORAGE_KEY = 'sejong_sero_service_sero-talk';
-const ROLE_OVERRIDE_KEY = 'sejong_role_override';
-const DEMO_MEMBER = {
-  id: 'demo-member',
-  email: 'member@selo.local',
-  user_metadata: {
-    name: '일반 회원',
-    brand: 'SELO 테스트 브랜드',
-    company_name: 'SELO 테스트 브랜드',
-    role: 'user'
-  }
-};
 
 const readStoredList = (key) => {
   if (typeof window === 'undefined') return [];
@@ -88,6 +77,18 @@ export default function MyPage() {
   const [editTitle, setEditTitle] = useState('');
   const [editContent, setEditContent] = useState('');
 
+  // Close whichever edit modal is open on Escape
+  useEffect(() => {
+    if (!editingPost && !editingShopItem) return;
+    const onKeyDown = (event) => {
+      if (event.key !== 'Escape') return;
+      setEditingPost(null);
+      setEditingShopItem(null);
+    };
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [editingPost, editingShopItem]);
+
   const startEditPost = (post) => {
     setEditingPost(post);
     setEditTitle(post.title || '');
@@ -146,18 +147,7 @@ export default function MyPage() {
   };
 
   useEffect(() => {
-    const useDemoMember = () => {
-      setUser(DEMO_MEMBER);
-      refreshDashboard();
-      setLoading(false);
-    };
-
     const checkSession = async () => {
-      if (localStorage.getItem(ROLE_OVERRIDE_KEY) === 'user') {
-        useDemoMember();
-        return;
-      }
-
       if (!isSupabaseConfigured) {
         const localUserStr = localStorage.getItem('sejong_session_user');
         if (localUserStr) {
@@ -201,11 +191,6 @@ export default function MyPage() {
     let subscription = null;
     if (isSupabaseConfigured) {
       const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (localStorage.getItem(ROLE_OVERRIDE_KEY) === 'user') {
-          useDemoMember();
-          return;
-        }
-
         if (!session?.user) {
           router.replace('/login');
           return;
@@ -367,7 +352,6 @@ export default function MyPage() {
   ), [shopItems, user, userBrand]);
 
   const handleLogout = async () => {
-    localStorage.removeItem(ROLE_OVERRIDE_KEY);
     localStorage.removeItem('sejong_session_user');
     window.dispatchEvent(new Event('storage'));
     window.dispatchEvent(new Event('sejong_role_update'));
@@ -730,7 +714,7 @@ export default function MyPage() {
 
       {editingPost && (
         <div className="edit-modal-overlay">
-          <div className="edit-modal-card glass-panel animate-fade-in">
+          <div className="edit-modal-card glass-panel animate-fade-in" role="dialog" aria-modal="true">
             <h3>게시글 수정</h3>
             <form onSubmit={saveEditPost}>
               <div className="edit-form-group">
@@ -763,7 +747,7 @@ export default function MyPage() {
 
       {editingShopItem && (
         <div className="edit-modal-overlay">
-          <div className="edit-modal-card glass-panel animate-fade-in">
+          <div className="edit-modal-card glass-panel animate-fade-in" role="dialog" aria-modal="true">
             <h3>상품 게시글 수정</h3>
             <form onSubmit={saveShopEdit}>
               <div className="edit-form-group">

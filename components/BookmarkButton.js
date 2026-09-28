@@ -47,7 +47,7 @@ export default function BookmarkButton({ item }) {
           padding: 0 18px;
           border: 1px solid rgba(255, 255, 255, 0.34);
           background: transparent;
-          color: #ffffff;
+          color: var(--color-white);
           font-size: 14px;
           font-weight: 900;
           transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
@@ -55,9 +55,9 @@ export default function BookmarkButton({ item }) {
 
         .bookmark-button:hover,
         .bookmark-button.saved {
-          border-color: #ff5a2a;
-          background: #ff5a2a;
-          color: #ffffff;
+          border-color: var(--color-orange-accent);
+          background: var(--color-orange-accent);
+          color: var(--color-white);
         }
       `}</style>
     </button>
