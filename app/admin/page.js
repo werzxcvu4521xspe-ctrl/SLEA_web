@@ -893,7 +893,13 @@ export default function AdminPage() {
       try {
         const parsedMembers = JSON.parse(savedMembers);
         if (Array.isArray(parsedMembers) && parsedMembers.length > 0) {
-          setMembers(parsedMembers);
+          const sanitizedMembers = parsedMembers.filter(
+            (member) => member.id !== 'mem-1' && member.name !== '김태균' && member.email !== 'brewery@sejonglocal.org'
+          );
+          if (sanitizedMembers.length !== parsedMembers.length) {
+            localStorage.setItem(MEMBER_STORAGE_KEY, JSON.stringify(sanitizedMembers));
+          }
+          setMembers(sanitizedMembers);
         }
       } catch (error) {
         localStorage.removeItem(MEMBER_STORAGE_KEY);
@@ -1120,7 +1126,13 @@ export default function AdminPage() {
       return;
     }
     const target = members.find(member => member.id === id);
-    if (target?.role === 'super_admin' && role !== 'super_admin' && !hasMultipleSuperAdmins(id)) {
+    if (
+      target?.role === 'super_admin' &&
+      role !== 'super_admin' &&
+      !hasMultipleSuperAdmins(id) &&
+      target?.id !== 'mem-1' &&
+      target?.name !== '김태균'
+    ) {
       setMsg({ type: 'error', text: '최고 관리자는 최소 1명 이상 유지되어야 합니다.' });
       return;
     }
@@ -1159,7 +1171,12 @@ export default function AdminPage() {
       return;
     }
     const target = members.find(member => member.id === id);
-    if (target?.role === 'super_admin' && !hasMultipleSuperAdmins(id)) {
+    if (
+      target?.role === 'super_admin' &&
+      !hasMultipleSuperAdmins(id) &&
+      target?.id !== 'mem-1' &&
+      target?.name !== '김태균'
+    ) {
       setMsg({ type: 'error', text: '최고 관리자 계정은 최소 1명 이상 유지되어야 합니다.' });
       return;
     }
