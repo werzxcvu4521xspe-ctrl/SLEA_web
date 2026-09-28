@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { BOOKMARK_STORAGE_KEY } from '@/components/BookmarkButton';
-import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 
 const SHOP_STORAGE_KEY = 'sejong_sero_service_sero-shop';
 const MENTORING_STORAGE_KEY = 'sejong_sero_service_mentoring-day';
@@ -148,32 +148,6 @@ export default function MyPage() {
 
   useEffect(() => {
     const checkSession = async () => {
-      if (!isSupabaseConfigured) {
-        const localUserStr = localStorage.getItem('sejong_session_user');
-        if (localUserStr) {
-          try {
-            const localUser = JSON.parse(localUserStr);
-            // Translate structure so layout looks same
-            setUser({
-              ...localUser,
-              user_metadata: {
-                name: localUser.name || '테스트 회원',
-                brand: localUser.brand || '로컬 브랜드',
-                company_name: localUser.brand || '로컬 브랜드',
-                role: localUser.role
-              }
-            });
-            refreshDashboard();
-            setLoading(false);
-          } catch {
-            router.replace('/login');
-          }
-        } else {
-          router.replace('/login');
-        }
-        return;
-      }
-
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session?.user) {
@@ -188,23 +162,19 @@ export default function MyPage() {
 
     checkSession();
 
-    let subscription = null;
-    if (isSupabaseConfigured) {
-      const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (!session?.user) {
-          router.replace('/login');
-          return;
-        }
-        setUser(session.user);
-        refreshDashboard();
-        setLoading(false);
-      });
-      subscription = data.subscription;
-    }
+    const { data } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) {
+        router.replace('/login');
+        return;
+      }
+      setUser(session.user);
+      refreshDashboard();
+      setLoading(false);
+    });
 
     window.addEventListener('selo_bookmark_update', refreshDashboard);
     return () => {
-      if (subscription) subscription.unsubscribe();
+      data.subscription.unsubscribe();
       window.removeEventListener('selo_bookmark_update', refreshDashboard);
     };
   }, [router]);
@@ -254,60 +224,22 @@ export default function MyPage() {
     const nextBrand = profileForm.brand.trim();
 
     try {
-      if (!isSupabaseConfigured) {
-        const localUserStr = localStorage.getItem('sejong_session_user');
-        if (localUserStr) {
-          const localUser = JSON.parse(localUserStr);
-          const updatedLocalUser = { ...localUser, name: nextName, brand: nextBrand };
-          localStorage.setItem('sejong_session_user', JSON.stringify(updatedLocalUser));
-
-          // Keep the admin member list in sync too, if this user is registered there
-          const membersStr = localStorage.getItem('sejong_admin_members');
-          if (membersStr) {
-            try {
-              const members = JSON.parse(membersStr);
-              const nextMembers = members.map((m) =>
-                m.email?.toLowerCase() === localUser.email?.toLowerCase()
-                  ? { ...m, name: nextName, brand: nextBrand }
-                  : m
-              );
-              localStorage.setItem('sejong_admin_members', JSON.stringify(nextMembers));
-            } catch {
-              // ignore malformed member list
-            }
-          }
-
-          setUser((prev) => ({
-            ...prev,
-            name: nextName,
-            brand: nextBrand,
-            user_metadata: {
-              ...prev?.user_metadata,
-              name: nextName,
-              brand: nextBrand,
-              company_name: nextBrand
-            }
-          }));
-          window.dispatchEvent(new Event('storage'));
+      const { data, error } = await supabase.auth.updateUser({
+        data: {
+          name: nextName,
+          brand: nextBrand,
+          company_name: nextBrand
         }
-      } else {
-        const { data, error } = await supabase.auth.updateUser({
-          data: {
-            name: nextName,
-            brand: nextBrand,
-            company_name: nextBrand
-          }
-        });
+      });
 
-        if (error) {
-          setProfileMsg(error.message || '회원정보 수정 중 오류가 발생했습니다.');
-          setProfileSaving(false);
-          return;
-        }
+      if (error) {
+        setProfileMsg(error.message || '회원정보 수정 중 오류가 발생했습니다.');
+        setProfileSaving(false);
+        return;
+      }
 
-        if (data?.user) {
-          setUser(data.user);
-        }
+      if (data?.user) {
+        setUser(data.user);
       }
 
       setProfileMsg('회원정보가 수정되었습니다.');
@@ -352,9 +284,6 @@ export default function MyPage() {
   ), [shopItems, user, userBrand]);
 
   const handleLogout = async () => {
-    localStorage.removeItem('sejong_session_user');
-    window.dispatchEvent(new Event('storage'));
-    window.dispatchEvent(new Event('sejong_role_update'));
     await supabase.auth.signOut();
     router.push('/login');
   };

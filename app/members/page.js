@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { supabase, isSupabaseConfigured } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabaseClient';
 import Link from 'next/link';
 
 const INITIAL_MEMBERS = [
@@ -26,22 +26,6 @@ function MembersContent() {
 
   useEffect(() => {
     const checkRole = () => {
-      if (!isSupabaseConfigured) {
-        const localUserStr = localStorage.getItem('sejong_session_user');
-        if (localUserStr) {
-          try {
-            const localUser = JSON.parse(localUserStr);
-            setUserRole(localUser.role || 'visitor');
-          } catch {
-            setUserRole(null);
-          }
-        } else {
-          setUserRole(null);
-        }
-        setCheckingAuth(false);
-        return;
-      }
-
       supabase.auth.getSession().then(({ data: { session } }) => {
         if (session?.user) {
           const role = session.user.user_metadata?.role || 'user';
@@ -54,12 +38,8 @@ function MembersContent() {
     };
 
     checkRole();
-    window.addEventListener('storage', checkRole);
-    window.addEventListener('sejong_role_update', checkRole);
-    return () => {
-      window.removeEventListener('storage', checkRole);
-      window.removeEventListener('sejong_role_update', checkRole);
-    };
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(checkRole);
+    return () => subscription.unsubscribe();
   }, []);
 
   // Directory Search/Filter State
