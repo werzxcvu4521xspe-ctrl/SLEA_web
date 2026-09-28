@@ -10,6 +10,8 @@ import { supabase } from '@/lib/supabaseClient';
 const SHOP_STORAGE_KEY = 'sejong_sero_service_sero-shop';
 const MENTORING_STORAGE_KEY = 'sejong_sero_service_mentoring-day';
 const TALK_STORAGE_KEY = 'sejong_sero_service_sero-talk';
+const MEMBER_STORAGE_KEY = 'sejong_sero_service_sero-members';
+const MEMBER_CONTENT_TYPES = ['인터뷰 영상', 'Instagram Reels', 'Instagram 게시물', '브랜드 필름'];
 
 const readStoredList = (key) => {
   if (typeof window === 'undefined') return [];
@@ -52,6 +54,7 @@ export default function MyPage() {
   const [shopItems, setShopItems] = useState([]);
   const [mentoringItems, setMentoringItems] = useState([]);
   const [talkPosts, setTalkPosts] = useState([]);
+  const [memberContentItems, setMemberContentItems] = useState([]);
   const [shopForm, setShopForm] = useState({
     product: '',
     brand: '',
@@ -65,6 +68,13 @@ export default function MyPage() {
   const [isShopFormOpen, setIsShopFormOpen] = useState(false);
   const [editingShopItem, setEditingShopItem] = useState(null);
   const [shopEditForm, setShopEditForm] = useState({ product: '', brand: '', price: '', imageUrl: '', description: '' });
+
+  // 세로 회원사 콘텐츠 upload form toggle + item edit state
+  const [isMemberFormOpen, setIsMemberFormOpen] = useState(false);
+  const [memberForm, setMemberForm] = useState({ title: '', type: MEMBER_CONTENT_TYPES[0], channel: '', url: '', story: '', image: '' });
+  const [memberMessage, setMemberMessage] = useState('');
+  const [editingMemberItem, setEditingMemberItem] = useState(null);
+  const [memberEditForm, setMemberEditForm] = useState({ title: '', type: MEMBER_CONTENT_TYPES[0], channel: '', url: '', story: '', image: '' });
 
   // Profile edit toggle state
   const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
@@ -80,15 +90,16 @@ export default function MyPage() {
 
   // Close whichever edit modal is open on Escape
   useEffect(() => {
-    if (!editingPost && !editingShopItem) return;
+    if (!editingPost && !editingShopItem && !editingMemberItem) return;
     const onKeyDown = (event) => {
       if (event.key !== 'Escape') return;
       setEditingPost(null);
       setEditingShopItem(null);
+      setEditingMemberItem(null);
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [editingPost, editingShopItem]);
+  }, [editingPost, editingShopItem, editingMemberItem]);
 
   const startEditPost = (post) => {
     setEditingPost(post);
@@ -145,6 +156,7 @@ export default function MyPage() {
     setShopItems(readStoredList(SHOP_STORAGE_KEY));
     setMentoringItems(readStoredList(MENTORING_STORAGE_KEY));
     setTalkPosts(readStoredList(TALK_STORAGE_KEY));
+    setMemberContentItems(readStoredList(MEMBER_STORAGE_KEY));
   };
 
   useEffect(() => {
@@ -284,6 +296,13 @@ export default function MyPage() {
     ))
   ), [shopItems, user, userBrand]);
 
+  const myMemberContents = useMemo(() => (
+    memberContentItems.filter((item) => (
+      (item.authorEmail && user?.email && item.authorEmail.toLowerCase() === user.email.toLowerCase()) ||
+      (!item.authorEmail && userBrand && item.brand === userBrand)
+    ))
+  ), [memberContentItems, user, userBrand]);
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     router.push('/login');
@@ -408,6 +427,128 @@ export default function MyPage() {
     }
   };
 
+  const toggleMemberForm = () => {
+    setIsMemberFormOpen((prev) => !prev);
+  };
+
+  const updateMemberField = (field, value) => {
+    setMemberForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleMemberImageUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateMemberField('image', reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const submitMemberContent = (event) => {
+    event.preventDefault();
+    const sourceBrand = userBrand.trim();
+    if (!memberForm.title.trim() || !memberForm.story.trim() || !sourceBrand) return;
+
+    const nextItem = {
+      id: `mypage-member-${Date.now()}`,
+      title: memberForm.title.trim(),
+      type: memberForm.type,
+      channel: memberForm.channel.trim(),
+      url: memberForm.url.trim(),
+      story: memberForm.story.trim(),
+      content: [memberForm.story.trim()],
+      image: memberForm.image,
+      mediaKind: 'user',
+      brand: sourceBrand,
+      authorEmail: user.email,
+      authorName: userName,
+      date: new Date().toISOString().slice(0, 10),
+      popularity: 50,
+      createdAt: new Date().toISOString()
+    };
+
+    const nextItems = [nextItem, ...memberContentItems];
+    writeStoredList(MEMBER_STORAGE_KEY, nextItems);
+    setMemberContentItems(nextItems);
+    setMemberForm({ title: '', type: MEMBER_CONTENT_TYPES[0], channel: '', url: '', story: '', image: '' });
+    setMemberMessage('세로 회원사 콘텐츠가 등록되었습니다.');
+    window.setTimeout(() => setMemberMessage(''), 2600);
+  };
+
+  const startEditMemberItem = (item) => {
+    setEditingMemberItem(item);
+    setMemberEditForm({
+      title: item.title || '',
+      type: item.type || MEMBER_CONTENT_TYPES[0],
+      channel: item.channel || '',
+      url: item.url || '',
+      story: item.story || '',
+      image: item.image || ''
+    });
+  };
+
+  const updateMemberEditField = (field, value) => {
+    setMemberEditForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleMemberEditImageUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateMemberEditField('image', reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const saveMemberEdit = (event) => {
+    event.preventDefault();
+    if (!editingMemberItem) return;
+    if (!memberEditForm.title.trim() || !memberEditForm.story.trim()) return;
+
+    try {
+      const stored = readStoredList(MEMBER_STORAGE_KEY);
+      const nextItems = stored.map((item) => (
+        item.id === editingMemberItem.id
+          ? {
+              ...item,
+              title: memberEditForm.title.trim(),
+              type: memberEditForm.type,
+              channel: memberEditForm.channel.trim(),
+              url: memberEditForm.url.trim(),
+              story: memberEditForm.story.trim(),
+              content: [memberEditForm.story.trim()],
+              image: memberEditForm.image,
+              updatedAt: new Date().toISOString()
+            }
+          : item
+      ));
+      writeStoredList(MEMBER_STORAGE_KEY, nextItems);
+      setMemberContentItems(nextItems);
+      setEditingMemberItem(null);
+      alert('세로 회원사 콘텐츠가 수정되었습니다.');
+    } catch {
+      alert('콘텐츠 수정 중 오류가 발생했습니다.');
+    }
+  };
+
+  const deleteMemberItem = (id) => {
+    if (!confirm('정말로 이 콘텐츠를 삭제하시겠습니까?')) return;
+
+    try {
+      const stored = readStoredList(MEMBER_STORAGE_KEY);
+      const nextItems = stored.filter((item) => item.id !== id);
+      writeStoredList(MEMBER_STORAGE_KEY, nextItems);
+      setMemberContentItems(nextItems);
+      alert('세로 회원사 콘텐츠가 삭제되었습니다.');
+    } catch {
+      alert('콘텐츠 삭제 중 오류가 발생했습니다.');
+    }
+  };
+
   const removeBookmark = (id) => {
     const nextBookmarks = bookmarks.filter((item) => item.id !== id);
     writeStoredList(BOOKMARK_STORAGE_KEY, nextBookmarks);
@@ -520,6 +661,83 @@ export default function MyPage() {
               <div className="empty-state">
                 공지사항 또는 세로 회원사 콘텐츠 상세 페이지에서 북마크를 눌러 저장해 보세요.
               </div>
+            )}
+          </div>
+        </article>
+
+        <article className="panel wide">
+          <div className="panel-title-row">
+            <div>
+              <span>SERO MEMBERS</span>
+              <strong>세로 회원사 콘텐츠 관리</strong>
+            </div>
+            <button type="button" className="profile-toggle-btn" onClick={toggleMemberForm}>
+              {isMemberFormOpen ? '콘텐츠 등록 닫기' : '콘텐츠 등록'}
+            </button>
+          </div>
+
+          {isMemberFormOpen && (
+            <form className="dashboard-form" onSubmit={submitMemberContent}>
+              <input required value={memberForm.title} onChange={(event) => updateMemberField('title', event.target.value)} placeholder="콘텐츠 제목" />
+              <select value={memberForm.type} onChange={(event) => updateMemberField('type', event.target.value)}>
+                {MEMBER_CONTENT_TYPES.map((type) => (
+                  <option key={type} value={type}>{type}</option>
+                ))}
+              </select>
+              {userBrand && <small className="source-helper">회원가입 정보의 브랜드/회사명({userBrand})이 출처로 자동 포함됩니다.</small>}
+              <input value={memberForm.channel} onChange={(event) => updateMemberField('channel', event.target.value)} placeholder="채널 예: YouTube, Instagram" />
+              <input value={memberForm.url} onChange={(event) => updateMemberField('url', event.target.value)} placeholder="원본 콘텐츠 링크 (선택)" />
+              <input type="file" accept="image/*" onChange={handleMemberImageUpload} />
+              <textarea required value={memberForm.story} onChange={(event) => updateMemberField('story', event.target.value)} placeholder="브랜드 스토리 / 콘텐츠 소개" />
+              <button type="submit">회원사 콘텐츠 저장</button>
+              {memberMessage && <em>{memberMessage}</em>}
+            </form>
+          )}
+
+          <div className="reaction-grid">
+            {myMemberContents.map((item) => (
+              <div key={item.id} className="reaction-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '15px' }}>
+                <div>
+                  {item.image && (
+                    <div style={{ position: 'relative', width: '100%', height: '120px', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
+                      <Image
+                        src={item.image}
+                        alt={`${item.title} 이미지`}
+                        fill
+                        unoptimized
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
+                  )}
+                  <span className="talk-type-tag" style={{ display: 'inline-block', fontSize: '10px', background: 'var(--color-orange-accent)', color: '#fff', padding: '3px 8px', borderRadius: '4px', fontWeight: 'bold' }}>
+                    {item.type}
+                  </span>
+                  <strong style={{ display: 'block', fontSize: '16px', margin: '8px 0 6px', color: 'var(--color-charcoal-deep)' }}>{item.title}</strong>
+                  <div style={{ fontSize: '12px', color: '#999' }}>
+                    {item.brand} · {item.channel || '채널 미입력'}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #eee', paddingTop: '12px', marginTop: 'auto' }}>
+                  <button
+                    type="button"
+                    onClick={() => startEditMemberItem(item)}
+                    style={{ flex: 1, padding: '8px 12px', fontSize: '12px', background: '#f4f4f5', border: '1px solid #e4e4e7', borderRadius: '4px', cursor: 'pointer', fontWeight: '700', color: '#3f3f46', transition: 'background-color 0.2s' }}
+                  >
+                    수정하기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteMemberItem(item.id)}
+                    style={{ flex: 1, padding: '8px 12px', fontSize: '12px', background: '#fee2e2', border: '1px solid #fca5a5', color: '#991b1b', borderRadius: '4px', cursor: 'pointer', fontWeight: '700', transition: 'background-color 0.2s' }}
+                  >
+                    삭제하기
+                  </button>
+                </div>
+              </div>
+            ))}
+            {myMemberContents.length === 0 && (
+              <div className="empty-state">아직 등록한 세로 회원사 콘텐츠가 없습니다. 위 버튼으로 새 콘텐츠를 등록해 보세요.</div>
             )}
           </div>
         </article>
@@ -757,6 +975,78 @@ export default function MyPage() {
         </div>
       )}
 
+      {editingMemberItem && (
+        <div className="edit-modal-overlay">
+          <div className="edit-modal-card glass-panel animate-fade-in" role="dialog" aria-modal="true">
+            <h3>세로 회원사 콘텐츠 수정</h3>
+            <form onSubmit={saveMemberEdit}>
+              <div className="edit-form-group">
+                <label>제목</label>
+                <input
+                  required
+                  value={memberEditForm.title}
+                  onChange={(e) => updateMemberEditField('title', e.target.value)}
+                  placeholder="콘텐츠 제목을 입력해 주세요"
+                />
+              </div>
+              <div className="edit-form-group">
+                <label>콘텐츠 유형</label>
+                <select value={memberEditForm.type} onChange={(e) => updateMemberEditField('type', e.target.value)}>
+                  {MEMBER_CONTENT_TYPES.map((type) => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="edit-form-group">
+                <label>채널</label>
+                <input
+                  value={memberEditForm.channel}
+                  onChange={(e) => updateMemberEditField('channel', e.target.value)}
+                  placeholder="채널 예: YouTube, Instagram"
+                />
+              </div>
+              <div className="edit-form-group">
+                <label>원본 콘텐츠 링크</label>
+                <input
+                  value={memberEditForm.url}
+                  onChange={(e) => updateMemberEditField('url', e.target.value)}
+                  placeholder="https://..."
+                />
+              </div>
+              <div className="edit-form-group">
+                <label>대표 이미지</label>
+                <input type="file" accept="image/*" onChange={handleMemberEditImageUpload} />
+                {memberEditForm.image && (
+                  <div style={{ position: 'relative', width: '100%', height: '160px', borderRadius: '4px', overflow: 'hidden', marginTop: '4px' }}>
+                    <Image
+                      src={memberEditForm.image}
+                      alt="콘텐츠 이미지 미리보기"
+                      fill
+                      unoptimized
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="edit-form-group">
+                <label>브랜드 스토리 / 콘텐츠 소개</label>
+                <textarea
+                  required
+                  value={memberEditForm.story}
+                  onChange={(e) => updateMemberEditField('story', e.target.value)}
+                  placeholder="브랜드 스토리 / 콘텐츠 소개를 입력해 주세요"
+                  rows={4}
+                />
+              </div>
+              <div className="edit-modal-actions">
+                <button type="submit" className="save-btn">저장하기</button>
+                <button type="button" className="cancel-btn" onClick={() => setEditingMemberItem(null)}>취소</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
       <style dangerouslySetInnerHTML={{ __html: `
         .mypage {
           background: #f8f8f8;
@@ -809,7 +1099,7 @@ export default function MyPage() {
           color: var(--color-gray-dark);
         }
 
-        .edit-form-group input, .edit-form-group textarea {
+        .edit-form-group input, .edit-form-group select, .edit-form-group textarea {
           padding: 10px 12px;
           font-size: 14px;
           border: 1px solid #d4d4d8;
@@ -1120,6 +1410,7 @@ export default function MyPage() {
         }
 
         .dashboard-form input,
+        .dashboard-form select,
         .dashboard-form textarea {
           width: 100%;
           border: 1px solid #d8d8d8;

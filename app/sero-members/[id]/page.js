@@ -1,15 +1,35 @@
 'use client';
 
 /* eslint-disable @next/next/no-img-element */
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import BookmarkButton from '@/components/BookmarkButton';
-import { getMemberContent, MEMBER_CONTENTS } from '@/lib/memberContents';
+import { MEMBER_CONTENTS } from '@/lib/memberContents';
+
+const MEMBER_STORAGE_KEY = 'sejong_sero_service_sero-members';
+
+function readMemberSubmissions() {
+  if (typeof window === 'undefined') return [];
+  try {
+    const parsed = JSON.parse(localStorage.getItem(MEMBER_STORAGE_KEY) || '[]');
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 export default function MemberContentDetailPage() {
   const params = useParams();
-  const content = getMemberContent(String(params.id));
+  const [submissions, setSubmissions] = useState([]);
+
+  useEffect(() => {
+    setSubmissions(readMemberSubmissions());
+  }, []);
+
+  const allContents = useMemo(() => [...submissions, ...MEMBER_CONTENTS], [submissions]);
+  const content = allContents.find((item) => String(item.id) === String(params.id));
 
   if (!content) {
     return (
@@ -69,7 +89,7 @@ export default function MemberContentDetailPage() {
     );
   }
 
-  const relatedContents = MEMBER_CONTENTS
+  const relatedContents = allContents
     .filter((item) => item.id !== content.id)
     .slice(0, 3);
 

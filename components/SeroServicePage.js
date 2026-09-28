@@ -105,6 +105,7 @@ export default function SeroServicePage({ slug }) {
   const [user, setUser] = useState(null);
   const [productPage, setProductPage] = useState(1);
   const [selectedProductIndex, setSelectedProductIndex] = useState(null);
+  const [memberSubmissions, setMemberSubmissions] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -198,6 +199,10 @@ export default function SeroServicePage({ slug }) {
     }
   }, []);
 
+  useEffect(() => {
+    setMemberSubmissions(readItems('sero-members'));
+  }, []);
+
   const cartTotal = useMemo(() => (
     cart.reduce((sum, item) => sum + item.price, 0)
   ), [cart]);
@@ -228,19 +233,23 @@ export default function SeroServicePage({ slug }) {
     alert(`"${product.name}" 상품 구매 문의가 접수되었습니다.\n${product.brand} 담당자가 확인 후 곧 연락드립니다.`);
   };
 
+  const allMemberContents = useMemo(() => (
+    [...memberSubmissions, ...MEMBER_CONTENTS]
+  ), [memberSubmissions]);
+
   const filteredMemberContents = useMemo(() => {
     const contents = memberFilter === '전체'
-      ? MEMBER_CONTENTS
-      : MEMBER_CONTENTS.filter((item) => item.type === memberFilter);
+      ? allMemberContents
+      : allMemberContents.filter((item) => item.type === memberFilter);
 
     return [...contents].sort((a, b) => {
       if (memberSort === 'popular') {
-        return b.popularity - a.popularity;
+        return (b.popularity || 0) - (a.popularity || 0);
       }
 
       return new Date(b.date).getTime() - new Date(a.date).getTime();
     });
-  }, [memberFilter, memberSort]);
+  }, [allMemberContents, memberFilter, memberSort]);
 
   const seroDayFilters = useMemo(() => (
     ['전체', ...Array.from(new Set(seroPrograms.map((program) => program.type)))]
@@ -260,7 +269,7 @@ export default function SeroServicePage({ slug }) {
     const counts = {
       notice: 2,
       'sero-day': seroPrograms.length,
-      'sero-members': MEMBER_CONTENTS.length,
+      'sero-members': allMemberContents.length,
       'sero-ai-start': 0,
       'mentoring-day': 0,
       'sero-shop': products.length,
@@ -268,7 +277,7 @@ export default function SeroServicePage({ slug }) {
     };
 
     return counts[slug] || 0;
-  }, [slug, seroPrograms.length, talkPosts.length]);
+  }, [slug, seroPrograms.length, talkPosts.length, allMemberContents.length]);
 
   if (!category) {
     return null;
