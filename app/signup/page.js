@@ -57,10 +57,16 @@ export default function SignupPage() {
 
         if (isAlreadyRegistered) {
           setErrorMsg('이미 가입된 이메일입니다. 로그인을 이용해 주세요.');
-        } else if (data.user && !data.session) {
-          // If email confirmation is enabled, session will be null
-          setSuccessMsg('입력하신 이메일로 인증 링크가 발송되었습니다! 메일함(또는 스팸함)을 확인하셔서 인증을 완료해 주세요. 완료 후 로그인이 가능합니다.');
+        } else if (data.user && data.session) {
+          // Email confirmation is disabled, so signUp already returns an active session —
+          // the user is signed in immediately, no confirmation step needed.
+          setSuccessMsg('회원가입이 완료되었습니다! 마이페이지로 이동합니다.');
+          setTimeout(() => {
+            router.push('/mypage');
+            router.refresh();
+          }, 1200);
         } else {
+          // Fallback in case email confirmation gets re-enabled later.
           setSuccessMsg('회원가입이 정상 완료되었습니다! 로그인 창으로 이동합니다.');
           setTimeout(() => {
             router.push('/login');

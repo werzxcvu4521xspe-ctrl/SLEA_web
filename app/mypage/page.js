@@ -63,6 +63,18 @@ const getUserBrand = (user) => (
   || ''
 ).trim();
 
+const MEMBER_GRADE_LABELS = {
+  super_admin: { label: '최고 관리자', className: 'grade-admin' },
+  staff_admin: { label: '운영 관리자', className: 'grade-admin' },
+  entrepreneur: { label: '정회원', className: 'grade-full' },
+  visitor: { label: '일반회원', className: 'grade-general' }
+};
+
+const getMemberGrade = (user) => {
+  const role = user?.user_metadata?.role;
+  return MEMBER_GRADE_LABELS[role] || MEMBER_GRADE_LABELS.visitor;
+};
+
 export default function MyPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -167,6 +179,7 @@ export default function MyPage() {
 
   const userName = user?.user_metadata?.name || user?.email?.split('@')[0] || 'SELO 회원';
   const userBrand = getUserBrand(user);
+  const memberGrade = getMemberGrade(user);
 
   const refreshDashboard = () => {
     setBookmarks(readStoredList(BOOKMARK_STORAGE_KEY));
@@ -596,7 +609,10 @@ export default function MyPage() {
         <div className="dashboard-container">
           <div>
             <span className="eyebrow">MY SELO</span>
-            <h1>마이페이지</h1>
+            <div className="mypage-title-row">
+              <h1>마이페이지</h1>
+              <span className={`member-grade-badge ${memberGrade.className}`}>{memberGrade.label}</span>
+            </div>
             <p>{userName}님의 저장 콘텐츠, 등록 신청, 멘토링 진행, 세로토크 반응을 확인합니다.</p>
           </div>
           <div style={{ display: 'flex', gap: '10px' }}>
@@ -1199,6 +1215,41 @@ export default function MyPage() {
           font-size: clamp(48px, 7vw, 104px);
           font-weight: 900;
           line-height: 1;
+        }
+
+        .mypage-title-row {
+          display: flex;
+          align-items: center;
+          flex-wrap: wrap;
+          gap: 16px;
+        }
+
+        .member-grade-badge {
+          display: inline-flex;
+          align-items: center;
+          min-height: 34px;
+          padding: 0 16px;
+          border-radius: 999px;
+          font-size: 13px;
+          font-weight: 900;
+          letter-spacing: 0.02em;
+          white-space: nowrap;
+        }
+
+        .member-grade-badge.grade-full {
+          background: #ff5a2a;
+          color: #ffffff;
+        }
+
+        .member-grade-badge.grade-general {
+          background: transparent;
+          border: 1px solid rgba(255, 255, 255, 0.5);
+          color: #ffffff;
+        }
+
+        .member-grade-badge.grade-admin {
+          background: #ffd23f;
+          color: #111111;
         }
 
         .mypage-hero p {
