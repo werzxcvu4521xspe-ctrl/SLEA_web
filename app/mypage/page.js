@@ -71,6 +71,11 @@ export default function MyPage() {
   });
   const [message, setMessage] = useState('');
 
+  // Shop upload form toggle + item edit state
+  const [isShopFormOpen, setIsShopFormOpen] = useState(false);
+  const [editingShopItem, setEditingShopItem] = useState(null);
+  const [shopEditForm, setShopEditForm] = useState({ product: '', brand: '', price: '', imageUrl: '', description: '' });
+
   // Profile edit toggle state
   const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
   const [profileForm, setProfileForm] = useState({ name: '', brand: '' });
@@ -354,6 +359,13 @@ export default function MyPage() {
     }));
   }, [talkPosts, user, userName]);
 
+  const myShopItems = useMemo(() => (
+    shopItems.filter((item) => (
+      (item.authorEmail && user?.email && item.authorEmail.toLowerCase() === user.email.toLowerCase()) ||
+      (!item.authorEmail && userBrand && item.brand === userBrand)
+    ))
+  ), [shopItems, user, userBrand]);
+
   const handleLogout = async () => {
     localStorage.removeItem(ROLE_OVERRIDE_KEY);
     localStorage.removeItem('sejong_session_user');
@@ -403,6 +415,83 @@ export default function MyPage() {
     setShopForm({ product: '', brand: userBrand, price: '', imageUrl: '', description: '' });
     setMessage('쇼핑 콘텐츠 등록 신청이 저장되었습니다.');
     window.setTimeout(() => setMessage(''), 2600);
+  };
+
+  const toggleShopForm = () => {
+    if (!isShopFormOpen && userBrand) {
+      setShopForm((prev) => ({ ...prev, brand: prev.brand || userBrand }));
+    }
+    setIsShopFormOpen((prev) => !prev);
+  };
+
+  const startEditShopItem = (item) => {
+    setEditingShopItem(item);
+    setShopEditForm({
+      product: item.product || '',
+      brand: item.brand || '',
+      price: item.price || '',
+      imageUrl: item.imageUrl || '',
+      description: item.description || ''
+    });
+  };
+
+  const updateShopEditField = (field, value) => {
+    setShopEditForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleShopEditImageUpload = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateShopEditField('imageUrl', reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const saveShopEdit = (event) => {
+    event.preventDefault();
+    if (!editingShopItem) return;
+    if (!shopEditForm.product.trim() || !shopEditForm.brand.trim()) return;
+
+    try {
+      const stored = readStoredList(SHOP_STORAGE_KEY);
+      const nextItems = stored.map((item) => (
+        item.id === editingShopItem.id
+          ? {
+              ...item,
+              product: shopEditForm.product.trim(),
+              brand: shopEditForm.brand.trim(),
+              source: shopEditForm.brand.trim(),
+              price: shopEditForm.price.trim(),
+              imageUrl: shopEditForm.imageUrl,
+              description: shopEditForm.description.trim(),
+              updatedAt: new Date().toISOString()
+            }
+          : item
+      ));
+      writeStoredList(SHOP_STORAGE_KEY, nextItems);
+      setShopItems(nextItems);
+      setEditingShopItem(null);
+      alert('상품 게시글이 수정되었습니다.');
+    } catch {
+      alert('상품 게시글 수정 중 오류가 발생했습니다.');
+    }
+  };
+
+  const deleteShopItem = (id) => {
+    if (!confirm('정말로 이 상품 게시글을 삭제하시겠습니까?')) return;
+
+    try {
+      const stored = readStoredList(SHOP_STORAGE_KEY);
+      const nextItems = stored.filter((item) => item.id !== id);
+      writeStoredList(SHOP_STORAGE_KEY, nextItems);
+      setShopItems(nextItems);
+      alert('상품 게시글이 삭제되었습니다.');
+    } catch {
+      alert('상품 게시글 삭제 중 오류가 발생했습니다.');
+    }
   };
 
   const removeBookmark = (id) => {
@@ -511,28 +600,64 @@ export default function MyPage() {
           </div>
         </article>
 
-        <article className="panel">
+        <article className="panel wide">
           <div className="panel-title-row">
-            <span>SHOP UPLOAD</span>
-            <strong>상품 콘텐츠 등록</strong>
+            <div>
+              <span>SHOP UPLOAD</span>
+              <strong>회원사 상품 게시물 관리</strong>
+            </div>
+            <button type="button" className="profile-toggle-btn" onClick={toggleShopForm}>
+              {isShopFormOpen ? '상품 등록 닫기' : '상품 콘텐츠 등록'}
+            </button>
           </div>
-          <form className="dashboard-form" onSubmit={submitShopItem}>
-            <input required value={shopForm.product} onChange={(event) => updateShopField('product', event.target.value)} placeholder="상품명" />
-            <input required value={shopForm.brand} onChange={(event) => updateShopField('brand', event.target.value)} placeholder="브랜드/회원사명" />
-            {userBrand && <small className="source-helper">회원가입 정보의 브랜드/회사명이 출처로 자동 포함됩니다.</small>}
-            <input value={shopForm.price} onChange={(event) => updateShopField('price', event.target.value)} placeholder="가격 예: 22,900원" />
-            <input type="file" accept="image/*" onChange={handleShopImageUpload} />
-            <textarea value={shopForm.description} onChange={(event) => updateShopField('description', event.target.value)} placeholder="상품 소개" />
-            <button type="submit">쇼핑 콘텐츠 저장</button>
-            {message && <em>{message}</em>}
-          </form>
-          <div className="mini-list">
-            {shopItems.slice(0, 3).map((item) => (
-              <div key={item.id}>
-                <strong>{item.product}</strong>
-                <span>{item.brand} · {item.status || '검토중'}</span>
+
+          {isShopFormOpen && (
+            <form className="dashboard-form" onSubmit={submitShopItem}>
+              <input required value={shopForm.product} onChange={(event) => updateShopField('product', event.target.value)} placeholder="상품명" />
+              <input required value={shopForm.brand} onChange={(event) => updateShopField('brand', event.target.value)} placeholder="브랜드/회원사명" />
+              {userBrand && <small className="source-helper">회원가입 정보의 브랜드/회사명이 출처로 자동 포함됩니다.</small>}
+              <input value={shopForm.price} onChange={(event) => updateShopField('price', event.target.value)} placeholder="가격 예: 22,900원" />
+              <input type="file" accept="image/*" onChange={handleShopImageUpload} />
+              <textarea value={shopForm.description} onChange={(event) => updateShopField('description', event.target.value)} placeholder="상품 소개" />
+              <button type="submit">쇼핑 콘텐츠 저장</button>
+              {message && <em>{message}</em>}
+            </form>
+          )}
+
+          <div className="reaction-grid">
+            {myShopItems.map((item) => (
+              <div key={item.id} className="reaction-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '15px' }}>
+                <div>
+                  {item.imageUrl && (
+                    <img src={item.imageUrl} alt={`${item.product} 이미지`} style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '4px', marginBottom: '10px' }} />
+                  )}
+                  <strong style={{ display: 'block', fontSize: '16px', margin: '0 0 6px 0', color: 'var(--color-charcoal-deep)' }}>{item.product}</strong>
+                  <div style={{ fontSize: '12px', color: '#999' }}>
+                    {item.brand} · {item.price || '가격 미정'} · {item.status || '검토중'}
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid #eee', paddingTop: '12px', marginTop: 'auto' }}>
+                  <button
+                    type="button"
+                    onClick={() => startEditShopItem(item)}
+                    style={{ flex: 1, padding: '8px 12px', fontSize: '12px', background: '#f4f4f5', border: '1px solid #e4e4e7', borderRadius: '4px', cursor: 'pointer', fontWeight: '700', color: '#3f3f46', transition: 'background-color 0.2s' }}
+                  >
+                    수정하기
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => deleteShopItem(item.id)}
+                    style={{ flex: 1, padding: '8px 12px', fontSize: '12px', background: '#fee2e2', border: '1px solid #fca5a5', color: '#991b1b', borderRadius: '4px', cursor: 'pointer', fontWeight: '700', transition: 'background-color 0.2s' }}
+                  >
+                    삭제하기
+                  </button>
+                </div>
               </div>
             ))}
+            {myShopItems.length === 0 && (
+              <div className="empty-state">아직 등록한 상품 게시물이 없습니다. 위 버튼으로 새 상품을 등록해 보세요.</div>
+            )}
           </div>
         </article>
 
@@ -633,95 +758,62 @@ export default function MyPage() {
               </div>
             </form>
           </div>
+        </div>
+      )}
 
-          <style dangerouslySetInnerHTML={{ __html: `
-            .edit-modal-overlay {
-              position: fixed;
-              top: 0;
-              left: 0;
-              width: 100vw;
-              height: 100vh;
-              background: rgba(0, 0, 0, 0.4);
-              backdrop-filter: blur(4px);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              z-index: 1000;
-            }
-
-            .edit-modal-card {
-              max-width: 500px;
-              width: 90%;
-              background: #ffffff;
-              padding: 30px;
-              border-radius: var(--border-radius-lg);
-              box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
-            }
-
-            .edit-modal-card h3 {
-              font-size: 20px;
-              font-weight: 800;
-              margin: 0 0 20px 0;
-              color: var(--color-charcoal-deep);
-            }
-
-            .edit-form-group {
-              display: flex;
-              flex-direction: column;
-              gap: 6px;
-              margin-bottom: 16px;
-            }
-
-            .edit-form-group label {
-              font-size: 13px;
-              font-weight: 700;
-              color: var(--color-gray-dark);
-            }
-
-            .edit-form-group input, .edit-form-group textarea {
-              padding: 10px 12px;
-              font-size: 14px;
-              border: 1px solid #d4d4d8;
-              border-radius: 4px;
-              font-family: inherit;
-            }
-
-            .edit-modal-actions {
-              display: flex;
-              gap: 12px;
-              margin-top: 24px;
-            }
-
-            .edit-modal-actions button {
-              flex: 1;
-              height: 44px;
-              border-radius: 4px;
-              font-size: 14px;
-              font-weight: bold;
-              cursor: pointer;
-              transition: background-color 0.2s ease;
-            }
-
-            .save-btn {
-              background: var(--color-orange-accent);
-              color: #ffffff;
-              border: none;
-            }
-
-            .save-btn:hover {
-              background: var(--color-charcoal-deep);
-            }
-
-            .cancel-btn {
-              background: #f4f4f5;
-              border: 1px solid #e4e4e7;
-              color: #3f3f46;
-            }
-
-            .cancel-btn:hover {
-              background: #e4e4e7;
-            }
-          ` }} />
+      {editingShopItem && (
+        <div className="edit-modal-overlay">
+          <div className="edit-modal-card glass-panel animate-fade-in">
+            <h3>상품 게시글 수정</h3>
+            <form onSubmit={saveShopEdit}>
+              <div className="edit-form-group">
+                <label>상품명</label>
+                <input
+                  required
+                  value={shopEditForm.product}
+                  onChange={(e) => updateShopEditField('product', e.target.value)}
+                  placeholder="상품명을 입력해 주세요"
+                />
+              </div>
+              <div className="edit-form-group">
+                <label>브랜드/회원사명</label>
+                <input
+                  required
+                  value={shopEditForm.brand}
+                  onChange={(e) => updateShopEditField('brand', e.target.value)}
+                  placeholder="브랜드/회원사명"
+                />
+              </div>
+              <div className="edit-form-group">
+                <label>가격</label>
+                <input
+                  value={shopEditForm.price}
+                  onChange={(e) => updateShopEditField('price', e.target.value)}
+                  placeholder="가격 예: 22,900원"
+                />
+              </div>
+              <div className="edit-form-group">
+                <label>상품 이미지</label>
+                <input type="file" accept="image/*" onChange={handleShopEditImageUpload} />
+                {shopEditForm.imageUrl && (
+                  <img src={shopEditForm.imageUrl} alt="상품 이미지 미리보기" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '4px', marginTop: '4px' }} />
+                )}
+              </div>
+              <div className="edit-form-group">
+                <label>상품 소개</label>
+                <textarea
+                  value={shopEditForm.description}
+                  onChange={(e) => updateShopEditField('description', e.target.value)}
+                  placeholder="상품 소개를 입력해 주세요"
+                  rows={4}
+                />
+              </div>
+              <div className="edit-modal-actions">
+                <button type="submit" className="save-btn">저장하기</button>
+                <button type="button" className="cancel-btn" onClick={() => setEditingShopItem(null)}>취소</button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -730,6 +822,95 @@ export default function MyPage() {
           background: #f8f8f8;
           color: #161616;
           min-height: 100vh;
+        }
+
+        .edit-modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100vw;
+          height: 100vh;
+          background: rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(4px);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+        }
+
+        .edit-modal-card {
+          max-width: 500px;
+          width: 90%;
+          max-height: 85vh;
+          overflow-y: auto;
+          background: #ffffff;
+          padding: 30px;
+          border-radius: var(--border-radius-lg);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .edit-modal-card h3 {
+          font-size: 20px;
+          font-weight: 800;
+          margin: 0 0 20px 0;
+          color: var(--color-charcoal-deep);
+        }
+
+        .edit-form-group {
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
+          margin-bottom: 16px;
+        }
+
+        .edit-form-group label {
+          font-size: 13px;
+          font-weight: 700;
+          color: var(--color-gray-dark);
+        }
+
+        .edit-form-group input, .edit-form-group textarea {
+          padding: 10px 12px;
+          font-size: 14px;
+          border: 1px solid #d4d4d8;
+          border-radius: 4px;
+          font-family: inherit;
+        }
+
+        .edit-modal-actions {
+          display: flex;
+          gap: 12px;
+          margin-top: 24px;
+        }
+
+        .edit-modal-actions button {
+          flex: 1;
+          height: 44px;
+          border-radius: 4px;
+          font-size: 14px;
+          font-weight: bold;
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+        }
+
+        .save-btn {
+          background: var(--color-orange-accent);
+          color: #ffffff;
+          border: none;
+        }
+
+        .save-btn:hover {
+          background: var(--color-charcoal-deep);
+        }
+
+        .cancel-btn {
+          background: #f4f4f5;
+          border: 1px solid #e4e4e7;
+          color: #3f3f46;
+        }
+
+        .cancel-btn:hover {
+          background: #e4e4e7;
         }
 
         .dashboard-container {
