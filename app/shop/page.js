@@ -67,10 +67,13 @@ function ShopContent() {
     }, 1000);
   };
 
+  // Only show admin-approved products publicly (older items with no status are treated as approved)
+  const approvedProducts = products.filter((p) => !p.status || p.status === '승인됨');
+
   // Filtered Products
-  const filteredProducts = subCategory === 'all' 
-    ? products 
-    : products.filter(p => p.category === subCategory);
+  const filteredProducts = subCategory === 'all'
+    ? approvedProducts
+    : approvedProducts.filter(p => p.category === subCategory);
 
   return (
     <div className="shop-page-wrapper">
@@ -237,7 +240,7 @@ function ShopContent() {
                 🌟 협회 추천 명품 셀렉션
               </h3>
               <div className="grid-3">
-                {products.slice(0, 3).map(prod => (
+                {approvedProducts.slice(0, 3).map(prod => (
                   <div key={prod.id} className="glass-panel" style={{ backgroundColor: 'var(--color-white)', overflow: 'hidden', padding: '16px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     <div style={{ height: '180px', backgroundImage: `url("${prod.img}")`, backgroundSize: 'cover', backgroundPosition: 'center', borderRadius: '8px' }} />
                     <span className="badge badge-emerald" style={{ width: 'fit-content' }}>MD 추천</span>

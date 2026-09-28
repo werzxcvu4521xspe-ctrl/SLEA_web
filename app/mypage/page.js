@@ -6,8 +6,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { BOOKMARK_STORAGE_KEY } from '@/components/BookmarkButton';
 import { supabase } from '@/lib/supabaseClient';
+import { DEFAULT_SHOP_PRODUCTS } from '@/lib/shopProducts';
 
-const SHOP_STORAGE_KEY = 'sejong_sero_service_sero-shop';
+const SHOP_STORAGE_KEY = 'sejong_shop_products';
 const MENTORING_STORAGE_KEY = 'sejong_sero_service_mentoring-day';
 const TALK_STORAGE_KEY = 'sejong_sero_service_sero-talk';
 const MEMBER_STORAGE_KEY = 'sejong_sero_service_sero-members';
@@ -27,6 +28,22 @@ const readStoredList = (key) => {
 
 const writeStoredList = (key, items) => {
   localStorage.setItem(key, JSON.stringify(items));
+};
+
+// Shop products live in a store shared with admin/`/shop`; fall back to the
+// seeded catalog so a first-time write here doesn't wipe it out.
+const readShopProductsList = () => {
+  if (typeof window === 'undefined') return DEFAULT_SHOP_PRODUCTS;
+
+  const stored = localStorage.getItem(SHOP_STORAGE_KEY);
+  if (!stored) return DEFAULT_SHOP_PRODUCTS;
+
+  try {
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed : DEFAULT_SHOP_PRODUCTS;
+  } catch {
+    return DEFAULT_SHOP_PRODUCTS;
+  }
 };
 
 const getReactionStats = (item, index) => {
@@ -56,10 +73,10 @@ export default function MyPage() {
   const [talkPosts, setTalkPosts] = useState([]);
   const [memberContentItems, setMemberContentItems] = useState([]);
   const [shopForm, setShopForm] = useState({
-    product: '',
+    name: '',
     brand: '',
     price: '',
-    imageUrl: '',
+    img: '',
     description: ''
   });
   const [message, setMessage] = useState('');
@@ -67,7 +84,7 @@ export default function MyPage() {
   // Shop upload form toggle + item edit state
   const [isShopFormOpen, setIsShopFormOpen] = useState(false);
   const [editingShopItem, setEditingShopItem] = useState(null);
-  const [shopEditForm, setShopEditForm] = useState({ product: '', brand: '', price: '', imageUrl: '', description: '' });
+  const [shopEditForm, setShopEditForm] = useState({ name: '', brand: '', price: '', img: '', description: '' });
 
   // 세로 회원사 콘텐츠 upload form toggle + item edit state
   const [isMemberFormOpen, setIsMemberFormOpen] = useState(false);
@@ -153,7 +170,7 @@ export default function MyPage() {
 
   const refreshDashboard = () => {
     setBookmarks(readStoredList(BOOKMARK_STORAGE_KEY));
-    setShopItems(readStoredList(SHOP_STORAGE_KEY));
+    setShopItems(readShopProductsList());
     setMentoringItems(readStoredList(MENTORING_STORAGE_KEY));
     setTalkPosts(readStoredList(TALK_STORAGE_KEY));
     setMemberContentItems(readStoredList(MEMBER_STORAGE_KEY));
@@ -318,7 +335,7 @@ export default function MyPage() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      updateShopField('imageUrl', reader.result);
+      updateShopField('img', reader.result);
     };
     reader.readAsDataURL(file);
   };
@@ -326,15 +343,15 @@ export default function MyPage() {
   const submitShopItem = (event) => {
     event.preventDefault();
     const sourceBrand = (userBrand || shopForm.brand).trim();
-    if (!shopForm.product.trim() || !sourceBrand) return;
+    if (!shopForm.name.trim() || !sourceBrand) return;
 
     const nextItem = {
       id: `mypage-shop-${Date.now()}`,
-      ...shopForm,
-      product: shopForm.product.trim(),
+      category: '기타',
+      name: shopForm.name.trim(),
       brand: sourceBrand,
-      source: sourceBrand,
       price: shopForm.price.trim(),
+      img: shopForm.img,
       description: shopForm.description.trim(),
       authorEmail: user.email,
       authorName: userName,
@@ -342,12 +359,12 @@ export default function MyPage() {
       createdAt: new Date().toISOString()
     };
 
-    const nextItems = [nextItem, ...shopItems];
+    const nextItems = [nextItem, ...readShopProductsList()];
     writeStoredList(SHOP_STORAGE_KEY, nextItems);
     setShopItems(nextItems);
-    setShopForm({ product: '', brand: userBrand, price: '', imageUrl: '', description: '' });
-    setMessage('쇼핑 콘텐츠 등록 신청이 저장되었습니다.');
-    window.setTimeout(() => setMessage(''), 2600);
+    setShopForm({ name: '', brand: userBrand, price: '', img: '', description: '' });
+    setMessage('쇼핑 콘텐츠 등록 신청이 저장되었습니다. 관리자 승인 후 쇼핑몰에 노출됩니다.');
+    window.setTimeout(() => setMessage(''), 3600);
   };
 
   const toggleShopForm = () => {
@@ -360,10 +377,10 @@ export default function MyPage() {
   const startEditShopItem = (item) => {
     setEditingShopItem(item);
     setShopEditForm({
-      product: item.product || '',
+      name: item.name || '',
       brand: item.brand || '',
       price: item.price || '',
-      imageUrl: item.imageUrl || '',
+      img: item.img || '',
       description: item.description || ''
     });
   };
@@ -378,7 +395,7 @@ export default function MyPage() {
 
     const reader = new FileReader();
     reader.onload = () => {
-      updateShopEditField('imageUrl', reader.result);
+      updateShopEditField('img', reader.result);
     };
     reader.readAsDataURL(file);
   };
@@ -386,19 +403,18 @@ export default function MyPage() {
   const saveShopEdit = (event) => {
     event.preventDefault();
     if (!editingShopItem) return;
-    if (!shopEditForm.product.trim() || !shopEditForm.brand.trim()) return;
+    if (!shopEditForm.name.trim() || !shopEditForm.brand.trim()) return;
 
     try {
-      const stored = readStoredList(SHOP_STORAGE_KEY);
+      const stored = readShopProductsList();
       const nextItems = stored.map((item) => (
         item.id === editingShopItem.id
           ? {
               ...item,
-              product: shopEditForm.product.trim(),
+              name: shopEditForm.name.trim(),
               brand: shopEditForm.brand.trim(),
-              source: shopEditForm.brand.trim(),
               price: shopEditForm.price.trim(),
-              imageUrl: shopEditForm.imageUrl,
+              img: shopEditForm.img,
               description: shopEditForm.description.trim(),
               updatedAt: new Date().toISOString()
             }
@@ -417,7 +433,7 @@ export default function MyPage() {
     if (!confirm('정말로 이 상품 게시글을 삭제하시겠습니까?')) return;
 
     try {
-      const stored = readStoredList(SHOP_STORAGE_KEY);
+      const stored = readShopProductsList();
       const nextItems = stored.filter((item) => item.id !== id);
       writeStoredList(SHOP_STORAGE_KEY, nextItems);
       setShopItems(nextItems);
@@ -755,7 +771,7 @@ export default function MyPage() {
 
           {isShopFormOpen && (
             <form className="dashboard-form" onSubmit={submitShopItem}>
-              <input required value={shopForm.product} onChange={(event) => updateShopField('product', event.target.value)} placeholder="상품명" />
+              <input required value={shopForm.name} onChange={(event) => updateShopField('name', event.target.value)} placeholder="상품명" />
               <input required value={shopForm.brand} onChange={(event) => updateShopField('brand', event.target.value)} placeholder="브랜드/회원사명" />
               {userBrand && <small className="source-helper">회원가입 정보의 브랜드/회사명이 출처로 자동 포함됩니다.</small>}
               <input value={shopForm.price} onChange={(event) => updateShopField('price', event.target.value)} placeholder="가격 예: 22,900원" />
@@ -770,18 +786,18 @@ export default function MyPage() {
             {myShopItems.map((item) => (
               <div key={item.id} className="reaction-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '15px' }}>
                 <div>
-                  {item.imageUrl && (
+                  {item.img && (
                     <div style={{ position: 'relative', width: '100%', height: '120px', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
                       <Image
-                        src={item.imageUrl}
-                        alt={`${item.product} 이미지`}
+                        src={item.img}
+                        alt={`${item.name} 이미지`}
                         fill
                         unoptimized
                         style={{ objectFit: 'cover' }}
                       />
                     </div>
                   )}
-                  <strong style={{ display: 'block', fontSize: '16px', margin: '0 0 6px 0', color: 'var(--color-charcoal-deep)' }}>{item.product}</strong>
+                  <strong style={{ display: 'block', fontSize: '16px', margin: '0 0 6px 0', color: 'var(--color-charcoal-deep)' }}>{item.name}</strong>
                   <div style={{ fontSize: '12px', color: '#999' }}>
                     {item.brand} · {item.price || '가격 미정'} · {item.status || '검토중'}
                   </div>
@@ -920,8 +936,8 @@ export default function MyPage() {
                 <label>상품명</label>
                 <input
                   required
-                  value={shopEditForm.product}
-                  onChange={(e) => updateShopEditField('product', e.target.value)}
+                  value={shopEditForm.name}
+                  onChange={(e) => updateShopEditField('name', e.target.value)}
                   placeholder="상품명을 입력해 주세요"
                 />
               </div>
@@ -945,10 +961,10 @@ export default function MyPage() {
               <div className="edit-form-group">
                 <label>상품 이미지</label>
                 <input type="file" accept="image/*" onChange={handleShopEditImageUpload} />
-                {shopEditForm.imageUrl && (
+                {shopEditForm.img && (
                   <div style={{ position: 'relative', width: '100%', height: '160px', borderRadius: '4px', overflow: 'hidden', marginTop: '4px' }}>
                     <Image
-                      src={shopEditForm.imageUrl}
+                      src={shopEditForm.img}
                       alt="상품 이미지 미리보기"
                       fill
                       unoptimized

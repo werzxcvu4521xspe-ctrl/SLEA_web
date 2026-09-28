@@ -26,14 +26,38 @@ function getUserBrand(user) {
 
 
 
-const products = DEFAULT_SHOP_PRODUCTS.map((item) => ({
-  id: String(item.id),
-  name: item.name,
-  brand: item.brand,
-  price: Number(String(item.price).replace(/[^0-9]/g, '')) || 0,
-  category: item.category,
-  imageUrl: item.img
-}));
+const SHOP_STORAGE_KEY = 'sejong_shop_products';
+
+function mapShopProduct(item) {
+  return {
+    id: String(item.id),
+    name: item.name,
+    brand: item.brand,
+    price: Number(String(item.price).replace(/[^0-9]/g, '')) || 0,
+    category: item.category,
+    imageUrl: item.img
+  };
+}
+
+function readShopProducts() {
+  if (typeof window === 'undefined') return DEFAULT_SHOP_PRODUCTS.map(mapShopProduct);
+
+  const stored = localStorage.getItem(SHOP_STORAGE_KEY);
+  let list = DEFAULT_SHOP_PRODUCTS;
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      list = Array.isArray(parsed) ? parsed : DEFAULT_SHOP_PRODUCTS;
+    } catch {
+      list = DEFAULT_SHOP_PRODUCTS;
+    }
+  }
+
+  // Only show admin-approved products publicly (items with no status are treated as approved)
+  return list
+    .filter((item) => !item.status || item.status === '승인됨')
+    .map(mapShopProduct);
+}
 
 const PRODUCTS_PER_PAGE = 9;
 
@@ -105,6 +129,7 @@ export default function SeroServicePage({ slug }) {
   const [user, setUser] = useState(null);
   const [productPage, setProductPage] = useState(1);
   const [selectedProductIndex, setSelectedProductIndex] = useState(null);
+  const [products, setProducts] = useState(() => DEFAULT_SHOP_PRODUCTS.map(mapShopProduct));
   const [memberSubmissions, setMemberSubmissions] = useState([]);
 
   const [currentPage, setCurrentPage] = useState(1);
@@ -201,6 +226,13 @@ export default function SeroServicePage({ slug }) {
 
   useEffect(() => {
     setMemberSubmissions(readItems('sero-members'));
+  }, []);
+
+  useEffect(() => {
+    const loadProducts = () => setProducts(readShopProducts());
+    loadProducts();
+    window.addEventListener('storage', loadProducts);
+    return () => window.removeEventListener('storage', loadProducts);
   }, []);
 
   const cartTotal = useMemo(() => (

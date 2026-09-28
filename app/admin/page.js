@@ -825,6 +825,26 @@ export default function AdminPage() {
     }
   };
 
+  const handleApproveShopProduct = (id, name) => {
+    const updatedList = shopProducts.map((p) => (
+      p.id === id ? { ...p, status: '승인됨' } : p
+    ));
+    saveShopProductsToStorage(updatedList);
+    setMsg({ type: 'success', text: `"${name}" 상품이 승인되어 쇼핑몰에 노출됩니다.` });
+    window.setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+  };
+
+  const handleRejectShopProduct = (id, name) => {
+    if (window.confirm(`"${name}" 등록 신청을 반려하시겠습니까?`)) {
+      const updatedList = shopProducts.map((p) => (
+        p.id === id ? { ...p, status: '반려됨' } : p
+      ));
+      saveShopProductsToStorage(updatedList);
+      setMsg({ type: 'success', text: `"${name}" 상품이 반려되었습니다.` });
+      window.setTimeout(() => setMsg({ type: '', text: '' }), 3000);
+    }
+  };
+
   useEffect(() => {
     const storageLoadTimer = window.setTimeout(() => {
       const savedSections = localStorage.getItem(CONTENT_STORAGE_KEY);
@@ -1931,9 +1951,14 @@ export default function AdminPage() {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '12px', marginBottom: '20px' }}>
                 <h3 style={{ fontSize: '18px', color: 'var(--color-charcoal-deep)', margin: 0 }}>
                   🛒 쇼핑몰 게시글 관리 ({shopProducts.length})
+                  {shopProducts.filter((p) => p.status === '검토중').length > 0 && (
+                    <span style={{ marginLeft: '10px', fontSize: '12px', fontWeight: '800', color: 'var(--color-orange-accent)' }}>
+                      승인 대기 {shopProducts.filter((p) => p.status === '검토중').length}건
+                    </span>
+                  )}
                 </h3>
                 <span style={{ fontSize: '12px', color: 'var(--color-gray-dark)' }}>
-                  쇼핑몰에 등록된 상품 게시글을 삭제할 수 있습니다.
+                  회원사가 마이페이지에서 등록 신청한 상품을 승인/반려하거나 삭제할 수 있습니다.
                 </span>
               </div>
 
@@ -1945,6 +1970,7 @@ export default function AdminPage() {
                       <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)' }}>상품명</th>
                       <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)' }}>브랜드</th>
                       <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)' }}>가격</th>
+                      <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)' }}>상태</th>
                       <th style={{ padding: '10px 8px', fontSize: '12px', color: 'var(--color-gray-dark)', textAlign: 'right' }}>관리</th>
                     </tr>
                   </thead>
@@ -1957,7 +1983,60 @@ export default function AdminPage() {
                           <td style={{ padding: '10px 8px', fontSize: '13px', fontWeight: '700' }}>{product.name}</td>
                           <td style={{ padding: '10px 8px', fontSize: '13px' }}>{product.brand}</td>
                           <td style={{ padding: '10px 8px', fontSize: '13px' }}>{product.price}</td>
-                          <td style={{ padding: '10px 8px', textAlign: 'right' }}>
+                          <td style={{ padding: '10px 8px', fontSize: '12px' }}>
+                            <span
+                              style={{
+                                display: 'inline-block',
+                                padding: '3px 8px',
+                                borderRadius: 'var(--border-radius-full)',
+                                fontWeight: '800',
+                                fontSize: '11px',
+                                background:
+                                  product.status === '검토중' ? 'var(--color-orange-light)' :
+                                  product.status === '반려됨' ? '#fee2e2' : 'var(--color-emerald-pale)',
+                                color:
+                                  product.status === '검토중' ? 'var(--color-orange-accent)' :
+                                  product.status === '반려됨' ? '#991b1b' : 'var(--color-emerald-deep)'
+                              }}
+                            >
+                              {product.status || '승인됨'}
+                            </span>
+                          </td>
+                          <td style={{ padding: '10px 8px', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                            {product.status === '검토중' && (
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => handleApproveShopProduct(product.id, product.name)}
+                                  style={{
+                                    background: 'none',
+                                    color: 'var(--color-emerald-deep)',
+                                    fontWeight: '800',
+                                    fontSize: '12px',
+                                    cursor: 'pointer',
+                                    border: 'none',
+                                    marginRight: '10px'
+                                  }}
+                                >
+                                  승인
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleRejectShopProduct(product.id, product.name)}
+                                  style={{
+                                    background: 'none',
+                                    color: 'var(--color-gray-dark)',
+                                    fontWeight: '800',
+                                    fontSize: '12px',
+                                    cursor: 'pointer',
+                                    border: 'none',
+                                    marginRight: '10px'
+                                  }}
+                                >
+                                  반려
+                                </button>
+                              </>
+                            )}
                             <button
                               type="button"
                               onClick={() => handleDeleteShopProduct(product.id, product.name)}
@@ -1977,7 +2056,7 @@ export default function AdminPage() {
                       ))}
                     {shopProducts.length === 0 && (
                       <tr>
-                        <td colSpan={5} style={{ padding: '24px 8px', textAlign: 'center', fontSize: '13px', color: 'var(--color-gray-dark)' }}>
+                        <td colSpan={6} style={{ padding: '24px 8px', textAlign: 'center', fontSize: '13px', color: 'var(--color-gray-dark)' }}>
                           등록된 쇼핑몰 게시글이 없습니다.
                         </td>
                       </tr>
