@@ -54,6 +54,8 @@ const products = [
   }
 ];
 
+const PRODUCTS_PER_PAGE = 9;
+
 function saveItem(key, item) {
   const storageKey = `${STORAGE_PREFIX}${key}`;
   const previous = readItems(key);
@@ -120,6 +122,8 @@ export default function SeroServicePage({ slug }) {
   const [selectedSeroProgramId, setSelectedSeroProgramId] = useState('');
   const [activeSeroProgram, setActiveSeroProgram] = useState(null);
   const [user, setUser] = useState(null);
+  const [productPage, setProductPage] = useState(1);
+  const [selectedProductIndex, setSelectedProductIndex] = useState(null);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -227,6 +231,32 @@ export default function SeroServicePage({ slug }) {
   const cartTotal = useMemo(() => (
     cart.reduce((sum, item) => sum + item.price, 0)
   ), [cart]);
+
+  const totalProductPages = Math.max(1, Math.ceil(products.length / PRODUCTS_PER_PAGE));
+
+  const pagedProducts = useMemo(() => (
+    products.slice((productPage - 1) * PRODUCTS_PER_PAGE, productPage * PRODUCTS_PER_PAGE)
+  ), [productPage]);
+
+  const selectedProduct = selectedProductIndex !== null ? products[selectedProductIndex] : null;
+
+  const openProductDetail = (product) => {
+    setSelectedProductIndex(products.findIndex((p) => p.id === product.id));
+  };
+
+  const closeProductDetail = () => setSelectedProductIndex(null);
+
+  const goToPrevProduct = () => {
+    setSelectedProductIndex((idx) => (idx === null ? null : (idx - 1 + products.length) % products.length));
+  };
+
+  const goToNextProduct = () => {
+    setSelectedProductIndex((idx) => (idx === null ? null : (idx + 1) % products.length));
+  };
+
+  const handlePurchaseInquiry = (product) => {
+    alert(`"${product.name}" 상품 구매 문의가 접수되었습니다.\n${product.brand} 담당자가 확인 후 곧 연락드립니다.`);
+  };
 
   const filteredMemberContents = useMemo(() => {
     const contents = memberFilter === '전체'
@@ -663,18 +693,18 @@ export default function SeroServicePage({ slug }) {
             <div className="service-panel shop-product-panel">
               <h3>회원사 상품</h3>
               <div className="product-grid">
-                {products.map((product) => (
+                {pagedProducts.map((product) => (
                   <article
                     key={product.id}
                     className="shop-product-card"
                     role="button"
                     tabIndex={0}
-                    aria-label={`${product.name} 장바구니 담기`}
-                    onClick={() => setCart([...cart, product])}
+                    aria-label={`${product.name} 상세보기`}
+                    onClick={() => openProductDetail(product)}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === ' ') {
                         event.preventDefault();
-                        setCart([...cart, product]);
+                        openProductDetail(product);
                       }
                     }}
                   >
@@ -692,6 +722,28 @@ export default function SeroServicePage({ slug }) {
                   </article>
                 ))}
               </div>
+              {totalProductPages > 1 && (
+                <div className="talk-pagination">
+                  {Array.from({ length: totalProductPages }, (_, i) => i + 1).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      type="button"
+                      className={productPage === pageNum ? 'active' : ''}
+                      onClick={() => setProductPage(pageNum)}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    className="page-arrow"
+                    disabled={productPage === totalProductPages}
+                    onClick={() => setProductPage((prev) => Math.min(prev + 1, totalProductPages))}
+                  >
+                    &gt;
+                  </button>
+                </div>
+              )}
             </div>
             <div className="service-panel">
               <h3>상품 등록 신청</h3>
@@ -750,6 +802,55 @@ export default function SeroServicePage({ slug }) {
               )}
             </div>
           </section>
+        )}
+
+        {selectedProduct && (
+          <div className="talk-detail-overlay" onClick={closeProductDetail}>
+            <div className="talk-detail-modal product-detail-modal" onClick={(e) => e.stopPropagation()}>
+              <div className="modal-header">
+                <span className="talk-type-badge">{selectedProduct.category}</span>
+                <button className="close-btn" onClick={closeProductDetail} aria-label="닫기">×</button>
+              </div>
+
+              <div className="product-detail-body">
+                <div className="product-detail-image">
+                  <img src={selectedProduct.imageUrl} alt={`${selectedProduct.name} 상품 이미지`} />
+                </div>
+                <div className="product-detail-info">
+                  <span className="product-detail-brand">{selectedProduct.brand}</span>
+                  <h2 className="modal-title">{selectedProduct.name}</h2>
+                  <div className="shop-price-stack">
+                    {selectedProduct.originalPrice && (
+                      <span className="shop-original-price">{selectedProduct.originalPrice.toLocaleString()}원</span>
+                    )}
+                    <span className="shop-current-price">{selectedProduct.price.toLocaleString()}원</span>
+                    {selectedProduct.discount && <span className="shop-discount">{selectedProduct.discount}%</span>}
+                  </div>
+                  <button
+                    type="button"
+                    className="product-inquiry-btn"
+                    onClick={() => handlePurchaseInquiry(selectedProduct)}
+                  >
+                    구매 문의하기
+                  </button>
+                </div>
+              </div>
+
+              {products.length > 1 && (
+                <div className="product-detail-nav">
+                  <button type="button" onClick={goToPrevProduct} aria-label="이전 상품">
+                    &lt; 이전 상품
+                  </button>
+                  <span className="product-detail-nav-count">
+                    {selectedProductIndex + 1} / {products.length}
+                  </span>
+                  <button type="button" onClick={goToNextProduct} aria-label="다음 상품">
+                    다음 상품 &gt;
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         )}
 
         {slug === 'sero-talk' && (
@@ -1918,6 +2019,95 @@ export default function SeroServicePage({ slug }) {
         .shop-discount {
           color: #8a735f;
           font-size: 18px;
+        }
+
+        .product-detail-modal {
+          width: min(720px, 100%);
+        }
+
+        .product-detail-body {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 24px;
+        }
+
+        .product-detail-image {
+          width: 100%;
+          aspect-ratio: 1 / 1;
+          overflow: hidden;
+          border-radius: var(--border-radius-sm, 6px);
+          background: var(--color-sand-light);
+        }
+
+        .product-detail-image img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+
+        .product-detail-info {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+        }
+
+        .product-detail-brand {
+          font-size: 12.5px;
+          font-weight: 800;
+          color: var(--color-emerald-medium);
+        }
+
+        .product-inquiry-btn {
+          margin-top: 20px;
+          height: 48px;
+          border: none;
+          border-radius: 4px;
+          background: var(--color-orange-accent);
+          color: #fff;
+          font-size: 14.5px;
+          font-weight: 800;
+          cursor: pointer;
+          transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .product-inquiry-btn:hover {
+          background: var(--color-charcoal-deep);
+          transform: translateY(-2px);
+        }
+
+        .product-detail-nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-top: 1px solid var(--color-gray-light);
+          padding-top: 16px;
+        }
+
+        .product-detail-nav button {
+          background: none;
+          border: none;
+          color: var(--color-charcoal-deep);
+          font-size: 13.5px;
+          font-weight: 700;
+          cursor: pointer;
+          padding: 6px 8px;
+        }
+
+        .product-detail-nav button:hover {
+          color: var(--color-orange-accent);
+        }
+
+        .product-detail-nav-count {
+          font-size: 12.5px;
+          color: var(--color-gray-dark);
+          font-weight: 700;
+        }
+
+        @media (min-width: 640px) {
+          .product-detail-body {
+            grid-template-columns: 1fr 1fr;
+            align-items: start;
+          }
         }
 
         .member-editorial {
