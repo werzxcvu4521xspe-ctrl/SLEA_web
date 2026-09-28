@@ -98,8 +98,15 @@ export default function SignupPage() {
       if (error) {
         setErrorMsg(error.message || '회원가입 중 오류가 발생했습니다.');
       } else if (data) {
-        // If email confirmation is enabled, session will be null
-        if (data.user && !data.session) {
+        // Supabase returns a user with an empty identities array (no error, no session)
+        // when the email is already registered — this is how it avoids leaking which
+        // emails exist. Treat that as "already signed up" instead of a fresh signup.
+        const isAlreadyRegistered = data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0;
+
+        if (isAlreadyRegistered) {
+          setErrorMsg('이미 가입된 이메일입니다. 로그인을 이용해 주세요.');
+        } else if (data.user && !data.session) {
+          // If email confirmation is enabled, session will be null
           setSuccessMsg('입력하신 이메일로 인증 링크가 발송되었습니다! 메일함(또는 스팸함)을 확인하셔서 인증을 완료해 주세요. 완료 후 로그인이 가능합니다.');
         } else {
           setSuccessMsg('회원가입이 정상 완료되었습니다! 로그인 창으로 이동합니다.');
@@ -201,14 +208,14 @@ export default function SignupPage() {
                 className={`role-btn ${role === 'entrepreneur' ? 'active' : ''}`}
                 onClick={() => setRole('entrepreneur')}
               >
-                🏪 로컬 창업가 회원
+                로컬 창업가 회원
               </button>
               <button
                 type="button"
                 className={`role-btn ${role === 'visitor' ? 'active' : ''}`}
                 onClick={() => setRole('visitor')}
               >
-                👥 일반 방문자 회원
+                일반 방문자 회원
               </button>
             </div>
           </div>
