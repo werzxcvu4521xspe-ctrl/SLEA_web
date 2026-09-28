@@ -25,6 +25,11 @@ const ROLE_OPTIONS = [
   { value: 'visitor', label: '일반 회원', shortLabel: 'Visitor', description: '커뮤니티 열람 회원' }
 ];
 
+// 회원 목록에서는 관리자 등급을 부여하지 않고 정회원/일반 회원 구분만 다룬다.
+const MEMBER_ROLE_OPTIONS = ROLE_OPTIONS.filter(
+  (role) => role.value === 'entrepreneur' || role.value === 'visitor'
+);
+
 const STATUS_OPTIONS = [
   { value: 'active', label: '활성' },
   { value: 'pending', label: '검토중' },
@@ -1461,10 +1466,10 @@ export default function AdminPage() {
                   className="member-filter-select"
                   value={memberRoleFilter}
                   onChange={(e) => setMemberRoleFilter(e.target.value)}
-                  aria-label="권한별 회원 필터"
+                  aria-label="회원 구분별 필터"
                 >
-                  <option value="all">전체 권한</option>
-                  {ROLE_OPTIONS.map(role => (
+                  <option value="all">전체 회원</option>
+                  {MEMBER_ROLE_OPTIONS.map(role => (
                     <option key={role.value} value={role.value}>{role.label}</option>
                   ))}
                 </select>
@@ -1476,7 +1481,7 @@ export default function AdminPage() {
                     <tr>
                       <th>회원</th>
                       <th>연락처</th>
-                      <th>권한</th>
+                      <th>회원 구분</th>
                       <th>상태</th>
                       <th>가입일</th>
                       <th>특이 사항 메모</th>
@@ -1508,18 +1513,27 @@ export default function AdminPage() {
                             </div>
                           </td>
                           <td>
-                            <select
-                              value={member.role}
-                              className="member-control-select"
-                              disabled={!isSuperAdmin}
-                              onChange={(e) => handleMemberRoleChange(member.id, e.target.value)}
-                              aria-label={`${member.name} 회원 권한 변경`}
-                            >
-                              {ROLE_OPTIONS.map(role => (
-                                <option key={role.value} value={role.value}>{role.label}</option>
-                              ))}
-                            </select>
-                            {roleOption && <small className="member-select-hint">{roleOption.description}</small>}
+                            {(member.role === 'super_admin' || member.role === 'staff_admin') ? (
+                              <>
+                                <span className={`member-role-pill ${member.role}`}>{roleOption?.label}</span>
+                                {roleOption && <small className="member-select-hint">{roleOption.description}</small>}
+                              </>
+                            ) : (
+                              <>
+                                <select
+                                  value={member.role}
+                                  className="member-control-select"
+                                  disabled={!isSuperAdmin}
+                                  onChange={(e) => handleMemberRoleChange(member.id, e.target.value)}
+                                  aria-label={`${member.name} 회원 구분 변경`}
+                                >
+                                  {MEMBER_ROLE_OPTIONS.map(role => (
+                                    <option key={role.value} value={role.value}>{role.label}</option>
+                                  ))}
+                                </select>
+                                {roleOption && <small className="member-select-hint">{roleOption.description}</small>}
+                              </>
+                            )}
                           </td>
                           <td>
                             <select
