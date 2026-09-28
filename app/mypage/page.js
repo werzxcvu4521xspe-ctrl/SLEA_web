@@ -671,7 +671,7 @@ export default function MyPage() {
               <span>SERO MEMBERS</span>
               <strong>세로 회원사 콘텐츠 관리</strong>
             </div>
-            <button type="button" className="profile-toggle-btn" onClick={toggleMemberForm}>
+            <button type="button" className="panel-toggle-btn" onClick={toggleMemberForm}>
               {isMemberFormOpen ? '콘텐츠 등록 닫기' : '콘텐츠 등록'}
             </button>
           </div>
@@ -748,7 +748,7 @@ export default function MyPage() {
               <span>SHOP UPLOAD</span>
               <strong>회원사 상품 게시물 관리</strong>
             </div>
-            <button type="button" className="profile-toggle-btn" onClick={toggleShopForm}>
+            <button type="button" className="panel-toggle-btn" onClick={toggleShopForm}>
               {isShopFormOpen ? '상품 등록 닫기' : '상품 콘텐츠 등록'}
             </button>
           </div>
@@ -1217,6 +1217,24 @@ export default function MyPage() {
         .profile-toggle-btn:hover {
           background: #ffffff !important;
           color: #111111 !important;
+        }
+
+        .panel-toggle-btn {
+          min-height: 44px;
+          padding: 0 18px;
+          background: transparent;
+          border: 1px solid #ff5a2a;
+          color: #ff5a2a;
+          font-weight: 900;
+          letter-spacing: 0.04em;
+          text-transform: uppercase;
+          transition: background var(--transition-smooth), color var(--transition-smooth);
+          white-space: nowrap;
+        }
+
+        .panel-toggle-btn:hover {
+          background: #ff5a2a;
+          color: #ffffff;
         }
 
         .profile-edit-panel {
