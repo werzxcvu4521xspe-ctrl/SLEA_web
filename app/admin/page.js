@@ -423,17 +423,6 @@ const mergeSectionsWithDefaults = (savedSections) => {
 
 const DEFAULT_MEMBERS = [
   {
-    id: 'mem-1',
-    name: '김태균',
-    brand: '조치원 브루어리',
-    email: 'brewery@sejonglocal.org',
-    phone: '010-2244-1100',
-    role: 'super_admin',
-    status: 'active',
-    joinedAt: '2024-03-10',
-    memo: '초대 운영진. 대외협력 및 네트워킹 총괄.'
-  },
-  {
     id: 'mem-2',
     name: '박민수',
     brand: '로컬허브 나성',
