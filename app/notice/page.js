@@ -200,7 +200,7 @@ export default function NoticePage() {
                         }}
                         aria-label={`${notice.title} 상세 보기`}
                       >
-                        <Image src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} fill unoptimized />
+                        <Image src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} fill unoptimized style={{ objectFit: 'cover' }} />
                         <div className="featured-overlay">
                           <div className="featured-meta">
                             <span>{notice.category}</span>

@@ -1738,6 +1738,7 @@ export default function AdminPage() {
                             alt={`${selectedSection.area} 미리보기`}
                             fill
                             unoptimized
+                            style={{ objectFit: 'cover' }}
                           />
                         ) : (
                           <div className="empty-preview">이미지 없음</div>
