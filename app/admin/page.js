@@ -1221,42 +1221,6 @@ export default function AdminPage() {
             시스템 설정 {!isSuperAdmin && '🔒'}
           </button>
         </nav>
-
-        {/* Simulator Panel (For Demonstration) */}
-        <div className="simulator-panel">
-          <h4 className="sim-title">⚙️ 권한 시뮬레이터</h4>
-          <p className="sim-desc">클릭하여 관리자 등급별 보기 권한 및 차단 UI를 테스트해 보세요.</p>
-          <div className="sim-buttons">
-            <button 
-              type="button" 
-              className={`sim-btn ${userRole === 'super_admin' ? 'active' : ''}`}
-              onClick={() => handleSimulateRole('super_admin')}
-            >
-              최고 관리자 (Lv.2)
-            </button>
-            <button 
-              type="button" 
-              className={`sim-btn ${userRole === 'staff_admin' ? 'active' : ''}`}
-              onClick={() => handleSimulateRole('staff_admin')}
-            >
-              일반 관리자 (Lv.1)
-            </button>
-            <button 
-              type="button" 
-              className="sim-btn reset"
-              onClick={() => handleSimulateRole('user')}
-            >
-              일반회원으로 강등
-            </button>
-            <button 
-              type="button" 
-              className="sim-btn reset"
-              onClick={() => handleSimulateRole('none')}
-            >
-              로그아웃 (권한 해제)
-            </button>
-          </div>
-        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -2693,62 +2657,6 @@ export default function AdminPage() {
         .indicator-dot.muted {
           background-color: var(--color-emerald-pale);
           color: var(--color-emerald-deep);
-        }
-
-        /* Simulator Styles */
-        .simulator-panel {
-          padding: 16px;
-          background-color: var(--color-sand-light);
-          border-radius: 6px;
-          border: 1px solid var(--color-gray-light);
-        }
-
-        .sim-title {
-          font-size: 12px;
-          font-weight: 900;
-          color: var(--color-charcoal-deep);
-          margin-bottom: 6px;
-        }
-
-        .sim-desc {
-          font-size: 11px;
-          color: var(--color-gray-dark);
-          line-height: 1.4;
-          margin-bottom: 12px;
-        }
-
-        .sim-buttons {
-          display: flex;
-          flex-direction: column;
-          gap: 6px;
-        }
-
-        .sim-btn {
-          width: 100%;
-          padding: 8px;
-          font-size: 11.5px;
-          font-weight: 700;
-          border-radius: 4px;
-          background-color: var(--color-white);
-          border: 1px solid var(--color-gray-light);
-          color: var(--color-gray-dark);
-          cursor: pointer;
-          transition: all 0.2s ease;
-        }
-
-        .sim-btn:hover, .sim-btn.active {
-          background-color: var(--color-emerald-deep);
-          color: var(--color-white);
-          border-color: var(--color-emerald-deep);
-        }
-
-        .sim-btn.reset {
-          background-color: #f1f1f1;
-          color: #666;
-        }
-
-        .sim-btn.reset:hover {
-          background-color: #ddd;
         }
 
         /* Main Content Container */
