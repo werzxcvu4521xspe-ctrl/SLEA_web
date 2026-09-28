@@ -11,6 +11,25 @@ import { SERVICE_CATEGORIES, getServiceCategory } from '@/lib/serviceCategories'
 
 const STORAGE_PREFIX = 'sejong_sero_service_';
 
+function getUserRole(user) {
+  return user?.user_metadata?.role || user?.role || null;
+}
+
+function isAdminRole(role) {
+  return role === 'super_admin' || role === 'staff_admin';
+}
+
+function getUserBrand(user) {
+  return (
+    user?.user_metadata?.brand ||
+    user?.user_metadata?.company_name ||
+    user?.user_metadata?.companyName ||
+    user?.brand ||
+    user?.companyName ||
+    ''
+  );
+}
+
 
 
 const products = [
@@ -281,6 +300,8 @@ export default function SeroServicePage({ slug }) {
   const [talkType, setTalkType] = useState('자유 게시판');
   const [selectedPost, setSelectedPost] = useState(null);
   const [commentInput, setCommentInput] = useState('');
+  const [isEditingPost, setIsEditingPost] = useState(false);
+  const [editForm, setEditForm] = useState({ title: '', content: '' });
   const [memberFilter, setMemberFilter] = useState('전체');
   const [memberSort, setMemberSort] = useState('latest');
   const [seroDayFilter, setSeroDayFilter] = useState('전체');
@@ -288,6 +309,8 @@ export default function SeroServicePage({ slug }) {
   const [selectedSeroProgramId, setSelectedSeroProgramId] = useState('');
   const [activeSeroProgram, setActiveSeroProgram] = useState(null);
   const [user, setUser] = useState(null);
+  const userRole = getUserRole(user);
+  const isAdmin = isAdminRole(userRole);
 
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -492,7 +515,8 @@ export default function SeroServicePage({ slug }) {
 
     const newComment = {
       id: Date.now(),
-      author: user.user_metadata?.name || user.email?.split('@')[0] || '회원',
+      author: user.user_metadata?.name || user.name || user.email?.split('@')[0] || '회원',
+      authorBrand: getUserBrand(user),
       body: commentInput.trim(),
       createdAt: new Date().toISOString()
     };
@@ -510,6 +534,36 @@ export default function SeroServicePage({ slug }) {
     setTalkPosts(updatedPosts);
     localStorage.setItem('sejong_sero_service_sero-talk', JSON.stringify(updatedPosts));
     setCommentInput('');
+  };
+
+  const startEditingPost = () => {
+    if (!selectedPost) return;
+    setEditForm({ title: selectedPost.title || '', content: selectedPost.content || '' });
+    setIsEditingPost(true);
+  };
+
+  const cancelEditingPost = () => {
+    setIsEditingPost(false);
+  };
+
+  const handleAdminEditSave = (event) => {
+    event.preventDefault();
+    if (!isAdmin || !selectedPost) return;
+
+    const updatedPosts = talkPosts.map((post) => {
+      if (post.id === selectedPost.id) {
+        const nextPost = { ...post, title: editForm.title.trim() || post.title, content: editForm.content };
+        setSelectedPost(nextPost);
+        return nextPost;
+      }
+      return post;
+    });
+
+    setTalkPosts(updatedPosts);
+    localStorage.setItem('sejong_sero_service_sero-talk', JSON.stringify(updatedPosts));
+    setIsEditingPost(false);
+    setSubmitted('글이 수정되었습니다.');
+    window.setTimeout(() => setSubmitted(''), 2000);
   };
 
   const submitSeroDayApplication = (event) => {
@@ -990,34 +1044,66 @@ export default function SeroServicePage({ slug }) {
         )}
 
         {selectedPost && (
-          <div className="talk-detail-overlay" onClick={() => setSelectedPost(null)}>
+          <div className="talk-detail-overlay" onClick={() => { setSelectedPost(null); setIsEditingPost(false); }}>
             <div className="talk-detail-modal glass-panel" onClick={(e) => e.stopPropagation()}>
               <div className="modal-header">
                 <span className="talk-type-badge">{selectedPost.type}</span>
-                <button className="close-btn" onClick={() => setSelectedPost(null)}>×</button>
-              </div>
-              
-              <h2 className="modal-title">{selectedPost.title}</h2>
-              <div className="modal-meta">
-                <span>작성자: {selectedPost.author}</span>
-                {selectedPost.createdAt && (
-                  <span>작성일: {new Date(selectedPost.createdAt).toLocaleDateString()}</span>
-                )}
+                <div className="modal-header-actions">
+                  {isAdmin && !isEditingPost && (
+                    <button type="button" className="admin-edit-btn" onClick={startEditingPost}>
+                      ✏️ 관리자 수정
+                    </button>
+                  )}
+                  <button className="close-btn" onClick={() => { setSelectedPost(null); setIsEditingPost(false); }}>×</button>
+                </div>
               </div>
 
-              <div className="modal-content-body">
-                <p>{selectedPost.content || '등록된 내용이 없습니다.'}</p>
-              </div>
+              {isEditingPost ? (
+                <form className="service-form admin-edit-form" onSubmit={handleAdminEditSave}>
+                  <input
+                    required
+                    value={editForm.title}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, title: e.target.value }))}
+                    placeholder="제목"
+                  />
+                  <textarea
+                    value={editForm.content}
+                    onChange={(e) => setEditForm((prev) => ({ ...prev, content: e.target.value }))}
+                    placeholder="내용"
+                  />
+                  <div className="admin-edit-form-actions">
+                    <button type="submit">저장</button>
+                    <button type="button" className="admin-edit-cancel-btn" onClick={cancelEditingPost}>취소</button>
+                  </div>
+                </form>
+              ) : (
+                <>
+                  <h2 className="modal-title">{selectedPost.title}</h2>
+                  <div className="modal-meta">
+                    <span>작성자: {selectedPost.author}</span>
+                    {selectedPost.createdAt && (
+                      <span>작성일: {new Date(selectedPost.createdAt).toLocaleDateString()}</span>
+                    )}
+                  </div>
+
+                  <div className="modal-content-body">
+                    <p>{selectedPost.content || '등록된 내용이 없습니다.'}</p>
+                  </div>
+                </>
+              )}
 
               {/* 댓글 섹션 */}
               <div className="modal-comments-section">
                 <h3>댓글 ({selectedPost.comments ? selectedPost.comments.length : 0})</h3>
-                
+
                 <div className="comments-list">
                   {(selectedPost.comments || []).map((comm) => (
                     <div key={comm.id} className="comment-item">
                       <div className="comment-meta">
-                        <strong>{comm.author}</strong>
+                        <strong>
+                          {comm.author}
+                          {comm.authorBrand && <span className="comment-author-brand"> · {comm.authorBrand}</span>}
+                        </strong>
                         <span>{new Date(comm.createdAt).toLocaleString()}</span>
                       </div>
                       <p className="comment-body">{comm.body}</p>
@@ -1132,6 +1218,64 @@ export default function SeroServicePage({ slug }) {
           display: flex;
           justify-content: space-between;
           align-items: center;
+        }
+
+        .modal-header-actions {
+          display: flex;
+          align-items: center;
+          gap: 14px;
+        }
+
+        .admin-edit-btn {
+          min-height: 30px;
+          padding: 0 12px;
+          background: var(--color-charcoal-deep);
+          color: #ffffff;
+          font-size: 12px;
+          font-weight: 800;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background 0.2s ease;
+        }
+
+        .admin-edit-btn:hover {
+          background: var(--color-orange-accent);
+        }
+
+        .admin-edit-form {
+          gap: 12px;
+        }
+
+        .admin-edit-form textarea {
+          min-height: 160px;
+        }
+
+        .admin-edit-form-actions {
+          display: flex;
+          gap: 8px;
+        }
+
+        .admin-edit-form-actions button {
+          min-height: 40px;
+          padding: 0 16px;
+          font-size: 13.5px;
+          font-weight: 800;
+          border: none;
+          border-radius: 4px;
+          cursor: pointer;
+          background: var(--color-orange-accent);
+          color: #ffffff;
+        }
+
+        .admin-edit-cancel-btn {
+          background: var(--color-gray-light) !important;
+          color: var(--color-charcoal-deep) !important;
+        }
+
+        .comment-author-brand {
+          font-weight: 700;
+          color: var(--color-gray-dark);
         }
 
         .talk-type-badge {
