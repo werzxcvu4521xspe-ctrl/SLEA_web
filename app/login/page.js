@@ -12,28 +12,6 @@ export default function LoginPage() {
   const [errorMsg, setErrorMsg] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleQuickAdminLogin = (e) => {
-    e.preventDefault();
-    setEmail('admin@sejong.com');
-    setPassword('adminpassword');
-    
-    const defaultAdminUser = {
-      id: 'admin-1',
-      email: 'admin@sejong.com',
-      password: 'adminpassword',
-      role: 'super_admin',
-      status: 'active',
-      name: '최고관리자',
-      brand: '협회 사무국'
-    };
-    localStorage.setItem('sejong_session_user', JSON.stringify(defaultAdminUser));
-    window.dispatchEvent(new Event('storage'));
-    window.dispatchEvent(new Event('sejong_role_update'));
-    alert('최고관리자 계정으로 신속 로그인 완료되었습니다.');
-    router.push('/mypage');
-    router.refresh();
-  };
-
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMsg('');
@@ -151,25 +129,6 @@ export default function LoginPage() {
             <Link href="/find-auth?tab=password" className="auth-redirect-link" style={{ fontSize: '12px', color: 'var(--color-gray-dark)', textDecoration: 'none' }}>
               비밀번호 재설정
             </Link>
-            <span style={{ color: '#ccc', fontSize: '12px' }}>|</span>
-            <button 
-              type="button" 
-              onClick={handleQuickAdminLogin} 
-              className="auth-redirect-link" 
-              style={{ 
-                background: 'none', 
-                border: 'none', 
-                padding: 0, 
-                fontSize: '12px', 
-                color: 'var(--color-gray-dark)', 
-                textDecoration: 'none', 
-                cursor: 'pointer',
-                fontFamily: 'inherit',
-                fontWeight: 'inherit'
-              }}
-            >
-              관리자 로그인
-            </button>
           </div>
           <div style={{ marginTop: '4px' }}>
             <span>아직 계정이 없으신가요? </span>

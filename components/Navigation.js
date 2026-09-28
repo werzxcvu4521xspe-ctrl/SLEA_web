@@ -93,7 +93,7 @@ export default function Navigation() {
               {showAdminMenu && (
                 <li>
                   <Link href="/admin" className={pathname.startsWith('/admin') ? 'active' : ''} style={{ color: 'var(--color-orange-accent)' }}>
-                    👑 관리자
+                    관리자
                   </Link>
                 </li>
               )}
