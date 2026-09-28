@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import HeroSlider from '@/components/HeroSlider';
 import { DEFAULT_NOTICES, NOTICE_STORAGE_KEY } from '@/lib/notices';
 import { DEFAULT_SERO_DAY_PROGRAMS } from '@/lib/seroDayPrograms';
@@ -97,11 +98,13 @@ export default function HomePage() {
             {latestNotices.map((notice) => (
               <Link href={`/notice/${notice.id}`} key={notice.id} className="preview-card notice-card glass-panel">
                 <div className="card-image-wrap">
-                  <img 
-                    src={notice.imageUrl || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=600'} 
-                    alt={notice.title} 
+                  <Image
+                    src={notice.imageUrl || 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=600'}
+                    alt={notice.title}
                     className="card-image"
                     loading="lazy"
+                    fill
+                    unoptimized
                   />
                   {notice.pinned && <span className="card-badge pin-badge">중요</span>}
                   <span className="card-badge category-badge">{notice.category}</span>
@@ -138,11 +141,13 @@ export default function HomePage() {
             {latestPrograms.map((prog) => (
               <Link href="/sero-day" key={prog.id} className="preview-card program-card glass-panel">
                 <div className="card-image-wrap">
-                  <img 
-                    src={prog.imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600'} 
-                    alt={prog.title} 
+                  <Image
+                    src={prog.imageUrl || 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?q=80&w=600'}
+                    alt={prog.title}
                     className="card-image"
                     loading="lazy"
+                    fill
+                    unoptimized
                   />
                   <span className={`card-badge status-badge ${prog.status === 'recruiting' ? 'recruiting' : 'closed'}`}>
                     {prog.status === 'recruiting' ? '모집중' : '마감'}
@@ -187,11 +192,13 @@ export default function HomePage() {
             {memberPreview.map((member) => (
               <Link href={`/sero-members/${member.id}`} key={member.id} className="preview-card member-card glass-panel">
                 <div className="card-image-wrap">
-                  <img 
-                    src={member.image || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600'} 
-                    alt={member.brand} 
+                  <Image
+                    src={member.image || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?q=80&w=600'}
+                    alt={member.brand}
                     className="card-image"
                     loading="lazy"
+                    fill
+                    unoptimized
                   />
                   <span className="card-badge type-badge">{member.type}</span>
                 </div>

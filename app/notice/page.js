@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import {
   DEFAULT_NOTICE_IMAGE,
   DEFAULT_NOTICES,
@@ -199,7 +200,7 @@ export default function NoticePage() {
                         }}
                         aria-label={`${notice.title} 상세 보기`}
                       >
-                        <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
+                        <Image src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} fill unoptimized />
                         <div className="featured-overlay">
                           <div className="featured-meta">
                             <span>{notice.category}</span>
@@ -223,7 +224,7 @@ export default function NoticePage() {
               {gridNotices.map((notice) => (
                 <article key={notice.id} className="notice-card standard-card">
                   <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
-                    <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
+                    <Image src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} fill unoptimized />
                   </Link>
                   <div className="notice-card-copy">
                     <div className="notice-meta">
@@ -246,7 +247,7 @@ export default function NoticePage() {
               {filteredNotices.map((notice) => (
                 <article key={notice.id} className="notice-card standard-card">
                   <Link href={`/notice/${notice.id}`} className="notice-card-image-wrapper" aria-label={`${notice.title} 상세 보기`}>
-                    <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} />
+                    <Image src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={notice.title} fill unoptimized />
                   </Link>
                   <div className="notice-card-copy">
                     <div className="notice-meta">
@@ -379,7 +380,13 @@ export default function NoticePage() {
               <div className="notice-image-uploader">
                 <div className="upload-preview">
                   {form.imageUrl ? (
-                    <img src={form.imageUrl} alt="업로드 이미지 미리보기" />
+                    <Image
+                      src={form.imageUrl}
+                      alt="업로드 이미지 미리보기"
+                      fill
+                      unoptimized
+                      style={{ objectFit: 'cover' }}
+                    />
                   ) : (
                     <span>Image Preview</span>
                   )}
@@ -980,6 +987,7 @@ export default function NoticePage() {
         }
 
         .upload-preview {
+          position: relative;
           aspect-ratio: 16 / 9;
           display: flex;
           align-items: center;

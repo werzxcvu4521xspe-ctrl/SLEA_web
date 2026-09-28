@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const CABINET_DATA = {
   title: '세종의 뿌리 조치원, 청년 크리에이터로 다시 숨 쉬다',
@@ -66,11 +67,15 @@ export default function CabinetSection() {
           {/* Right: Dynamic Image */}
           <div className="cabinet-right">
             <div className="image-frame glass-panel">
-              <img 
-                src={hoveredItem.image} 
-                alt={hoveredItem.title} 
-                className="dynamic-image"
-              />
+              <div className="dynamic-image-inner">
+                <Image
+                  src={hoveredItem.image}
+                  alt={hoveredItem.title}
+                  fill
+                  sizes="(max-width: 767px) 100vw, 440px"
+                  className="dynamic-image"
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -208,11 +213,16 @@ export default function CabinetSection() {
           transform: translateY(-5px);
         }
 
-        .dynamic-image {
+        .dynamic-image-inner {
+          position: relative;
           width: 100%;
           height: 100%;
-          object-fit: cover;
           border-radius: calc(var(--border-radius-lg) - 4px);
+          overflow: hidden;
+        }
+
+        .dynamic-image {
+          object-fit: cover;
           transition: transform 0.5s ease;
         }
       `}</style>

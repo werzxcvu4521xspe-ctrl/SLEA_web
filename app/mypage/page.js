@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { BOOKMARK_STORAGE_KEY } from '@/components/BookmarkButton';
 import { supabase } from '@/lib/supabaseClient';
@@ -496,7 +497,17 @@ export default function MyPage() {
           <div className="bookmark-grid">
             {bookmarks.map((item) => (
               <div key={item.id} className="bookmark-card">
-                {item.imageUrl && <img src={item.imageUrl} alt={`${item.title} 썸네일`} />}
+                {item.imageUrl && (
+                  <div style={{ position: 'relative', width: '100%', height: '120px' }}>
+                    <Image
+                      src={item.imageUrl}
+                      alt={`${item.title} 썸네일`}
+                      fill
+                      unoptimized
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
+                )}
                 <div>
                   <span>{item.type}</span>
                   <Link href={item.href}>{item.title}</Link>
@@ -542,7 +553,15 @@ export default function MyPage() {
               <div key={item.id} className="reaction-card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', gap: '15px' }}>
                 <div>
                   {item.imageUrl && (
-                    <img src={item.imageUrl} alt={`${item.product} 이미지`} style={{ width: '100%', height: '120px', objectFit: 'cover', borderRadius: '4px', marginBottom: '10px' }} />
+                    <div style={{ position: 'relative', width: '100%', height: '120px', borderRadius: '4px', overflow: 'hidden', marginBottom: '10px' }}>
+                      <Image
+                        src={item.imageUrl}
+                        alt={`${item.product} 이미지`}
+                        fill
+                        unoptimized
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </div>
                   )}
                   <strong style={{ display: 'block', fontSize: '16px', margin: '0 0 6px 0', color: 'var(--color-charcoal-deep)' }}>{item.product}</strong>
                   <div style={{ fontSize: '12px', color: '#999' }}>
@@ -709,7 +728,15 @@ export default function MyPage() {
                 <label>상품 이미지</label>
                 <input type="file" accept="image/*" onChange={handleShopEditImageUpload} />
                 {shopEditForm.imageUrl && (
-                  <img src={shopEditForm.imageUrl} alt="상품 이미지 미리보기" style={{ width: '100%', maxHeight: '160px', objectFit: 'cover', borderRadius: '4px', marginTop: '4px' }} />
+                  <div style={{ position: 'relative', width: '100%', height: '160px', borderRadius: '4px', overflow: 'hidden', marginTop: '4px' }}>
+                    <Image
+                      src={shopEditForm.imageUrl}
+                      alt="상품 이미지 미리보기"
+                      fill
+                      unoptimized
+                      style={{ objectFit: 'cover' }}
+                    />
+                  </div>
                 )}
               </div>
               <div className="edit-form-group">

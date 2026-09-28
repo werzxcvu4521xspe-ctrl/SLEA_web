@@ -8,6 +8,7 @@ import { DEFAULT_SERO_DAY_PROGRAMS } from '@/lib/seroDayPrograms';
 import { DEFAULT_SERO_TALK_POSTS } from '@/lib/seroTalkPosts';
 import { DEFAULT_SHOP_PRODUCTS } from '@/lib/shopProducts';
 import Link from 'next/link';
+import Image from 'next/image';
 
 const CONTENT_STORAGE_KEY = 'sejong_site_content_sections';
 const MENTORING_STORAGE_KEY = 'sejong_mentoring_requests';
@@ -1723,7 +1724,12 @@ export default function AdminPage() {
                     <div className="preview-hero-card">
                       <div className="preview-hero-media">
                         {selectedSection.imageUrl ? (
-                          <img src={selectedSection.imageUrl} alt={`${selectedSection.area} 미리보기`} />
+                          <Image
+                            src={selectedSection.imageUrl}
+                            alt={`${selectedSection.area} 미리보기`}
+                            fill
+                            unoptimized
+                          />
                         ) : (
                           <div className="empty-preview">이미지 없음</div>
                         )}
@@ -3320,6 +3326,7 @@ export default function AdminPage() {
         }
 
         .preview-hero-media {
+          position: relative;
           width: 100%;
           aspect-ratio: 16 / 9;
           background-color: #222;

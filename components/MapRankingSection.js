@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 
 const MOCK_RANKINGS = [
   {
@@ -54,7 +55,7 @@ export default function MapRankingSection() {
               <Link href="/archive" className="ranking-card-inner">
                 <div className="ranking-image-container">
                   <span className="rank-badge">{item.rank}</span>
-                  <img src={item.image} alt={item.name} className="ranking-thumb" />
+                  <Image src={item.image} alt={item.name} className="ranking-thumb" fill sizes="80px" />
                 </div>
                 <div className="ranking-info">
                   <span className="ranking-cat en-title">{item.category}</span>

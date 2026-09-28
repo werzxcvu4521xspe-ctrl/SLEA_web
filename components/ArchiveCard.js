@@ -40,15 +40,15 @@ export default function ArchiveCard({ archive, preload = false }) {
               fetchPriority={preload ? 'high' : 'auto'}
             />
           ) : (
-            <img
+            <Image
               src={imageSrc}
               alt={`${company_name} 대표 이미지`}
+              fill
+              sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
               className="card-image"
-              width="600"
-              height="375"
+              unoptimized
               loading={preload ? 'eager' : 'lazy'}
               fetchPriority={preload ? 'high' : 'auto'}
-              decoding="async"
             />
           )}
           <span className="card-category-badge">{category}</span>

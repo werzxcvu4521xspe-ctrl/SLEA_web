@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import BookmarkButton from '@/components/BookmarkButton';
 import {
@@ -133,7 +134,12 @@ export default function NoticeDetailPage() {
 
       <main className="notice-detail-main container">
         <figure className="detail-cover">
-          <img src={notice.imageUrl || DEFAULT_NOTICE_IMAGE} alt={`${notice.title} 대표 이미지`} />
+          <Image
+            src={notice.imageUrl || DEFAULT_NOTICE_IMAGE}
+            alt={`${notice.title} 대표 이미지`}
+            fill
+            unoptimized
+          />
         </figure>
 
         <section className="blog-body">
@@ -153,7 +159,14 @@ export default function NoticeDetailPage() {
             <div className="related-grid">
               {relatedNotices.map((item) => (
                 <Link key={item.id} href={`/notice/${item.id}`} className="related-card">
-                  <img src={item.imageUrl || DEFAULT_NOTICE_IMAGE} alt={`${item.title} 썸네일`} />
+                  <div className="related-card-image-wrap">
+                    <Image
+                      src={item.imageUrl || DEFAULT_NOTICE_IMAGE}
+                      alt={`${item.title} 썸네일`}
+                      fill
+                      unoptimized
+                    />
+                  </div>
                   <span>{item.category}</span>
                   <strong>{item.title}</strong>
                 </Link>
@@ -249,7 +262,9 @@ export default function NoticeDetailPage() {
         }
 
         .detail-cover {
+          position: relative;
           width: 100%;
+          aspect-ratio: 16 / 9;
           overflow: hidden;
           background: #f6f6f6;
           margin-bottom: 44px;
@@ -257,7 +272,7 @@ export default function NoticeDetailPage() {
 
         .detail-cover img {
           width: 100%;
-          aspect-ratio: 16 / 9;
+          height: 100%;
           display: block;
           object-fit: cover;
         }
@@ -318,11 +333,18 @@ export default function NoticeDetailPage() {
           color: #161616;
         }
 
-        .related-card img {
+        .related-card-image-wrap {
+          position: relative;
           width: 100%;
           aspect-ratio: 16 / 10;
-          object-fit: cover;
+          overflow: hidden;
           background: #f6f6f6;
+        }
+
+        .related-card-image-wrap img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
         .related-card strong {

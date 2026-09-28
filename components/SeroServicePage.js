@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabaseClient';
 import { DEFAULT_SERO_DAY_PROGRAMS } from '@/lib/seroDayPrograms';
 import { MEMBER_CONTENT_FILTERS, MEMBER_CONTENTS } from '@/lib/memberContents';
@@ -453,7 +454,7 @@ export default function SeroServicePage({ slug }) {
                   {filteredSeroDayPrograms.map((program) => (
                     <article key={program.id} className="sero-program-card">
                       <button type="button" className="sero-program-image" onClick={() => setActiveSeroProgram(program)}>
-                        <img src={program.imageUrl} alt={program.title} />
+                        <Image src={program.imageUrl} alt={program.title} fill unoptimized />
                         <span>{program.type}</span>
                       </button>
                       <div className="sero-program-copy">
@@ -489,7 +490,7 @@ export default function SeroServicePage({ slug }) {
                 <div className="program-modal" onClick={(event) => event.stopPropagation()}>
                   <button type="button" className="modal-close" onClick={() => setActiveSeroProgram(null)}>Close</button>
                   <div className="program-modal-image">
-                    <img src={activeSeroProgram.imageUrl} alt={activeSeroProgram.title} />
+                    <Image src={activeSeroProgram.imageUrl} alt={activeSeroProgram.title} fill unoptimized />
                   </div>
                   <div className="program-modal-copy">
                     <span>{activeSeroProgram.type} / {activeSeroProgram.status}</span>
@@ -558,7 +559,7 @@ export default function SeroServicePage({ slug }) {
               {filteredMemberContents.map((item) => (
                 <Link key={item.id || item.title} href={`/sero-members/${item.id}`} className="member-content-card">
                   <span className="member-card-image">
-                    <img src={item.image} alt={item.title} loading="lazy" />
+                    <Image src={item.image} alt={item.title} loading="lazy" fill unoptimized />
                     <span>{item.type}</span>
                   </span>
                   <div className="member-card-copy">
@@ -697,7 +698,7 @@ export default function SeroServicePage({ slug }) {
                     }}
                   >
                     <div className="shop-product-image">
-                      <img src={product.imageUrl} alt={`${product.name} 상품 이미지`} />
+                      <Image src={product.imageUrl} alt={`${product.name} 상품 이미지`} fill unoptimized />
                     </div>
                     <strong>{product.name}</strong>
                     <div className="shop-price-stack">
@@ -802,7 +803,7 @@ export default function SeroServicePage({ slug }) {
 
               <div className="product-detail-body">
                 <div className="product-detail-image">
-                  <img src={selectedProduct.imageUrl} alt={`${selectedProduct.name} 상품 이미지`} />
+                  <Image src={selectedProduct.imageUrl} alt={`${selectedProduct.name} 상품 이미지`} fill unoptimized />
                 </div>
                 <div className="product-detail-info">
                   <span className="product-detail-brand">{selectedProduct.brand}</span>
@@ -1844,6 +1845,7 @@ export default function SeroServicePage({ slug }) {
         }
 
         .program-modal-image {
+          position: relative;
           min-height: 420px;
           background: var(--color-sand-light);
         }
@@ -1958,6 +1960,7 @@ export default function SeroServicePage({ slug }) {
         }
 
         .shop-product-image {
+          position: relative;
           width: 100%;
           aspect-ratio: 1 / 1;
           overflow: hidden;
@@ -2020,6 +2023,7 @@ export default function SeroServicePage({ slug }) {
         }
 
         .product-detail-image {
+          position: relative;
           width: 100%;
           aspect-ratio: 1 / 1;
           overflow: hidden;

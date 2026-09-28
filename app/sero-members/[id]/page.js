@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element */
 import Link from 'next/link';
+import Image from 'next/image';
 import { useParams } from 'next/navigation';
 import BookmarkButton from '@/components/BookmarkButton';
 import { getMemberContent, MEMBER_CONTENTS } from '@/lib/memberContents';
@@ -101,7 +102,12 @@ export default function MemberContentDetailPage() {
 
       <main className="member-detail-main container">
         <figure className="detail-cover">
-          <img src={content.image} alt={`${content.title} 대표 이미지`} />
+          <Image
+            src={content.image}
+            alt={`${content.title} 대표 이미지`}
+            fill
+            unoptimized
+          />
         </figure>
 
         <section className="blog-body">
@@ -138,7 +144,14 @@ export default function MemberContentDetailPage() {
             <div className="related-grid">
               {relatedContents.map((item) => (
                 <Link key={item.id} href={`/sero-members/${item.id}`} className="related-card">
-                  <img src={item.image} alt={`${item.title} 썸네일`} />
+                  <div className="related-card-image-wrap">
+                    <Image
+                      src={item.image}
+                      alt={`${item.title} 썸네일`}
+                      fill
+                      unoptimized
+                    />
+                  </div>
                   <span>{item.type}</span>
                   <strong>{item.title}</strong>
                 </Link>
@@ -234,7 +247,9 @@ export default function MemberContentDetailPage() {
         }
 
         .detail-cover {
+          position: relative;
           width: 100%;
+          aspect-ratio: 16 / 9;
           overflow: hidden;
           background: #f6f6f6;
           margin-bottom: 44px;
@@ -242,7 +257,7 @@ export default function MemberContentDetailPage() {
 
         .detail-cover img {
           width: 100%;
-          aspect-ratio: 16 / 9;
+          height: 100%;
           display: block;
           object-fit: cover;
         }
@@ -343,11 +358,18 @@ export default function MemberContentDetailPage() {
           color: #161616;
         }
 
-        .related-card img {
+        .related-card-image-wrap {
+          position: relative;
           width: 100%;
           aspect-ratio: 16 / 10;
-          object-fit: cover;
+          overflow: hidden;
           background: #f6f6f6;
+        }
+
+        .related-card-image-wrap img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
         }
 
         .related-card strong {
