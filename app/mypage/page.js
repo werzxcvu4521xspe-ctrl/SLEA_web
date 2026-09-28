@@ -70,6 +70,13 @@ export default function MyPage() {
     description: ''
   });
   const [message, setMessage] = useState('');
+
+  // Profile edit toggle state
+  const [isProfileEditOpen, setIsProfileEditOpen] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: '', brand: '' });
+  const [profileMsg, setProfileMsg] = useState('');
+  const [profileSaving, setProfileSaving] = useState(false);
+
   
   // Post Edit states
   const [editingPost, setEditingPost] = useState(null);
@@ -220,6 +227,111 @@ export default function MyPage() {
     ));
   }, [userBrand]);
 
+  useEffect(() => {
+    if (!user) return;
+    setProfileForm({
+      name: user.user_metadata?.name || userName || '',
+      brand: userBrand || ''
+    });
+  }, [user, userName, userBrand]);
+
+  const toggleProfileEdit = () => {
+    if (!isProfileEditOpen && user) {
+      setProfileForm({
+        name: user.user_metadata?.name || userName || '',
+        brand: userBrand || ''
+      });
+    }
+    setProfileMsg('');
+    setIsProfileEditOpen((prev) => !prev);
+  };
+
+  const updateProfileField = (field, value) => {
+    setProfileForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const saveProfile = async (event) => {
+    event.preventDefault();
+    if (!profileForm.name.trim()) {
+      setProfileMsg('이름을 입력해 주세요.');
+      return;
+    }
+
+    setProfileSaving(true);
+    setProfileMsg('');
+
+    const nextName = profileForm.name.trim();
+    const nextBrand = profileForm.brand.trim();
+
+    try {
+      if (!isSupabaseConfigured) {
+        const localUserStr = localStorage.getItem('sejong_session_user');
+        if (localUserStr) {
+          const localUser = JSON.parse(localUserStr);
+          const updatedLocalUser = { ...localUser, name: nextName, brand: nextBrand };
+          localStorage.setItem('sejong_session_user', JSON.stringify(updatedLocalUser));
+
+          // Keep the admin member list in sync too, if this user is registered there
+          const membersStr = localStorage.getItem('sejong_admin_members');
+          if (membersStr) {
+            try {
+              const members = JSON.parse(membersStr);
+              const nextMembers = members.map((m) =>
+                m.email?.toLowerCase() === localUser.email?.toLowerCase()
+                  ? { ...m, name: nextName, brand: nextBrand }
+                  : m
+              );
+              localStorage.setItem('sejong_admin_members', JSON.stringify(nextMembers));
+            } catch {
+              // ignore malformed member list
+            }
+          }
+
+          setUser((prev) => ({
+            ...prev,
+            name: nextName,
+            brand: nextBrand,
+            user_metadata: {
+              ...prev?.user_metadata,
+              name: nextName,
+              brand: nextBrand,
+              company_name: nextBrand
+            }
+          }));
+          window.dispatchEvent(new Event('storage'));
+        }
+      } else {
+        const { data, error } = await supabase.auth.updateUser({
+          data: {
+            name: nextName,
+            brand: nextBrand,
+            company_name: nextBrand
+          }
+        });
+
+        if (error) {
+          setProfileMsg(error.message || '회원정보 수정 중 오류가 발생했습니다.');
+          setProfileSaving(false);
+          return;
+        }
+
+        if (data?.user) {
+          setUser(data.user);
+        }
+      }
+
+      setProfileMsg('회원정보가 수정되었습니다.');
+      window.setTimeout(() => {
+        setProfileMsg('');
+        setIsProfileEditOpen(false);
+      }, 1400);
+    } catch {
+      setProfileMsg('회원정보 수정 중 오류가 발생했습니다.');
+    } finally {
+      setProfileSaving(false);
+    }
+  };
+
   const mentoringBriefs = useMemo(() => (
     mentoringItems.map((item, index) => ({
       ...item,
@@ -327,8 +439,50 @@ export default function MyPage() {
             <h1>마이페이지</h1>
             <p>{userName}님의 저장 콘텐츠, 등록 신청, 멘토링 진행, 세로토크 반응을 확인합니다.</p>
           </div>
-          <button type="button" onClick={handleLogout}>로그아웃</button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button type="button" className="profile-toggle-btn" onClick={toggleProfileEdit}>
+              {isProfileEditOpen ? '회원정보 수정 닫기' : '회원정보 수정'}
+            </button>
+            <button type="button" onClick={handleLogout}>로그아웃</button>
+          </div>
         </div>
+
+        {isProfileEditOpen && (
+          <div className="dashboard-container">
+            <form className="profile-edit-panel" onSubmit={saveProfile}>
+              <div className="profile-edit-row">
+                <div className="profile-edit-field">
+                  <label>이름 / 담당자명</label>
+                  <input
+                    required
+                    value={profileForm.name}
+                    onChange={(e) => updateProfileField('name', e.target.value)}
+                    placeholder="홍길동"
+                  />
+                </div>
+                <div className="profile-edit-field">
+                  <label>브랜드 / 회사명</label>
+                  <input
+                    value={profileForm.brand}
+                    onChange={(e) => updateProfileField('brand', e.target.value)}
+                    placeholder="예: 밀마루 베이커리"
+                  />
+                </div>
+              </div>
+              <div className="profile-edit-field">
+                <label>이메일 주소</label>
+                <input value={user?.email || ''} disabled />
+                <small>이메일은 여기서 변경할 수 없습니다.</small>
+              </div>
+              <div className="profile-edit-actions">
+                <button type="submit" className="profile-save-btn" disabled={profileSaving}>
+                  {profileSaving ? '저장 중...' : '저장하기'}
+                </button>
+                {profileMsg && <em className="profile-msg">{profileMsg}</em>}
+              </div>
+            </form>
+          </div>
+        )}
       </section>
 
       <section className="dashboard-container dashboard-grid">
@@ -641,6 +795,105 @@ export default function MyPage() {
           letter-spacing: 0.04em;
           text-transform: uppercase;
           transition: background var(--transition-smooth);
+        }
+
+        .profile-toggle-btn {
+          background: transparent !important;
+          border: 1px solid #ffffff !important;
+          color: #ffffff !important;
+        }
+
+        .profile-toggle-btn:hover {
+          background: #ffffff !important;
+          color: #111111 !important;
+        }
+
+        .profile-edit-panel {
+          margin-top: 24px;
+          padding: 28px;
+          background: #1c1c1c;
+          border: 1px solid #333333;
+          display: flex;
+          flex-direction: column;
+          gap: 18px;
+        }
+
+        .profile-edit-row {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 18px;
+        }
+
+        .profile-edit-field {
+          display: flex;
+          flex-direction: column;
+          gap: 8px;
+        }
+
+        .profile-edit-field label {
+          color: #ff5a2a;
+          font-size: 12px;
+          font-weight: 900;
+          letter-spacing: 0.04em;
+        }
+
+        .profile-edit-field input {
+          height: 46px;
+          padding: 0 14px;
+          border: 1px solid #3a3a3a;
+          background: #111111;
+          color: #ffffff;
+          font-size: 14px;
+          font-weight: 700;
+        }
+
+        .profile-edit-field input:disabled {
+          color: #888888;
+          cursor: not-allowed;
+        }
+
+        .profile-edit-field small {
+          color: #888888;
+          font-size: 12px;
+          font-weight: 700;
+        }
+
+        .profile-edit-actions {
+          display: flex;
+          align-items: center;
+          gap: 16px;
+        }
+
+        .profile-save-btn {
+          min-height: 44px;
+          padding: 0 20px;
+          background: #ff5a2a;
+          color: #ffffff;
+          font-weight: 900;
+          border: none;
+          cursor: pointer;
+        }
+
+        .profile-save-btn:hover {
+          background: #e04a1f;
+        }
+
+        .profile-save-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .profile-msg {
+          color: #ff5a2a;
+          font-style: normal;
+          font-weight: 900;
+          font-size: 13px;
+        }
+
+        @media (min-width: 640px) {
+          .profile-edit-row {
+            grid-template-columns: 1fr 1fr;
+          }
         }
 
         .mypage-hero button:hover,
