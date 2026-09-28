@@ -2866,7 +2866,9 @@ export default function AdminPage() {
           border-radius: var(--border-radius-sm);
           background-color: var(--color-white);
           color: var(--color-charcoal-deep);
-          font-size: 12.5px;
+          font-size: 13px;
+          -webkit-font-smoothing: antialiased;
+          text-rendering: optimizeLegibility;
         }
 
         .member-search-input,
@@ -2874,7 +2876,19 @@ export default function AdminPage() {
         .member-control-select {
           height: 38px;
           padding: 0 10px;
-          font-weight: 800;
+          font-weight: 600;
+        }
+
+        .member-filter-select,
+        .member-control-select {
+          appearance: none;
+          -webkit-appearance: none;
+          -moz-appearance: none;
+          padding-right: 28px;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6' fill='none'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23767676' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: right 10px center;
+          background-size: 10px 6px;
         }
 
         .member-table {
@@ -2911,7 +2925,8 @@ export default function AdminPage() {
           padding: 3px 7px;
           border-radius: var(--border-radius-full);
           font-size: 10.5px;
-          font-weight: 900;
+          font-weight: 700;
+          letter-spacing: 0.1px;
           background-color: var(--color-emerald-pale);
           color: var(--color-emerald-deep);
         }
